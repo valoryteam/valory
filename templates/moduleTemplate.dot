@@ -1,0 +1,85 @@
+{{const code = it.validatorLib.join("");}}
+{{?code.indexOf("formats")>-1}}const formats = require("ajv/lib/compile/formats");({{?it.format}}'{{=it.format}}'{{?}});{{?}}
+const hasher = require("metrohash")["metrohash64"];
+const FUNCTION_PREFIX = "f"
+
+function validate(path, method, data) {
+    const key = FUNCTION_PREFIX + hasher(`${path}:${method}`);
+    return module["exports"][key](data);
+}
+
+function ucs2length(str) {
+  var length = 0
+    , len = str.length
+    , pos = 0
+    , value;
+  while (pos < len) {
+    length++;
+    value = str.charCodeAt(pos++);
+    if (value >= 0xD800 && value <= 0xDBFF && pos < len) {
+      value = str.charCodeAt(pos);
+      if ((value & 0xFC00) == 0xDC00) pos++;
+    }
+  }
+  return length;
+}
+
+function equal(a, b) {
+  if (a === b) return true;
+
+  var arrA = Array.isArray(a)
+    , arrB = Array.isArray(b)
+    , i;
+
+  if (arrA && arrB) {
+    if (a.length != b.length) return false;
+    for (i = 0; i < a.length; i++)
+      if (!equal(a[i], b[i])) return false;
+    return true;
+  }
+
+  if (arrA != arrB) return false;
+
+  if (a && b && typeof a === 'object' && typeof b === 'object') {
+    var keys = Object.keys(a);
+    if (keys.length !== Object.keys(b).length) return false;
+
+    var dateA = a instanceof Date
+      , dateB = b instanceof Date;
+    if (dateA && dateB) return a.getTime() == b.getTime();
+    if (dateA != dateB) return false;
+
+    var regexpA = a instanceof RegExp
+      , regexpB = b instanceof RegExp;
+    if (regexpA && regexpB) return a.toString() == b.toString();
+    if (regexpA != regexpB) return false;
+
+    for (i = 0; i < keys.length; i++)
+      if (!Object.prototype.hasOwnProperty.call(b, keys[i])) return false;
+
+    for (i = 0; i < keys.length; i++)
+      if(!equal(a[keys[i]], b[keys[i]])) return false;
+
+    return true;
+  }
+
+  return false;
+};
+
+
+{{=code}}
+
+
+{{
+let exportsDefinitions = it.exportHashes.map(function(hash){
+    return ('"'+hash+'": '+ hash +',');
+});
+exportsDefinitions = exportsDefinitions.join("");
+}}
+module["exports"]= {
+{{=exportsDefinitions}}
+"defHash": "{{= it.defHash }}",
+"globalConsume": {{= JSON.stringify(it.swagger.consumes) }},
+"swaggerBlob": {{= JSON.stringify(JSON.stringify(it.swagger)) }},
+"validate": validate
+};

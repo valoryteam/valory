@@ -1,0 +1,58 @@
+var {{= it.hash }} =
+    {{
+      const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
+
+      let code = it.validate.toString();
+      /* Call our own schema var */
+      code = code.replace(/validate.schema/g, 'schema');
+
+      /* Call our own error var */
+      code = code.replace(/validate.errors/g, 'validationErrors');
+
+
+      /* Transform returned errors */
+      code = code.replace(errorReg, function(match, keyword, dataPath, params, message){
+            dataPath = dataPath.replace("normalizedHeaders", "headers");
+            var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
+            if(dataPath.indexOf("+")<0){
+                dataPath = dataPath.replace(/'/g,"");
+                return ('return ' + '\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\';');
+            } else {
+                return ('return ' + '\'ValidationError[' + keyword + ']: request' + dataPath + ' + \' ' + message + allowedVal + '\';');
+            }
+      });
+
+      /* Mangle ill-behaved property names */
+      it.mangledKeys.forEach(function(item){
+            var query = "\\.properties\\[['\"]"+item.original+"['\"]\\]";
+            var reggy = new RegExp(query, "g");
+            code = code.replace(reggy,".properties."+item.mangled);
+      });
+
+      /* Protect data properties */
+      code = code.replace(/(data[A-Za-z_$0-9]*?)\.(\w+)/g, '$1["$2"]');
+
+      /* Enum property is changed to prevent keyword collision */
+      code = code.replace(/.enum;/g, '.api_enum;');
+
+      /* allOf is reformatted into object map to prevent indirection */
+      code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1');
+
+      let functionHeader = code.substring(0, code.indexOf("{"));
+      let functionBody = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
+    }}
+    {{= functionHeader}} {
+    let validationErrors = null;
+    {{~ it.validate.source.defaults:d:i }}
+      {{= "\/**@const*\/"}} const default{{=i}} = {{=JSON.stringify(d)}};
+    {{~}}
+    {{= "\/**@const*\/"}} const schema = {{= JSON.stringify(it.schema )}};
+    {{
+      let patterns = it.validate.source.patterns.map(function(pattern, id){
+        pattern = pattern.replace(/\\/g,'\\\\');
+        return ("\/**@const*\/ const pattern" + id + " = new RegExp(\"" + pattern + "\");");
+      });
+    }}
+    {{= patterns.join("") }}
+    {{= functionBody}}
+};
