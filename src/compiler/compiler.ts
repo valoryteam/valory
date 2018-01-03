@@ -1,12 +1,19 @@
 import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
-import {Schema, Spec} from "swagger-schema-official";
-import {MangledKey, mangleKeys, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
+import {Spec} from "swagger-schema-official";
+import {mangleKeys, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import * as Ajv from "ajv";
-import {listenerCount} from "cluster";
 import {metrohash64} from "metrohash";
 import * as fs from "fs";
+import {
+	CompilationLevel,
+	CompilerOutput,
+	ExtendedSchema,
+	FUNCTION_PREFIX,
+	ICompilerOptions,
+	ValidatorModuleContent,
+} from "./compilerheaders";
 
 const beautifier = require("js-beautify").js_beautify;
 const ClosureCompiler = require("google-closure-compiler").compiler;
@@ -15,60 +22,8 @@ const templates = require("dot").process({path: "../../templates"});
 const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
 
-export interface ExtendedSchema extends Schema {
-	const?: any;
-	oneOf?: ExtendedSchema[];
-}
-
-export interface RequestFieldMap {
-	header: string;
-	body: string;
-	formData: string;
-	query: string;
-	path: string;
-	[key: string]: string;
-}
-
-export interface ValidatorModule {
-	defHash: string;
-	globalConsume: string[];
-	swaggerBlob: string;
-	validate: (path: string, method: string, data: any) => string | string[];
-}
-
-export type ValidatorModuleContent = string;
-
-export interface CompilerOutput {
-	module: ValidatorModuleContent;
-	debugArtifacts?: {
-		hashes: string[];
-		preSwagger: Spec;
-		derefSwagger: Spec;
-		initialSchema: ExtendedSchema[];
-		processedSchema: ExtendedSchema[];
-		initialCompiles: any[];
-		mangledSchema: Array<{schema: ExtendedSchema, mangledKeys: MangledKey[]}>;
-		intermediateFunctions: string[];
-		intermediateModule: ValidatorModuleContent;
-		postCompileModule: ValidatorModuleContent;
-		closureOutput: {stdout: string, stderr: string, exitCode: number};
-	};
-}
-
-export enum CompilationLevel {
-	"ADVANCED",
-	"WHITESPACE_ONLY",
-	"SIMPLE",
-}
-
-export interface ICompilerOptions {
-	debug?: boolean;
-	requestFieldMapping?: RequestFieldMap;
-	compilationLevel?: CompilationLevel;
-}
-
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
-export const FUNCTION_PREFIX = "f";
+
 const ajv = new Ajv({
 	coerceTypes: true,
 	useDefaults: "shared",
@@ -115,8 +70,8 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	merge(defaultCompilerOptions, options);
 	options = defaultCompilerOptions;
 	await validate(cloneDeep(spec));
-	output.debugArtifacts.preSwagger = swaggerPreproccess(spec);
-	output.debugArtifacts.derefSwagger = await dereference(spec);
+	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
+	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger);
 	const apiHashes: string[] = [];
 	const apiCache: string[] = [];
 	const apiSchemas: ExtendedSchema[] = [];
@@ -145,7 +100,6 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			output.debugArtifacts.mangledSchema.push(mangled);
 		}
 	}
-
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
 		defHash: metrohash64(stringify(spec.definitions)),

@@ -1,7 +1,9 @@
-import {unset, get, set, forEach, cloneDeep} from "lodash";
+import {cloneDeep, forEach, get, set, unset} from "lodash";
 import {Spec} from "swagger-schema-official";
-import {DisallowedFormats, ExtendedSchema} from "./compiler";
+import {DisallowedFormats} from "./compiler";
 import {metrohash64} from "metrohash";
+import {ExtendedSchema, MangledKey} from "./compilerheaders";
+
 const mergeAllOf = require("json-schema-merge-allof");
 const mapKeysDeep: <T>(obj: T, callback: (value: any, key: string) => string) => T = require("map-keys-deep-lodash");
 
@@ -16,11 +18,6 @@ const safeKey = /^(?:[A-Za-z_$])(?:[0-9a-zA-Z_$]*)$/;
 
 interface Deep {
 	deepMapValues<T>(obj: T, callback: (value: any, path: string) => any): T;
-}
-
-export interface MangledKey {
-	original: string;
-	mangled: string;
 }
 
 interface AllOfMarker {
