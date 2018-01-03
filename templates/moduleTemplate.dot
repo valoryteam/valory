@@ -5,7 +5,7 @@ const FUNCTION_PREFIX = "f"
 
 function validate(path, method, data) {
     const key = FUNCTION_PREFIX + hasher(`${path}:${method}`);
-    return module["exports"][key](data);
+    return module["exports"][key];
 }
 
 function ucs2length(str) {
@@ -81,5 +81,5 @@ module["exports"]= {
 "defHash": "{{= it.defHash }}",
 "globalConsume": {{= JSON.stringify(it.swagger.consumes) }},
 "swaggerBlob": {{= JSON.stringify(JSON.stringify(it.swagger)) }},
-"validate": validate
+"getValidator": validate
 };

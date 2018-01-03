@@ -8,16 +8,19 @@ import {readFileSync} from "fs";
 import {join} from "path";
 import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
 import {ExtendedSchema, RequestFieldMap} from "../compiler/compilerheaders";
+import * as Pino from "pino";
 
+const uuid = require("hyperid")();
+const VALORYLOGGERVAR = "LOGLEVEL";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
 	body: any;
-	formData: { [key: string]: any };
-	query: { [key: string]: any };
-	path: { [key: string]: any };
+	formData?: { [key: string]: any };
+	query?: { [key: string]: any };
+	path?: { [key: string]: any };
 	statusCode: number;
 }
 
@@ -25,6 +28,13 @@ export interface ErrorDef {
 	code: number;
 	defaultMessage: string;
 }
+
+export interface RequestContext {
+	requestId: string;
+}
+
+export type ApiHandler = (request: ApiExchange, logger: Pino.Logger, requestContext: RequestContext)
+	=> Promise<ApiExchange> | ApiExchange;
 
 export enum HttpMethod {
 	POST,
@@ -63,6 +73,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	public logger = Pino({level: process.env[VALORYLOGGERVAR] || "info"});
 	private COMPILERMODE: boolean = (process.env.VALORYCOMPILER === "TRUE");
 	private apiDef: Spec;
 	private server: ApiServer;
@@ -77,6 +88,7 @@ export class Valory {
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer = new FastifyAdaptor()) {
+		this.logger.info("Starting valory");
 		this.apiDef = {
 			swagger: "2.0",
 			info,
@@ -100,33 +112,58 @@ export class Valory {
 				throw Error("Missing compiled swagger file. Please run valory CLI.");
 			}
 		} else {
+			this.logger.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
 		}
 	}
 
-	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, secure: boolean = false,
-					documented: boolean = true) {
+	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
+					secure: boolean = false, documented: boolean = true) {
+		const stringMethod = HttpMethod[method].toLowerCase();
+		this.logger.debug(`Registering endpoint ${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
-			this.endpointCompile(path, method, swaggerDef, secure, documented);
+			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, secure, documented);
 		} else {
-			this.endpointRun(path, method, swaggerDef, secure, documented);
+			this.endpointRun(path, method, swaggerDef, handler, stringMethod, secure, documented);
 		}
 	}
 
 	public start(options: any): { valory: ValoryMetadata } {
+		this.logger.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
 	}
 
-	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, secure: boolean = false,
-							documented: boolean = true) {
+	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
+							stringMethod: string, secure: boolean = false, documented: boolean = true) {
 		// TODO: add undocumented support
-		set(this.apiDef.paths, `${path}.${HttpMethod[method].toLowerCase()}`, swaggerDef);
+		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
-	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation, secure: boolean = false,
-						documented: boolean = true) {
-
+	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
+						handler: ApiHandler, stringMethod: string, secure: boolean = false, documented: boolean = true) {
+		const validator = this.validatorModule.getValidator(path, stringMethod);
+		if (validator == null) {
+			throw Error("Compiled swagger is out of date. Please run valory cli");
+		}
+		const childLogger = this.logger.child({endpoint: `${path}:${stringMethod}`});
+		const chindings: string = (childLogger as any).chindings;
+		const wrapper = async (req: ApiExchange): Promise<ApiExchange> => {
+			const requestId = uuid();
+			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
+			childLogger.debug("Received request");
+			const result = validator(req);
+			if (result !== true) {
+				return {
+					statusCode: 200,
+					body: {code: DefaultErrors.ValidationError.code, message: result},
+					headers: {"Content-Type": "application/json"},
+				};
+			} else {
+				return await handler(req, childLogger, {requestId});
+			}
+		};
+		this.server.register(path, method, wrapper);
 	}
 
 	private registerDocSite() {

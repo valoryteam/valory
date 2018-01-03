@@ -58,10 +58,10 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	const defaultCompilerOptions: ICompilerOptions = {
 		requestFieldMapping: {
 			body: "body",
-			formData: "post",
-			header: "normalizedHeaders",
-			path: "pathParams",
-			query: "queryString",
+			formData: "formData",
+			header: "headers",
+			path: "path",
+			query: "query",
 		},
 		debug: false,
 		compilationLevel: CompilationLevel.ADVANCED,

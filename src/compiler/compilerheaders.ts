@@ -19,7 +19,7 @@ export interface ValidatorModule {
 	defHash: string;
 	globalConsume: string[];
 	swaggerBlob: string;
-	validate: (path: string, method: string, data: any) => string | string[];
+	getValidator: (path: string, method: string) => (data: any) => string | string[] | boolean;
 }
 
 export type ValidatorModuleContent = string;

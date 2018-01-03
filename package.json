@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@types/nomnom": "^0.0.28",
+		"@types/pino": "^4.7.0",
 		"ajv": "^5.5.2",
 		"ajv-keywords": "^2.1.1",
 		"claudia-api-builder": "^2.5.1",
@@ -26,6 +27,7 @@
 		"fast-json-stable-stringify": "^2.0.0",
 		"fastify": "^0.37.0",
 		"google-closure-compiler": "^20171203.0.0",
+		"hyperid": "^1.2.0",
 		"js-beautify": "^1.7.5",
 		"json-schema-merge-allof": "^0.6.0",
 		"lodash": "^4.17.4",
@@ -33,6 +35,7 @@
 		"map-keys-deep-lodash": "^1.0.1",
 		"metrohash": "^2.3.0",
 		"nomnom": "^1.8.1",
+		"pino": "^4.10.3",
 		"require-relative": "^0.8.7",
 		"swagger-parser": "^4.0.1",
 		"tmp": "^0.0.33"
