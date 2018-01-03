@@ -7,9 +7,9 @@ import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "./loader";
 import {readFileSync} from "fs";
 import {join} from "path";
 import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
-import {ExtendedSchema, RequestFieldMap} from "../compiler/compilerheaders";
 import * as Pino from "pino";
 
+const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const VALORYLOGGERVAR = "LOGLEVEL";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
@@ -47,7 +47,7 @@ export enum HttpMethod {
 }
 
 export interface ApiServer {
-	requestFieldMap: RequestFieldMap;
+	// requestFieldMap: RequestFieldMap;
 	register: (path: string, method: HttpMethod, handler: (request: ApiExchange) =>
 		ApiExchange | Promise<ApiExchange>) => void;
 	allowDocSite: boolean;
@@ -243,6 +243,11 @@ if (!module.parent) {
 				return v.toString();
 			},
 		},
+		singleError: {
+			flag: true,
+			help: "Only return a single validation error at a time",
+			default: false,
+		},
 		compilationLevel: {
 			abbr: "l",
 			help: "Compilation level ['SIMPLE', 'ADVANCED', 'WHITESPACE_ONLY']",
@@ -271,6 +276,7 @@ if (!module.parent) {
 	api.info.version = args.version;
 	const output = omitBy(api, isNil) as Spec;
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
-		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: args.compilation_level})
+		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: args.compilation_level,
+			singleError: args.singleError})
 		.then(() => {console.log("done"); process.exit(0); });
 }

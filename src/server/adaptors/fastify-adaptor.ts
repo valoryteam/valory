@@ -5,13 +5,6 @@ import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");
 
 export class FastifyAdaptor implements ApiServer {
-	public readonly requestFieldMap: RequestFieldMap = {
-		header: "headers",
-		body: "body",
-		formData: "body",
-		query: "query",
-		path: "params",
-	};
 	public readonly allowDocSite: boolean = true;
 	private instance: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({});
 	public register(path: string, method: HttpMethod,

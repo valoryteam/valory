@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {HttpMethod, Valory, ValoryMetadata} from "../server/valory";
+import {HttpMethod, Valory} from "../server/valory";
 
 const info: Info = {
 	title: "Test api",
@@ -102,6 +102,64 @@ api.endpoint("/burn", HttpMethod.GET, {
 			description: "JWT required",
 		},
 	],
+}, (req) => {
+	return {
+		body: "yay",
+		statusCode: 200,
+		headers: {},
+	};
+});
+
+api.endpoint("/burn", HttpMethod.POST, {
+	description: "Awful, horrible burns",
+	summary: "Submit a burn for evaluation",
+	parameters: [
+		{
+			required: true,
+			name: "body",
+			schema: {
+				type: "object",
+				allOf: [
+					{
+						$ref: "#/definitions/BurnSubmit",
+					},
+					{
+						type: "object",
+						properties: {
+							thing: {
+								type: "string",
+							},
+						},
+					},
+				],
+			},
+			in: "body",
+		},
+		{
+			in: "header",
+			name: "potato",
+			required: false,
+			type: "string",
+		},
+		{
+			required: true,
+			type: "string",
+			in: "header",
+			name: "authorization",
+			description: "JWT required",
+		},
+	],
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+}, (req) => {
+	return {
+		body: "yay",
+		statusCode: 200,
+		headers: {},
+	};
 });
 
 module.exports = api.start({port: 8080});

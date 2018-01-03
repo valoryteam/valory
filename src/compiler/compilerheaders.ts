@@ -56,6 +56,7 @@ export interface ICompilerOptions {
 	debug?: boolean;
 	requestFieldMapping?: RequestFieldMap;
 	compilationLevel?: CompilationLevel;
+	singleError?: boolean;
 }
 
 export const FUNCTION_PREFIX = "f";

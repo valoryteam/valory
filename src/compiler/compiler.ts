@@ -14,11 +14,12 @@ import {
 	ICompilerOptions,
 	ValidatorModuleContent,
 } from "./compilerheaders";
+import {join} from "path";
 
 const beautifier = require("js-beautify").js_beautify;
 const ClosureCompiler = require("google-closure-compiler").compiler;
 const tmp = require("tmp");
-const templates = require("dot").process({path: "../../templates"});
+const templates = require("dot").process({path: join(__dirname, "../../templates")});
 const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
 
@@ -64,6 +65,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			query: "query",
 		},
 		debug: false,
+		singleError: true,
 		compilationLevel: CompilationLevel.ADVANCED,
 	};
 
@@ -91,6 +93,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 				format: (ajv as any)._opts.format,
 				mangledKeys: mangled.mangledKeys,
 				schema: mangled.schema,
+				singleError: options.singleError,
 			});
 			output.debugArtifacts.hashes.push(hash);
 			output.debugArtifacts.initialSchema.push(schema);

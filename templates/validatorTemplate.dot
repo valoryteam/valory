@@ -12,13 +12,19 @@ var {{= it.hash }} =
 
       /* Transform returned errors */
       code = code.replace(errorReg, function(match, keyword, dataPath, params, message){
+            let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
             var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
-                return ('return ' + '\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\';');
+                replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\'');
             } else {
-                return ('return ' + '\'ValidationError[' + keyword + ']: request' + dataPath + ' + \' ' + message + allowedVal + '\';');
+                replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' + \' ' + message + allowedVal + '\'');
+            }
+            if(it.singleError){
+                return "return " + replace + ";";
+            } else {
+                return "validationErrors.push(" + replace + ");";
             }
       });
 
@@ -38,11 +44,16 @@ var {{= it.hash }} =
       /* allOf is reformatted into object map to prevent indirection */
       code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1');
 
+      /* Return error array if enabled */
+      if (!it.singleError) {
+        code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(validationErrors.length===0){return true;}else{return validationErrors;}");
+      }
+
       let functionHeader = code.substring(0, code.indexOf("{"));
       let functionBody = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
     }}
     {{= functionHeader}} {
-    let validationErrors = null;
+    let validationErrors = {{=(it.singleError) ? "null" : "[]"}};
     {{~ it.validate.source.defaults:d:i }}
       {{= "\/**@const*\/"}} const default{{=i}} = {{=JSON.stringify(d)}};
     {{~}}
