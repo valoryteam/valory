@@ -38,6 +38,7 @@ const ajv = new Ajv({
 	allErrors: false,
 });
 
+// TODO: Fix discriminator errors
 export async function compile(spec: Spec, options?: ICompilerOptions) {
 	
 	const output: CompilerOutput = {
@@ -143,8 +144,8 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		jscomp_off: errorSup,
 	};
 
-	CompileLog.info("Running Closure Compiler");
-	await new Promise((resolve, reject) => {
+	CompileLog.info("Running Closure Compiler:", CompilationLevel[options.compilationLevel]);
+	await new Promise((resol, reject) => {
 		new ClosureCompiler(compilerFlags).run((exitCode: number, stdout: string, stderr: string) => {
 			output.debugArtifacts.closureOutput.stderr = stderr;
 			output.debugArtifacts.closureOutput.stdout = stdout;
@@ -153,7 +154,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			if (!exitCode) {
 				output.debugArtifacts.postCompileModule =
 					fs.readFileSync(outputTemp.name, {encoding: "utf8"}) as ValidatorModuleContent;
-				resolve();
+				resol();
 			} else {
 				reject(stderr);
 			}

@@ -2,6 +2,7 @@ var {{= it.hash }} =
     {{
       const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
       const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;/g;
+      const oneOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
 
       let code = it.validate.toString();
       /* Call our own schema var */
@@ -55,8 +56,9 @@ var {{= it.hash }} =
       /* Enum property is changed to prevent keyword collision */
       code = code.replace(/.enum;/g, '.api_enum;');
 
+      /* NOTE: this step is no longer needed, there should be no allOf's */
       /* allOf is reformatted into object map to prevent indirection */
-      code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1');
+      /* code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1'); */
 
       /* oneOf is reformatted into object map to prevent indirection */
       code = code.replace(/oneOf\[(\d*?)\]/g, 'oneOf.t$1');
@@ -64,6 +66,13 @@ var {{= it.hash }} =
       /* Return error array if enabled */
       if (!it.singleError) {
         code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(validationErrors.length===0){return true;}else{return validationErrors;}");
+      }
+
+      /* Fix oneOf error return */
+      if (it.singleError) {
+        code = code.replace(oneOfErrorReturn, "return err;");
+      } else {
+        code = code.replace(oneOfErrorReturn, "validationErrors = fastConcat(validationErrors, vErrors);");
       }
 
       let functionHeader = code.substring(0, code.indexOf("{"));

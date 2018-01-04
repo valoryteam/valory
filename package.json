@@ -25,6 +25,7 @@
 		"claudia-api-builder": "^2.5.1",
 		"dot": "^1.1.2",
 		"fast-json-stable-stringify": "^2.0.0",
+		"fast.js": "^0.1.1",
 		"fastify": "^0.37.0",
 		"google-closure-compiler": "^20171203.0.0",
 		"hyperid": "^1.2.0",

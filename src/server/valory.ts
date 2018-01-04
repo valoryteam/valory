@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {ValidatorModule} from "../compiler/compilerheaders";
+import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
 import {assign, forIn, omitBy, isNil, set} from "lodash";
 import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "./loader";
@@ -276,8 +276,9 @@ if (!module.parent) {
 	api.host = args.host;
 	api.info.version = args.version;
 	const output = omitBy(api, isNil) as Spec;
+	const compLevel = CompilationLevel[args.compilationLevel] as any;
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
-		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: args.compilation_level,
+		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: compLevel,
 			singleError: args.singleError})
 		.then(() => {ValoryLog.info("Compilation Complete"); process.exit(0); });
 }
