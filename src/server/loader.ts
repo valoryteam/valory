@@ -4,6 +4,7 @@ import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {metrohash64} from "metrohash";
 import {ICompilerOptions, ValidatorModule} from "../compiler/compilerheaders";
+import {ValoryLog} from "./valory";
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -13,7 +14,7 @@ const stringify = require("fast-json-stable-stringify");
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
 									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions) {
 	const compiled = await require("../compiler/compiler").compile(swagger, compilerOptions);
-	console.log("Saving compiled swagger to: " + compilePath);
+	ValoryLog.info("Saving compiled swagger to: " + compilePath);
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
 	omit(trimmedSpec, undocumentedPaths);

@@ -15,11 +15,15 @@ import {
 	ValidatorModuleContent,
 } from "./compilerheaders";
 import {join} from "path";
+import Pino = require("pino");
 
+export const CompileLog = Pino();
 const beautifier = require("js-beautify").js_beautify;
 const ClosureCompiler = require("google-closure-compiler").compiler;
 const tmp = require("tmp");
-const templates = require("dot").process({path: join(__dirname, "../../templates")});
+const dotJs = require("dot");
+dotJs.log = false;
+const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
 
@@ -71,8 +75,11 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 
 	merge(defaultCompilerOptions, options);
 	options = defaultCompilerOptions;
+	CompileLog.info("Validating swagger");
 	await validate(cloneDeep(spec));
+	CompileLog.info("Preprocessing swagger");
 	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
+	CompileLog.info("Dereferencing swagger");
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger);
 	const apiHashes: string[] = [];
 	const apiCache: string[] = [];
@@ -80,11 +87,17 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)){
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])){
 			const hash = FUNCTION_PREFIX + metrohash64(`${path}:${method}`);
+			const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
+			endpointLogger.info("Building method schema");
 			const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)[method], method, path,
 				options.requestFieldMapping);
+			endpointLogger.info("Preprocessing schema");
 			const schemaProcessed = schemaPreprocess(schema);
+			endpointLogger.info("Compiling schema validator");
 			const initialCompile = ajv.compile(schemaProcessed);
+			endpointLogger.info("Mangling keys");
 			const mangled = mangleKeys(schemaProcessed);
+			endpointLogger.info("Compiling intermediate validator function");
 			const templated = templates.validatorTemplate({
 				validate: initialCompile,
 				funcName: path,
@@ -103,6 +116,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			output.debugArtifacts.mangledSchema.push(mangled);
 		}
 	}
+	CompileLog.info("Building intermediate module");
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
 		defHash: metrohash64(stringify(spec.definitions)),
@@ -126,6 +140,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		jscomp_off: errorSup,
 	};
 
+	CompileLog.info("Running Closure Compiler");
 	await new Promise((resolve, reject) => {
 		new ClosureCompiler(compilerFlags).run((exitCode: number, stdout: string, stderr: string) => {
 			output.debugArtifacts.closureOutput.stderr = stderr;
@@ -142,6 +157,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		});
 	});
 
+	CompileLog.info("Final post process");
 	output.module = finalProcess(output.debugArtifacts.postCompileModule);
 
 	return output;

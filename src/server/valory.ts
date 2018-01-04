@@ -14,6 +14,7 @@ const uuid = require("hyperid")();
 const VALORYLOGGERVAR = "LOGLEVEL";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
+export const ValoryLog = Pino({level: process.env[VALORYLOGGERVAR] || "info"});
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -73,7 +74,6 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
-	public logger = Pino({level: process.env[VALORYLOGGERVAR] || "info"});
 	private COMPILERMODE: boolean = (process.env.VALORYCOMPILER === "TRUE");
 	private apiDef: Spec;
 	private server: ApiServer;
@@ -88,7 +88,7 @@ export class Valory {
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer = new FastifyAdaptor()) {
-		this.logger.info("Starting valory");
+		ValoryLog.info("Starting valory");
 		this.apiDef = {
 			swagger: "2.0",
 			info,
@@ -112,7 +112,7 @@ export class Valory {
 				throw Error("Missing compiled swagger file. Please run valory CLI.");
 			}
 		} else {
-			this.logger.info("Starting in compiler mode");
+			ValoryLog.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
 		}
 	}
@@ -120,7 +120,7 @@ export class Valory {
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
 					secure: boolean = false, documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
-		this.logger.debug(`Registering endpoint ${path}:${stringMethod}`);
+		ValoryLog.debug(`Registering endpoint ${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
 			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, secure, documented);
 		} else {
@@ -129,7 +129,7 @@ export class Valory {
 	}
 
 	public start(options: any): { valory: ValoryMetadata } {
-		this.logger.info("Valory startup complete");
+		ValoryLog.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
 	}
@@ -146,9 +146,10 @@ export class Valory {
 		if (validator == null) {
 			throw Error("Compiled swagger is out of date. Please run valory cli");
 		}
-		const childLogger = this.logger.child({endpoint: `${path}:${stringMethod}`});
+		const childLogger = ValoryLog.child({endpoint: `${path}:${stringMethod}`});
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiExchange): Promise<ApiExchange> => {
+			// TODO: implement authorizer support
 			const requestId = uuid();
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
 			childLogger.debug("Received request");
@@ -278,5 +279,5 @@ if (!module.parent) {
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
 		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: args.compilation_level,
 			singleError: args.singleError})
-		.then(() => {console.log("done"); process.exit(0); });
+		.then(() => {ValoryLog.info("Compilation Complete"); process.exit(0); });
 }

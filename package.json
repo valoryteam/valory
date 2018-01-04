@@ -15,11 +15,11 @@
 		"@types/node": "^8.5.1",
 		"@types/swagger-parser": "^4.0.2",
 		"@types/swagger-schema-official": "^2.0.8",
+		"@types/pino": "^4.7.0",
+		"@types/nomnom": "^0.0.28",
 		"typescript": "^2.6.2"
 	},
 	"dependencies": {
-		"@types/nomnom": "^0.0.28",
-		"@types/pino": "^4.7.0",
 		"ajv": "^5.5.2",
 		"ajv-keywords": "^2.1.1",
 		"claudia-api-builder": "^2.5.1",
