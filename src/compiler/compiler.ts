@@ -1,7 +1,7 @@
 import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
 import {Spec} from "swagger-schema-official";
-import {mangleKeys, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
+import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import * as Ajv from "ajv";
 import {metrohash64} from "metrohash";
@@ -35,6 +35,7 @@ const ajv = new Ajv({
 	sourceCode: true,
 	errorDataPath: "property",
 	unicode: false,
+	allErrors: false,
 });
 
 export async function compile(spec: Spec, options?: ICompilerOptions) {
@@ -94,9 +95,11 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			endpointLogger.info("Preprocessing schema");
 			const schemaProcessed = schemaPreprocess(schema);
 			endpointLogger.info("Compiling schema validator");
-			const initialCompile = ajv.compile(schemaProcessed);
+			const initialCompile = ajv.compile(schemaProcessed.schema);
+			endpointLogger.info("Objectifying oneOf's");
+			resolve(schemaProcessed.resQueue);
 			endpointLogger.info("Mangling keys");
-			const mangled = mangleKeys(schemaProcessed);
+			const mangled = mangleKeys(schemaProcessed.schema);
 			endpointLogger.info("Compiling intermediate validator function");
 			const templated = templates.validatorTemplate({
 				validate: initialCompile,
@@ -111,7 +114,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			output.debugArtifacts.hashes.push(hash);
 			output.debugArtifacts.initialSchema.push(schema);
 			output.debugArtifacts.intermediateFunctions.push(templated);
-			output.debugArtifacts.processedSchema.push(schemaProcessed);
+			output.debugArtifacts.processedSchema.push(schemaProcessed.schema);
 			output.debugArtifacts.initialCompiles.push(initialCompile);
 			output.debugArtifacts.mangledSchema.push(mangled);
 		}

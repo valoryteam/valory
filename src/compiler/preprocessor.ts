@@ -1,8 +1,9 @@
 import {cloneDeep, forEach, get, set, unset} from "lodash";
 import {Spec} from "swagger-schema-official";
-import {DisallowedFormats} from "./compiler";
+import {CompileLog, DisallowedFormats} from "./compiler";
 import {metrohash64} from "metrohash";
 import {ExtendedSchema, MangledKey} from "./compilerheaders";
+import {PriorityQueue} from "tstl";
 
 const mergeAllOf = require("json-schema-merge-allof");
 const mapKeysDeep: <T>(obj: T, callback: (value: any, key: string) => string) => T = require("map-keys-deep-lodash");
@@ -20,7 +21,7 @@ interface Deep {
 	deepMapValues<T>(obj: T, callback: (value: any, path: string) => any): T;
 }
 
-interface AllOfMarker {
+export interface OneOfMarker {
 	depth: number;
 	schema: ExtendedSchema;
 }
@@ -65,8 +66,18 @@ export function swaggerPreproccess(swagger: Spec): Spec {
 	return swagger;
 }
 
-export function schemaPreprocess(schema: ExtendedSchema): ExtendedSchema {
+function objectify(oneOf: any[]): {[x: string]: any} {
+	const convertedObj: {[x: string]: any} = {};
+	forEach(oneOf, (item, ind) => {
+		convertedObj["t" + ind] = item;
+	});
+	return convertedObj;
+}
+
+export function schemaPreprocess(schema: ExtendedSchema):
+{schema: ExtendedSchema, resQueue: PriorityQueue<OneOfMarker>} {
 	const schemaClone = cloneDeep(schema);
+	const oneOfQueue = new PriorityQueue<OneOfMarker>((a, b): boolean => (a.depth > b.depth));
 
 	const deepScan = (scanSchema: ExtendedSchema, depth: number = 0) => {
 		if (scanSchema.properties) {
@@ -77,6 +88,8 @@ export function schemaPreprocess(schema: ExtendedSchema): ExtendedSchema {
 			if (scanSchema.oneOf.length === 1) {
 				scanSchema.allOf = scanSchema.oneOf;
 				delete scanSchema.oneOf;
+			} else {
+				oneOfQueue.push({depth, schema: scanSchema});
 			}
 			forEach(scanSchema.oneOf, (schemaChild) => {deepScan(schemaChild, depth + 1); });
 		}
@@ -95,13 +108,22 @@ export function schemaPreprocess(schema: ExtendedSchema): ExtendedSchema {
 		}
 
 		if (DisallowedFormats.indexOf(scanSchema.format) > -1) {
-			console.log("removing invalid format:", scanSchema.format);
+			CompileLog.warn("removing invalid format:", scanSchema.format);
 			delete scanSchema.format;
 		}
 	};
-	deepScan(schemaClone);
+	const merged = mergeAllOf(schemaClone);
 
-	return mergeAllOf(schemaClone);
+	deepScan(merged);
+	return {schema: merged, resQueue: oneOfQueue};
+}
+
+export function resolve(resolveQueue: PriorityQueue<OneOfMarker>) {
+	while (!resolveQueue.empty()) {
+		const item = resolveQueue.top();
+		item.schema.oneOf = (objectify(item.schema.oneOf) as any[]);
+		resolveQueue.pop();
+	}
 }
 
 export function mangleKeys(schema: ExtendedSchema): {schema: ExtendedSchema, mangledKeys: MangledKey[]} {

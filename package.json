@@ -13,10 +13,10 @@
 	"devDependencies": {
 		"@types/lodash": "^4.14.91",
 		"@types/node": "^8.5.1",
+		"@types/nomnom": "^0.0.28",
+		"@types/pino": "^4.7.0",
 		"@types/swagger-parser": "^4.0.2",
 		"@types/swagger-schema-official": "^2.0.8",
-		"@types/pino": "^4.7.0",
-		"@types/nomnom": "^0.0.28",
 		"typescript": "^2.6.2"
 	},
 	"dependencies": {
@@ -38,6 +38,7 @@
 		"pino": "^4.10.3",
 		"require-relative": "^0.8.7",
 		"swagger-parser": "^4.0.1",
-		"tmp": "^0.0.33"
+		"tmp": "^0.0.33",
+		"tstl": "^1.6.4"
 	}
 }

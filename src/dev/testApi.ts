@@ -46,6 +46,24 @@ const definitions = {
 			},
 		],
 	},
+	Dog: {
+		allOf: [
+			{
+				$ref: "#/definitions/Animal",
+			},
+			{
+				type: "object",
+				required: [
+					"tailWagging",
+				],
+				properties: {
+					tailWagging: {
+						type: "boolean",
+					},
+				},
+			},
+		],
+	},
 	BurnSubmit: {
 		type: "object",
 		required: [

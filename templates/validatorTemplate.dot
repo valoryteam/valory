@@ -1,6 +1,7 @@
 var {{= it.hash }} =
     {{
       const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
+      const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;/g;
 
       let code = it.validate.toString();
       /* Call our own schema var */
@@ -28,6 +29,19 @@ var {{= it.hash }} =
             }
       });
 
+      code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message){
+            let replace = "";
+            dataPath = dataPath.replace("normalizedHeaders", "headers");
+            var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
+            if(dataPath.indexOf("+")<0){
+                dataPath = dataPath.replace(/'/g,"");
+                replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\'');
+            } else {
+                replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' + \' ' + message + allowedVal + '\'');
+            }
+            return "err = "+ replace + ";";
+      });
+
       /* Mangle ill-behaved property names */
       it.mangledKeys.forEach(function(item){
             var query = "\\.properties\\[['\"]"+item.original+"['\"]\\]";
@@ -43,6 +57,9 @@ var {{= it.hash }} =
 
       /* allOf is reformatted into object map to prevent indirection */
       code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1');
+
+      /* oneOf is reformatted into object map to prevent indirection */
+      code = code.replace(/oneOf\[(\d*?)\]/g, 'oneOf.t$1');
 
       /* Return error array if enabled */
       if (!it.singleError) {
