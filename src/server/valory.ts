@@ -41,7 +41,6 @@ export enum HttpMethod {
 	POST,
 	PUT,
 	GET,
-	ANY,
 	DELETE,
 	HEAD,
 	PATCH,
@@ -126,6 +125,36 @@ export class Valory {
 		} else {
 			this.endpointRun(path, method, swaggerDef, handler, stringMethod, secure, documented);
 		}
+	}
+
+	public get(path: string, swaggerDef: Operation, handler: ApiHandler,
+			   secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, secure, documented);
+	}
+
+	public post(path: string, swaggerDef: Operation, handler: ApiHandler,
+			   secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, secure, documented);
+	}
+
+	public delete(path: string, swaggerDef: Operation, handler: ApiHandler,
+				secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, secure, documented);
+	}
+
+	public head(path: string, swaggerDef: Operation, handler: ApiHandler,
+				secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, secure, documented);
+	}
+
+	public patch(path: string, swaggerDef: Operation, handler: ApiHandler,
+				secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, secure, documented);
+	}
+
+	public put(path: string, swaggerDef: Operation, handler: ApiHandler,
+				secure: boolean = false, documented: boolean = true) {
+		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, secure, documented);
 	}
 
 	public start(options: any): { valory: ValoryMetadata } {

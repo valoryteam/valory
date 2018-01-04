@@ -19,10 +19,12 @@ const definitions = {
 			},
 			name: {
 				type: "string",
+				minLength: 4,
+				maxLength: 20,
 			},
 		},
 	},
-	Cat: {
+	ALIPAY: {
 		allOf: [
 			{
 				$ref: "#/definitions/Animal",
@@ -30,10 +32,10 @@ const definitions = {
 			{
 				type: "object",
 				required: [
-					"huntingSkill",
+					"alipay_specific_data",
 				],
 				properties: {
-					huntingSkill: {
+					alipay_specific_data: {
 						type: "string",
 						enum: [
 							"clueless",
@@ -46,7 +48,7 @@ const definitions = {
 			},
 		],
 	},
-	Dog: {
+	PAYPAL: {
 		allOf: [
 			{
 				$ref: "#/definitions/Animal",
@@ -54,10 +56,10 @@ const definitions = {
 			{
 				type: "object",
 				required: [
-					"tailWagging",
+					"paypal_specific_data",
 				],
 				properties: {
-					tailWagging: {
+					paypal_specific_data: {
 						type: "boolean",
 					},
 				},
@@ -103,7 +105,7 @@ const definitions = {
 
 const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, []);
 
-api.endpoint("/burn", HttpMethod.GET, {
+api.get("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Get burned",
 	responses: {
@@ -128,7 +130,7 @@ api.endpoint("/burn", HttpMethod.GET, {
 	};
 });
 
-api.endpoint("/burn", HttpMethod.POST, {
+api.post("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Submit a burn for evaluation",
 	parameters: [
@@ -172,10 +174,12 @@ api.endpoint("/burn", HttpMethod.POST, {
 			description: "Returns a thing",
 		},
 	},
-}, (req) => {
+}, (req, logger) => {
+	logger.info(req);
+
 	return {
 		body: "yay",
-		statusCode: 200,
+		statusCode: 401,
 		headers: {},
 	};
 });
