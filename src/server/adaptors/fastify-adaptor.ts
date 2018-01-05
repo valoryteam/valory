@@ -42,4 +42,8 @@ export class FastifyAdaptor implements ApiServer {
 		this.instance.listen(options.port);
 		return {valory: metadata};
 	}
+
+	public shutdown() {
+		this.instance.server.close();
+	}
 }

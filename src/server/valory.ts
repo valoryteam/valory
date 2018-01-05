@@ -50,11 +50,11 @@ export enum HttpMethod {
 }
 
 export interface ApiServer {
-	// requestFieldMap: RequestFieldMap;
 	register: (path: string, method: HttpMethod, handler: (request: ApiExchange) =>
 		ApiExchange | Promise<ApiExchange>) => void;
 	allowDocSite: boolean;
 	getExport: (metadata: ValoryMetadata, options: any) => { valory: ValoryMetadata };
+	shutdown: () => void;
 }
 
 export interface ValoryMetadata {
@@ -165,6 +165,10 @@ export class Valory {
 		ValoryLog.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
+	}
+
+	public shutdown() {
+		this.server.shutdown();
 	}
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,

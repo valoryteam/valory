@@ -1,6 +1,7 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
+		"experimentalDecorators": true,
 		"pretty": true,
 		"module": "commonjs",
 		"target": "esnext",

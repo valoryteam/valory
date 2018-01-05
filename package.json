@@ -4,19 +4,25 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"pretest": "tsc",
+		"test": "mocha dist/test/test.js",
 		"build": "tsc",
 		"prepublish": "tsc"
 	},
 	"author": "John Conley",
 	"license": "ISC",
 	"devDependencies": {
+		"@types/chai": "^4.1.0",
 		"@types/lodash": "^4.14.91",
+		"@types/mocha": "^2.2.46",
 		"@types/node": "^8.5.1",
 		"@types/nomnom": "^0.0.28",
 		"@types/pino": "^4.7.0",
 		"@types/swagger-parser": "^4.0.2",
 		"@types/swagger-schema-official": "^2.0.8",
+		"chai": "^4.1.2",
+		"mocha": "^4.1.0",
+		"mocha-typescript": "^1.1.12",
 		"typescript": "^2.6.2"
 	},
 	"dependencies": {
