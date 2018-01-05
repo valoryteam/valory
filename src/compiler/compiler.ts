@@ -9,15 +9,15 @@ import * as fs from "fs";
 import {
 	CompilationLevel,
 	CompilerOutput,
-	ExtendedSchema,
 	FUNCTION_PREFIX,
 	ICompilerOptions,
 	ValidatorModuleContent,
 } from "./compilerheaders";
 import {join} from "path";
 import Pino = require("pino");
+import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 
-export const CompileLog = Pino();
+export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
 const ClosureCompiler = require("google-closure-compiler").compiler;
 const tmp = require("tmp");
@@ -83,9 +83,6 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
 	CompileLog.info("Dereferencing swagger");
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger);
-	const apiHashes: string[] = [];
-	const apiCache: string[] = [];
-	const apiSchemas: ExtendedSchema[] = [];
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)){
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])){
 			const hash = FUNCTION_PREFIX + metrohash64(`${path}:${method}`);
@@ -173,7 +170,7 @@ function finalProcess(content: ValidatorModuleContent): ValidatorModuleContent {
 	const trueReg = /!0/g;
 	const falseReg = /!1/g;
 	const nullReg = /void 0/g;
-	const arrayCheckReg = /Array.isArray\(([a-zA-Z]*?)\)/g;
+	// const arrayCheckReg = /Array.isArray\(([a-zA-Z]*?)\)/g;
 
 	let ret = content.replace(trueReg, " true");
 	ret = ret.replace(falseReg, " false");

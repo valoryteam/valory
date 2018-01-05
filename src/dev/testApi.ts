@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {HttpMethod, Valory} from "../server/valory";
+import {Valory} from "../server/valory";
 
 const info: Info = {
 	title: "Test api",
@@ -193,7 +193,7 @@ api.post("/burn", {
 		},
 	},
 }, (req, logger) => {
-	logger.info(req);
+	// logger.info(req);
 
 	return {
 		body: "yay",

@@ -10,12 +10,14 @@ import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
 import * as Pino from "pino";
 
 const fastTry = require("fast.js/function/try");
-const stringify = require("fast-json-stable-stringify");
+// const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const VALORYLOGGERVAR = "LOGLEVEL";
+export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
-export const ValoryLog = Pino({level: process.env[VALORYLOGGERVAR] || "info"});
+export const ValoryLog = Pino({level: process.env[VALORYLOGGERVAR] || "info",
+	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -183,7 +185,7 @@ export class Valory {
 			// TODO: implement authorizer support
 			const requestId = uuid();
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
-			childLogger.debug("Received request");
+			childLogger.debug(req, "Received request");
 			const result = validator(req);
 			if (result !== true) {
 				return {
