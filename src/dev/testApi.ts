@@ -24,7 +24,7 @@ const definitions = {
 			},
 		},
 	},
-	ALIPAY: {
+	Cat: {
 		allOf: [
 			{
 				$ref: "#/definitions/Animal",
@@ -32,10 +32,10 @@ const definitions = {
 			{
 				type: "object",
 				required: [
-					"alipay_specific_data",
+					"huntingSkill",
 				],
 				properties: {
-					alipay_specific_data: {
+					huntingSkill: {
 						type: "string",
 						enum: [
 							"clueless",
@@ -48,7 +48,7 @@ const definitions = {
 			},
 		],
 	},
-	PAYPAL: {
+	Monkey: {
 		allOf: [
 			{
 				$ref: "#/definitions/Animal",
@@ -56,10 +56,29 @@ const definitions = {
 			{
 				type: "object",
 				required: [
-					"paypal_specific_data",
+					"numberOfFleas",
 				],
 				properties: {
-					paypal_specific_data: {
+					numberOfFleas: {
+						type: "number",
+						minimum: 0,
+					},
+				},
+			},
+		],
+	},
+	Dog: {
+		allOf: [
+			{
+				$ref: "#/definitions/Animal",
+			},
+			{
+				type: "object",
+				required: [
+					"tailWagging",
+				],
+				properties: {
+					tailWagging: {
 						type: "boolean",
 					},
 				},
@@ -87,7 +106,6 @@ const definitions = {
 						type: "string",
 						enum: [
 							"sick",
-							"supersick",
 						],
 					},
 					pet: {

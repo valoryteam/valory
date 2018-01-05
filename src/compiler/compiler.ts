@@ -82,7 +82,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	CompileLog.info("Preprocessing swagger");
 	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
 	CompileLog.info("Dereferencing swagger");
-	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger);
+	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger);
 	const apiHashes: string[] = [];
 	const apiCache: string[] = [];
 	const apiSchemas: ExtendedSchema[] = [];
@@ -111,6 +111,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 				mangledKeys: mangled.mangledKeys,
 				schema: mangled.schema,
 				singleError: options.singleError,
+				discriminators: output.debugArtifacts.preSwagger.discriminators,
 			});
 			output.debugArtifacts.hashes.push(hash);
 			output.debugArtifacts.initialSchema.push(schema);

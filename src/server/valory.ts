@@ -9,6 +9,7 @@ import {join} from "path";
 import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
 import * as Pino from "pino";
 
+const fastTry = require("fast.js/function/try");
 const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const VALORYLOGGERVAR = "LOGLEVEL";
@@ -102,13 +103,14 @@ export class Valory {
 		assign(this.errors, errors);
 
 		if (!this.COMPILERMODE) {
-			try {
-				this.validatorModule = loadModule(definitions);
+			const mod: ValidatorModule | Error = fastTry(() => loadModule(definitions));
+			if (mod instanceof Error) {
+				throw mod;
+			} else {
+				this.validatorModule = mod;
 				if (server.allowDocSite) {
 					this.registerDocSite();
 				}
-			} catch (err) {
-				throw Error("Missing compiled swagger file. Please run valory CLI.");
 			}
 		} else {
 			ValoryLog.info("Starting in compiler mode");

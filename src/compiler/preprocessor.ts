@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, get, set, unset} from "lodash";
+import {cloneDeep, forEach, get, set, unset, map} from "lodash";
 import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
 import {metrohash64} from "metrohash";
@@ -26,7 +26,7 @@ export interface OneOfMarker {
 	schema: ExtendedSchema;
 }
 
-export function swaggerPreproccess(swagger: Spec): Spec {
+export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminators: string[]} {
 	const pathMap: {[key: string]: {propName: string, oneOfPath: string}} = {};
 	const removePaths: string[] = [];
 
@@ -63,7 +63,7 @@ export function swaggerPreproccess(swagger: Spec): Spec {
 	removePaths.forEach((path) => {
 		unset(swagger, path);
 	});
-	return swagger;
+	return {swagger, discriminators: map(pathMap, "propName")};
 }
 
 function objectify(oneOf: any[]): {[x: string]: any} {

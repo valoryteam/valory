@@ -33,7 +33,7 @@ export interface CompilerOutput {
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
 		hashes: string[];
-		preSwagger: Spec;
+		preSwagger: {swagger: Spec, discriminators: string[]};
 		derefSwagger: Spec;
 		initialSchema: ExtendedSchema[];
 		processedSchema: ExtendedSchema[];

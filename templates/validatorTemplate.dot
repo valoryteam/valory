@@ -1,8 +1,9 @@
 var {{= it.hash }} =
     {{
       const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
-      const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;/g;
+      const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;[\s]*?(if[\s\S]*?else[\s\S]*?;)/g;
       const oneOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
+      const propGetter = /\.([^\.]*)'/g;
 
       let code = it.validate.toString();
       /* Call our own schema var */
@@ -29,9 +30,19 @@ var {{= it.hash }} =
             }
       });
 
-      code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message){
+      code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message, errPush){
             let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
+            if(keyword==="oneOf"){
+                return "err = null;";
+            }
+            if(keyword==="const"){
+                propGetter.lastIndex = 0;
+                let prop = propGetter.exec(dataPath)[1];
+                if(it.discriminators.indexOf(prop)>-1){
+                    return "err = null;";
+                }
+            }
             var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
@@ -39,7 +50,7 @@ var {{= it.hash }} =
             } else {
                 replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' + \' ' + message + allowedVal + '\'');
             }
-            return "err = "+ replace + ";";
+            return "err = "+ replace + ";" + errPush;
       });
 
       /* Mangle ill-behaved property names */
