@@ -1,8 +1,15 @@
 {{const code = it.validatorLib.join("");}}
 {{?code.indexOf("formats")>-1}}const formats = require("ajv/lib/compile/formats");({{?it.format}}'{{=it.format}}'{{?}});{{?}}
 const hasher = require("metrohash")["metrohash64"];
-const fastConcat = require("fast.js/array/concat");
 const FUNCTION_PREFIX = "f"
+
+function pushArr(target, other) {
+    const len = other.length;
+    let i;
+    for(i=0;i<len;i++){
+        target.push(other[i]);
+    }
+}
 
 function validate(path, method, data) {
     const key = FUNCTION_PREFIX + hasher(`${path}:${method}`);

@@ -82,7 +82,7 @@ var {{= it.hash }} =
       if (it.singleError) {
         code = code.replace(oneOfErrorReturn, "return err;");
       } else {
-        code = code.replace(oneOfErrorReturn, "(vErrors!=null) ? fastConcat(validationErrors, vErrors) : validationErrors.push(err);");
+        code = code.replace(oneOfErrorReturn, "(vErrors!=null) ? pushArr(validationErrors, vErrors) : validationErrors.push(err);");
       }
 
       let functionHeader = code.substring(0, code.indexOf("{"));
