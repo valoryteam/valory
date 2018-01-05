@@ -3,12 +3,15 @@ import {RequestFieldMap} from "../../compiler/compilerheaders";
 import {FastifyInstance, HTTPMethod} from "fastify";
 import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");
+const intern = require("fast.js/string/intern");
+const pathReplacer = /{([\S]*?)}/g;
 
 export class FastifyAdaptor implements ApiServer {
 	public readonly allowDocSite: boolean = true;
 	private instance: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({});
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiExchange) => ApiExchange | Promise<ApiExchange>) {
+		path = intern(path.replace(pathReplacer, ":$1"));
 		this.instance.route({
 			method: HttpMethod[method] as HTTPMethod,
 			url: path,

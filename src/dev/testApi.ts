@@ -148,6 +148,31 @@ api.get("/burn", {
 	};
 });
 
+api.get("/burn/{name}", {
+	description: "Burn someone",
+	summary: "Burn someone by name",
+	parameters: [
+		{
+			name: "name",
+			in: "path",
+			required: true,
+			type: "string",
+			description: "Name of person to burn",
+		},
+	],
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+}, (req, logger) => {
+	return {
+		body: "yay",
+		statusCode: 401,
+		headers: {},
+	};
+});
+
 api.post("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Submit a burn for evaluation",
