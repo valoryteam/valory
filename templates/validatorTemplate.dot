@@ -34,7 +34,7 @@ var {{= it.hash }} =
             let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
             if(keyword==="oneOf"){
-                return "err = null;";
+                errPush = "";
             }
             if(keyword==="const"){
                 propGetter.lastIndex = 0;
@@ -82,7 +82,7 @@ var {{= it.hash }} =
       if (it.singleError) {
         code = code.replace(oneOfErrorReturn, "return err;");
       } else {
-        code = code.replace(oneOfErrorReturn, "validationErrors = fastConcat(validationErrors, vErrors);");
+        code = code.replace(oneOfErrorReturn, "(vErrors!=null) ? fastConcat(validationErrors, vErrors) : validationErrors.push(err);");
       }
 
       let functionHeader = code.substring(0, code.indexOf("{"));
