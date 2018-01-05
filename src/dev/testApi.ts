@@ -173,6 +173,32 @@ api.get("/burn/{name}", {
 	};
 });
 
+api.post("/formtest", {
+	description: "Awful, horrible burns",
+	summary: "Submit a burn for evaluation",
+	parameters: [
+		{
+			in: "formData",
+			name: "potato",
+			required: true,
+			type: "string",
+		},
+	],
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+}, (req, logger) => {
+	// logger.info(req);
+
+	return {
+		body: "yay",
+		statusCode: 401,
+		headers: {},
+	};
+});
+
 api.post("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Submit a burn for evaluation",

@@ -27,6 +27,7 @@
 		"fast-json-stable-stringify": "^2.0.0",
 		"fast.js": "^0.1.1",
 		"fastify": "^0.37.0",
+		"fastify-formbody": "^1.1.0",
 		"google-closure-compiler": "^20171203.0.0",
 		"hyperid": "^1.2.0",
 		"js-beautify": "^1.7.5",
