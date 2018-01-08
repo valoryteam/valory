@@ -1,13 +1,15 @@
 {
-	"name": "valory2",
-	"version": "1.0.0",
+	"name": "valory",
+	"version": "0.0.1",
 	"description": "",
-	"main": "index.js",
+	"typings": "dist/server/valory.d.ts",
+	"main": "dist/server/valory.js",
 	"scripts": {
 		"pretest": "tsc",
 		"test": "mocha dist/test/test.js",
 		"build": "tsc",
-		"prepublish": "tsc"
+		"prepare": "tsc",
+		"release": ""
 	},
 	"author": "John Conley",
 	"license": "ISC",
@@ -26,12 +28,11 @@
 		"mocha-typescript": "^1.1.12",
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
+		"semantic-release": "^11.0.2",
 		"typescript": "^2.6.2"
 	},
 	"dependencies": {
-		"fastify-multipart": "^0.4.0",
 		"ajv": "^5.5.2",
-		"ajv-keywords": "^2.1.1",
 		"claudia-api-builder": "^2.5.1",
 		"dot": "^1.1.2",
 		"fast-json-stable-stringify": "^2.0.0",
@@ -52,5 +53,11 @@
 		"swagger-parser": "^4.0.1",
 		"tmp": "^0.0.33",
 		"tstl": "^1.6.4"
+	},
+	"bin": {
+		"valory": "dist/server/valory.js"
+	},
+	"release": {
+		"branch": "master"
 	}
 }
