@@ -18,14 +18,18 @@
 		"@types/node": "^8.5.1",
 		"@types/nomnom": "^0.0.28",
 		"@types/pino": "^4.7.0",
+		"@types/request-promise": "^4.1.39",
 		"@types/swagger-parser": "^4.0.2",
 		"@types/swagger-schema-official": "^2.0.8",
 		"chai": "^4.1.2",
 		"mocha": "^4.1.0",
 		"mocha-typescript": "^1.1.12",
+		"request": "^2.83.0",
+		"request-promise": "^4.2.2",
 		"typescript": "^2.6.2"
 	},
 	"dependencies": {
+		"fastify-multipart": "^0.4.0",
 		"ajv": "^5.5.2",
 		"ajv-keywords": "^2.1.1",
 		"claudia-api-builder": "^2.5.1",

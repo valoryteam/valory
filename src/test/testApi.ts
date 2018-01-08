@@ -142,9 +142,9 @@ api.get("/burn", {
 	],
 }, (req) => {
 	return {
-		body: "yay",
+		body: req,
 		statusCode: 200,
-		headers: {},
+		headers: {"Content-Type": "application/json"},
 	};
 });
 
@@ -167,8 +167,8 @@ api.get("/burn/{name}", {
 	},
 }, (req, logger) => {
 	return {
-		body: "yay",
-		statusCode: 401,
+		body: req,
+		statusCode: 200,
 		headers: {},
 	};
 });
@@ -194,7 +194,7 @@ api.post("/formtest", {
 
 	return {
 		body: "yay",
-		statusCode: 401,
+		statusCode: 200,
 		headers: {},
 	};
 });
@@ -247,8 +247,8 @@ api.post("/burn", {
 	// logger.info(req);
 
 	return {
-		body: "yay",
-		statusCode: 401,
+		body: req,
+		statusCode: 200,
 		headers: {},
 	};
 });
@@ -256,5 +256,5 @@ api.post("/burn", {
 const ex = api.start({port: 8080});
 module.exports = {
 	valory: ex.valory,
-	shutdown: api.shutdown,
+	server: (api as any).server.instance,
 };
