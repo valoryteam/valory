@@ -1,0 +1,16 @@
+version: 0.2
+env:
+  variables:
+    NVM_DIR: /root/.nvm
+    NODE_VERSION: 6.9.5
+phases:
+  install:
+    commands:
+      - chmod +x build_scripts/*.sh
+      - bash build_scripts/install.sh
+  pre_build:
+    commands:
+      - bash build_scripts/pre_build.sh
+  build:
+    commands:
+      - bash build_scripts/build.sh
