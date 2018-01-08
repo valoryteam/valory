@@ -2,6 +2,7 @@ import {expect} from "chai";
 import * as path from "path";
 import requestPromise = require("request-promise");
 import {Options, RequestPromiseOptions} from "request-promise";
+import {execSync} from "child_process";
 import {suite, test, slow, timeout} from "mocha-typescript";
 
 const valoryPath = path.join(__dirname, "../server/valory.js");
@@ -16,7 +17,7 @@ let api: any = null;
 
 	@timeout(200000)
 	public static before() {
-		// execSync(`${process.execPath} ${valoryPath} ${testApiPath} -v 1`);
+		execSync(`${process.execPath} ${valoryPath} ${testApiPath} -v 1`);
 		api = require("./testApi");
 	}
 
