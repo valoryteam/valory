@@ -1,10 +1,8 @@
 import {ApiExchange, ApiServer, HttpMethod, ValoryMetadata} from "../valory";
-import {RequestFieldMap} from "../../compiler/compilerheaders";
 import {FastifyInstance, HTTPMethod} from "fastify";
 import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");
 const formBody = require("fastify-formbody");
-// const multipart = require("fastify-multipart")
 const intern = require("fast.js/string/intern");
 const pathReplacer = /{([\S]*?)}/g;
 
@@ -13,7 +11,6 @@ export class FastifyAdaptor implements ApiServer {
 	private instance: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({});
 	constructor() {
 		this.instance.register(formBody);
-		// this.instance.register(multipart);
 	}
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiExchange) => ApiExchange | Promise<ApiExchange>) {

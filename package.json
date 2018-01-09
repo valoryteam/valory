@@ -10,7 +10,7 @@
 		"build": "tsc",
 		"prepare": "tsc",
 		"release": "semantic-release",
-		"commitmsg": "validate-commit-msg"
+		"commitmsg": "commitlint -e $GIT_PARAMS"
 	},
 	"author": "John Conley",
 	"license": "ISC",
