@@ -19,7 +19,7 @@
 		"@commitlint/cli": "^5.2.8",
 		"@commitlint/config-conventional": "^5.2.3",
 		"@types/chai": "^4.1.0",
-		"@types/lodash": "^4.14.91",
+		"@types/lodash": "^4.14.92",
 		"@types/mocha": "^2.2.46",
 		"@types/node": "^8.5.8",
 		"@types/nomnom": "^0.0.28",
