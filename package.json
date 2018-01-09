@@ -9,7 +9,8 @@
 		"test": "mocha dist/test/test.js",
 		"build": "tsc",
 		"prepare": "tsc",
-		"release": "semantic-release"
+		"release": "semantic-release",
+		"commitmsg": "validate-commit-msg"
 	},
 	"author": "John Conley",
 	"license": "ISC",
@@ -25,12 +26,14 @@
 		"@types/swagger-schema-official": "^2.0.8",
 		"chai": "^4.1.2",
 		"cz-conventional-changelog": "^2.1.0",
+		"husky": "^0.14.3",
 		"mocha": "^4.1.0",
 		"mocha-typescript": "^1.1.12",
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
 		"semantic-release": "^11.0.2",
-		"typescript": "^2.6.2"
+		"typescript": "^2.6.2",
+		"validate-commit-msg": "^2.14.0"
 	},
 	"dependencies": {
 		"ajv": "^5.5.2",
