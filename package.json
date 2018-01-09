@@ -9,7 +9,7 @@
 		"test": "mocha dist/test/test.js",
 		"build": "tsc",
 		"prepare": "tsc",
-		"release": ""
+		"release": "semantic-release"
 	},
 	"author": "John Conley",
 	"license": "ISC",
