@@ -24,6 +24,7 @@
 		"@types/swagger-parser": "^4.0.2",
 		"@types/swagger-schema-official": "^2.0.8",
 		"chai": "^4.1.2",
+		"cz-conventional-changelog": "^2.1.0",
 		"mocha": "^4.1.0",
 		"mocha-typescript": "^1.1.12",
 		"request": "^2.83.0",
@@ -59,5 +60,10 @@
 	},
 	"release": {
 		"branch": "master"
+	},
+	"config": {
+		"commitizen": {
+			"path": "./node_modules/cz-conventional-changelog"
+		}
 	}
 }
