@@ -15,6 +15,8 @@
 	"author": "John Conley",
 	"license": "ISC",
 	"devDependencies": {
+		"@commitlint/cli": "^5.2.8",
+		"@commitlint/config-conventional": "^5.2.3",
 		"@types/chai": "^4.1.0",
 		"@types/lodash": "^4.14.91",
 		"@types/mocha": "^2.2.46",
@@ -32,8 +34,7 @@
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
 		"semantic-release": "^11.0.2",
-		"typescript": "^2.6.2",
-		"validate-commit-msg": "^2.14.0"
+		"typescript": "^2.6.2"
 	},
 	"dependencies": {
 		"ajv": "^5.5.2",
