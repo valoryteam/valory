@@ -2,7 +2,7 @@ version: 0.2
 env:
   variables:
     NVM_DIR: /root/.nvm
-    NODE_VERSION: 6.9.5
+    NODE_VERSION: 8.9
 phases:
   install:
     commands:
