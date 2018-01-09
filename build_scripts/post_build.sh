@@ -1,2 +1,3 @@
 #!/bin/bash
-npm run release:
+source "$NVM_DIR/nvm.sh"
+npm run release
