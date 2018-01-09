@@ -6,7 +6,6 @@ env:
 phases:
   install:
     commands:
-      - sudo apt-get install git
       - chmod +x build_scripts/*.sh
       - bash build_scripts/install.sh
       - bash build_scripts/retrieve_git_meta.sh
