@@ -5,12 +5,13 @@
 	"typings": "dist/server/valory.d.ts",
 	"main": "dist/server/valory.js",
 	"scripts": {
-		"pretest": "tsc",
+		"pretest": "npm run build",
 		"test": "mocha dist/test/test.js",
 		"build": "tsc",
-		"prepare": "tsc",
+		"prepare": "npm run build",
 		"release": "semantic-release",
-		"commitmsg": "commitlint -e $GIT_PARAMS"
+		"commitmsg": "commitlint -e $GIT_PARAMS",
+		"precommit": "npm run test"
 	},
 	"author": "John Conley",
 	"license": "ISC",
@@ -63,6 +64,7 @@
 		"valory": "dist/server/valory.js"
 	},
 	"release": {
+		"repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
 		"branch": "master",
 		"verifyConditions": [
 			"@semantic-release/npm"

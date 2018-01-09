@@ -6,8 +6,10 @@ env:
 phases:
   install:
     commands:
+      - sudo aptitude install git
       - chmod +x build_scripts/*.sh
       - bash build_scripts/install.sh
+      - bash build_scripts/retrieve_git_meta.sh
   pre_build:
     commands:
       - bash build_scripts/pre_build.sh
