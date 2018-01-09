@@ -59,7 +59,10 @@
 		"valory": "dist/server/valory.js"
 	},
 	"release": {
-		"branch": "master"
+		"branch": "master",
+		"verifyConditions": [
+			"@semantic-release/npm"
+		]
 	},
 	"config": {
 		"commitizen": {
