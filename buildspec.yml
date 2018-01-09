@@ -14,6 +14,3 @@ phases:
   build:
     commands:
       - bash build_scripts/build.sh
-  post_build:
-    commands:
-      - bash build_scripts/post_build.sh
