@@ -3,7 +3,7 @@ env:
   variables:
     NVM_DIR: /root/.nvm
     NODE_VERSION: 8.9
-    DEPLOYMENT_PIPELINE: codepipeline/Valory2
+    DEPLOYMENT_BRANCH: master
 phases:
   install:
     commands:
