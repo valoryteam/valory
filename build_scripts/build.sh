@@ -2,8 +2,8 @@
 source "$NVM_DIR/nvm.sh"
 npm install
 npm test
-if [ $GIT_BRANCH == $DEPLOYMENT_BRANCH ]; then
+if [ $GIT_REF == $DEPLOYMENT_REF ]; then
     npm run release
 else
-    echo "Skipping publish on non-deployment branch: $GIT_BRANCH"
+    echo "Skipping publish on non-deployment ref: $GIT_REF"
 fi
