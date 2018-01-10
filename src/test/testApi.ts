@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {Valory} from "../server/valory";
+import {ApiMiddleware, Valory} from "../server/valory";
 
 const info: Info = {
 	title: "Test api",
@@ -123,6 +123,13 @@ const definitions = {
 
 const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, []);
 
+const TestMiddleware: ApiMiddleware = {
+	name: "TestMiddleware",
+	handler: (req, logger, done) => {
+		done(null, {test: req.headers["testheader"]});
+	},
+};
+
 api.get("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Get burned",
@@ -193,11 +200,13 @@ api.post("/formtest", {
 	// logger.info(req);
 
 	return {
-		body: "yay",
+		body: req.attachments,
 		statusCode: 200,
-		headers: {},
+		headers: {
+			"Content-Type": "application/json",
+		},
 	};
-});
+}, [TestMiddleware]);
 
 api.post("/burn", {
 	description: "Awful, horrible burns",

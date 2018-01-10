@@ -106,11 +106,31 @@ let api: any = null;
 		};
 
 		const response = await requestPromise(getRequest);
-		const resObj = response;
+		const resObj = JSON.parse(response);
 		try {
 			expect(resObj).to.not.have.property("code");
 		} catch (err) {
 			throw new Error("Failed response validation: " + JSON.stringify(resObj));
 		}
+	}
+
+	@test
+	public async TestMiddleware() {
+		const getRequest: Options = {
+			method: "POST",
+			uri: "http://localhost:8080/formtest",
+			headers: {
+				"Authorization": "Token aoisretn",
+				"Content-Type": "application/x-www-form-urlencoded",
+				"testheader": "teststring",
+			},
+			form: {
+				potato: "true",
+			},
+		};
+
+		const response = await requestPromise(getRequest);
+		const resObj = JSON.parse(response);
+		expect(resObj).to.have.property("TestMiddleware").to.have.property("test").eq("teststring");
 	}
 }

@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {Valory} from "../server/valory";
+import {ApiMiddleware, Valory} from "../server/valory";
 
 const info: Info = {
 	title: "Test api",
@@ -123,6 +123,23 @@ const definitions = {
 
 const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, []);
 
+const TestMiddleware: ApiMiddleware = {
+	name: "TestMiddleware",
+	handler: (req, logger, done) => {
+		// this.middlewareName = "TestMiddleware";
+		// logger.info(`Running middleware`);
+
+		// done(null, {key: "test", value: "thing"});
+		done({
+			statusCode: 401,
+			body: "Access Denied",
+			headers: {},
+		});
+	},
+};
+
+// api.addGlobalMiddleware(TestMiddleware);
+
 api.get("/burn", {
 	description: "Awful, horrible burns",
 	summary: "Get burned",
@@ -197,7 +214,7 @@ api.post("/formtest", {
 		statusCode: 401,
 		headers: {},
 	};
-});
+}, [TestMiddleware]);
 
 api.post("/burn", {
 	description: "Awful, horrible burns",

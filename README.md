@@ -101,7 +101,3 @@ node "API ENTRYPOINT"
 ```
 
 By default, this will also host a documentation site at the site root
-
-##Release History
-**0.0.1**
-* Initial Release

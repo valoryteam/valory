@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import {Callback} from "github";
+
+global.Promise = require("bluebird");
 import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
 import {assign, forIn, omitBy, isNil, set} from "lodash";
@@ -7,16 +10,22 @@ import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "./loader";
 import {readFileSync} from "fs";
 import {join} from "path";
 import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
-import * as Pino from "pino";
+import {ErrorCallback, Steed, SteedFunction} from "steed";
+import P = require("pino");
+import {Logger} from "pino";
+const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");
+const fastForEach = require("fast.js/array/forEach");
+const fastConcat = require("fast.js/array/concat");
 // const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
+const COMMONROUTEKEY = "ALL";
 const VALORYLOGGERVAR = "LOGLEVEL";
 export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
-export const ValoryLog = Pino({level: process.env[VALORYLOGGERVAR] || "info",
+export const ValoryLog = P({level: process.env[VALORYLOGGERVAR] || "info",
 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 
 export interface ApiExchange {
@@ -26,6 +35,16 @@ export interface ApiExchange {
 	query?: { [key: string]: any };
 	path?: { [key: string]: any };
 	statusCode: number;
+	attachments?: {[key: string]: any};
+	route?: string;
+}
+
+export type ApiMiddlewareHandler = (req: ApiExchange, logger: Logger,
+									done: (error?: ApiExchange, attachment?: any) => void) => void;
+
+export interface ApiMiddleware {
+	name: string;
+	handler: ApiMiddlewareHandler;
 }
 
 export interface ErrorDef {
@@ -37,7 +56,7 @@ export interface RequestContext {
 	requestId: string;
 }
 
-export type ApiHandler = (request: ApiExchange, logger: Pino.Logger, requestContext: RequestContext)
+export type ApiHandler = (request: ApiExchange, logger: Logger, requestContext: RequestContext)
 	=> Promise<ApiExchange> | ApiExchange;
 
 export enum HttpMethod {
@@ -73,10 +92,15 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 		code: 1002,
 		defaultMessage: "Authorization Failure",
 	},
+	InternalError: {
+		code: 1003,
+		defaultMessage: "An internal error occured",
+	},
 };
 
 export class Valory {
 	private COMPILERMODE: boolean = (process.env.VALORYCOMPILER === "TRUE");
+	private globalMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
@@ -100,7 +124,6 @@ export class Valory {
 			consumes,
 			produces,
 		};
-
 		this.server = server;
 		assign(this.errors, errors);
 
@@ -121,44 +144,49 @@ export class Valory {
 	}
 
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-					secure: boolean = false, documented: boolean = true) {
+					middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
 		ValoryLog.debug(`Registering endpoint ${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
-			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, secure, documented);
+			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented);
 		} else {
-			this.endpointRun(path, method, swaggerDef, handler, stringMethod, secure, documented);
+			this.endpointRun(path, method, swaggerDef, handler, stringMethod, middleware, documented);
 		}
 	}
 
-	public get(path: string, swaggerDef: Operation, handler: ApiHandler,
-			   secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, secure, documented);
+	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+			   documented: boolean = true) {
+		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented);
 	}
 
-	public post(path: string, swaggerDef: Operation, handler: ApiHandler,
-			   secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, secure, documented);
+	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+				documented: boolean = true) {
+		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented);
 	}
 
-	public delete(path: string, swaggerDef: Operation, handler: ApiHandler,
-				secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, secure, documented);
+	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+				  documented: boolean = true) {
+		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented);
 	}
 
-	public head(path: string, swaggerDef: Operation, handler: ApiHandler,
-				secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, secure, documented);
+	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+				documented: boolean = true) {
+		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented);
 	}
 
-	public patch(path: string, swaggerDef: Operation, handler: ApiHandler,
-				secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, secure, documented);
+	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+				 documented: boolean = true) {
+		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented);
 	}
 
-	public put(path: string, swaggerDef: Operation, handler: ApiHandler,
-				secure: boolean = false, documented: boolean = true) {
-		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, secure, documented);
+	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+			   documented: boolean = true) {
+		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented);
+	}
+
+	public addGlobalMiddleware(middleware: ApiMiddleware) {
+		ValoryLog.debug("Adding global middleware:", middleware.name);
+		this.globalMiddleware.push(middleware);
 	}
 
 	public start(options: any): { valory: ValoryMetadata } {
@@ -172,24 +200,31 @@ export class Valory {
 	}
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-							stringMethod: string, secure: boolean = false, documented: boolean = true) {
+							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		// TODO: add undocumented support
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
-						handler: ApiHandler, stringMethod: string, secure: boolean = false, documented: boolean = true) {
+						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
 		if (validator == null) {
 			throw Error("Compiled swagger is out of date. Please run valory cli");
 		}
-		const childLogger = ValoryLog.child({endpoint: `${path}:${stringMethod}`});
+		const route = `${path}:${stringMethod}`;
+		const childLogger = ValoryLog.child({endpoint: route});
+		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware);
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiExchange): Promise<ApiExchange> => {
 			// TODO: implement authorizer support
 			const requestId = uuid();
+			req.attachments.requestId = requestId;
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
 			childLogger.debug(req, "Received request");
+			const middlewareResp: void | ApiExchange = await processMiddleware(middlewares, req, childLogger);
+			if (middlewareResp != null) {
+				return (middlewareResp as ApiExchange);
+			}
 			const result = validator(req);
 			if (result !== true) {
 				return {
@@ -228,6 +263,31 @@ export class Valory {
 			};
 		});
 	}
+}
+
+function processMiddleware(middlewares: ApiMiddleware[],
+						   req: ApiExchange, logger: Logger): Promise<void | ApiExchange> {
+	return new Promise<void | ApiExchange>((resolve) => {
+		let err: ApiExchange = null;
+		steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
+			const childLog = logger.child({middleware: handler.name});
+			childLog.debug("Running Middleware");
+			handler.handler(req, childLog, (error, data) => {
+				if (error != null) {
+					err = error;
+					done(error);
+					return;
+				}
+
+				if (data != null) {
+					req.attachments[handler.name] = data;
+				}
+				done();
+			});
+		}, (error) => {
+			resolve(err as ApiExchange);
+		});
+	});
 }
 
 function generateErrorTable(errors: { [x: string]: ErrorDef }): Tag {

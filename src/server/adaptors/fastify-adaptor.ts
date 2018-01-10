@@ -14,6 +14,7 @@ export class FastifyAdaptor implements ApiServer {
 	}
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiExchange) => ApiExchange | Promise<ApiExchange>) {
+		const route = `${path}:${HttpMethod[method]}`;
 		path = intern(path.replace(pathReplacer, ":$1"));
 		this.instance.route({
 			method: HttpMethod[method] as HTTPMethod,
@@ -27,6 +28,8 @@ export class FastifyAdaptor implements ApiServer {
 					query: req.query,
 					path: req.params,
 					statusCode: 0,
+					attachments: {},
+					route,
 				};
 
 				const response = await handler(transRequest);
