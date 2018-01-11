@@ -4,3 +4,4 @@ dist/
 package-lock.json
 swagger.json
 yarn.lock
+src/**/*.js

@@ -18,7 +18,9 @@
 	"files": [
 		"dist",
 		"package.json",
-		"README.md"
+		"README.md",
+		"html",
+		"templates"
 	],
 	"devDependencies": {
 		"@commitlint/cli": "^6.0.1",
