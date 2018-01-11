@@ -1,5 +1,6 @@
 import {Info} from "swagger-schema-official";
 import {ApiMiddleware, Valory} from "../server/valory";
+import {FastifyAdaptor} from "valory-adaptor-fastify";
 
 const info: Info = {
 	title: "Test api",
@@ -121,7 +122,7 @@ const definitions = {
 	},
 };
 
-const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, []);
+const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, [], new FastifyAdaptor());
 
 const TestMiddleware: ApiMiddleware = {
 	name: "TestMiddleware",

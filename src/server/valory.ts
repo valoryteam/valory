@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 global.Promise = require("bluebird");
+
 import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
 import {assign, forIn, omitBy, isNil, set} from "lodash";
 import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "./loader";
 import {readFileSync} from "fs";
 import {join} from "path";
-import {FastifyAdaptor} from "./adaptors/fastify-adaptor";
 import {ErrorCallback, Steed, SteedFunction} from "steed";
 import P = require("pino");
 import {Logger} from "pino";
@@ -115,7 +115,7 @@ export class Valory {
 	};
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer = new FastifyAdaptor()) {
+				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
 		ValoryLog.info("Starting valory");
 		this.apiDef = {
 			swagger: "2.0",
