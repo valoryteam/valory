@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {ApiMiddleware, Valory} from "../server/valory";
+import {ApiMiddleware, ErrorDef, Valory} from "../server/valory";
 
 const info: Info = {
 	title: "Test api",
@@ -121,7 +121,15 @@ const definitions = {
 	},
 };
 
-const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, []);
+const errors: {[name: string]: ErrorDef} = {
+	AccessDenied: {
+		statusCode: 401,
+		errorCode: 1004,
+		defaultMessage: "Access to this resource is denied",
+	},
+};
+
+const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, []);
 
 const TestMiddleware: ApiMiddleware = {
 	name: "TestMiddleware",
@@ -130,11 +138,7 @@ const TestMiddleware: ApiMiddleware = {
 		// logger.info(`Running middleware`);
 
 		// done(null, {key: "test", value: "thing"});
-		done({
-			statusCode: 401,
-			body: "Access Denied",
-			headers: {},
-		});
+		done(api.buildError("AccessDenied"));
 	},
 };
 

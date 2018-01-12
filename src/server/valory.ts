@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-import {Callback} from "github";
-
 global.Promise = require("bluebird");
 import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
@@ -48,7 +46,8 @@ export interface ApiMiddleware {
 }
 
 export interface ErrorDef {
-	code: number;
+	statusCode: number;
+	errorCode: number;
 	defaultMessage: string;
 }
 
@@ -85,15 +84,18 @@ export interface ValoryMetadata {
 
 const DefaultErrors: { [x: string]: ErrorDef } = {
 	ValidationError: {
-		code: 1001,
+		statusCode: 200,
+		errorCode: 1001,
 		defaultMessage: "Invalid Parameters",
 	},
 	TokenMalformed: {
-		code: 1002,
+		statusCode: 200,
+		errorCode: 1002,
 		defaultMessage: "Authorization Failure",
 	},
 	InternalError: {
-		code: 1003,
+		statusCode: 200,
+		errorCode: 1003,
 		defaultMessage: "An internal error occured",
 	},
 };
@@ -152,6 +154,18 @@ export class Valory {
 		} else {
 			this.endpointRun(path, method, swaggerDef, handler, stringMethod, middleware, documented);
 		}
+	}
+
+	public buildError(error: string | ErrorDef, message?: string): ApiExchange {
+		const errorDef: ErrorDef = (typeof error === "string") ? this.errors[error] : error;
+		return {
+			statusCode: errorDef.statusCode,
+			body: {
+				code: errorDef.errorCode,
+				message: (message != null) ? message : errorDef.defaultMessage,
+			},
+			headers: {"Content-Type": "application/json"},
+		};
 	}
 
 	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
@@ -229,7 +243,7 @@ export class Valory {
 			if (result !== true) {
 				return {
 					statusCode: 200,
-					body: {code: DefaultErrors.ValidationError.code, message: result},
+					body: {code: DefaultErrors.ValidationError.errorCode, message: result},
 					headers: {"Content-Type": "application/json"},
 				};
 			} else {
@@ -295,7 +309,7 @@ function generateErrorTable(errors: { [x: string]: ErrorDef }): Tag {
 	let table = ERRORTABLEHEADER;
 	forIn(errors, (error: ErrorDef, name: string) => {
 		"use strict";
-		table += "|" + error.code + "|" + name + "|" + error.defaultMessage + "|\n";
+		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";
 	});
 	tagDef.description = table;
 	return omitBy(tagDef, isNil) as Tag;
