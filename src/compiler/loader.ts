@@ -3,8 +3,8 @@ import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {metrohash64} from "metrohash";
-import {ICompilerOptions, ValidatorModule} from "../compiler/compilerheaders";
-import {ValoryLog} from "./valory";
+import {ICompilerOptions, ValidatorModule} from "./compilerheaders";
+import {ValoryLog} from "../server/valory";
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -13,7 +13,7 @@ const stringify = require("fast-json-stable-stringify");
 
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
 									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions) {
-	const compiled = await require("../compiler/compiler").compile(swagger, compilerOptions);
+	const compiled = await require("./compiler").compile(swagger, compilerOptions);
 	ValoryLog.info("Saving compiled swagger to: " + compilePath);
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);

@@ -6,7 +6,7 @@
 * [Installation](#installation)
 * [Usage](#usage)
 * [Release History](#release-history)
-* [API documentation](#api-documentation)
+* [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 
 ##Description
 Valory is small framework designed to standardize the process of writing well documented, bulletproof api's using whatever server backend you want. 
@@ -37,9 +37,12 @@ npm install -g valory
 Using Valory is pretty straightforward.
 ```javascript
 const Sentencer = require("sentencer");
-const Valory = require('valory');
+const Valory = require('valory').Valory;
 
-//Create a valory object with default server core
+// We also need a server core adaptor
+const FastifyAdaptor = require("valory-adaptor-fastify").FastifyAdaptor;
+
+//Create a valory instance
 const Appserver = new Valory({title: 'burnApi'}, [], undefined, undefined, {
         BurnName: {
                 type: "object",
@@ -52,7 +55,7 @@ const Appserver = new Valory({title: 'burnApi'}, [], undefined, undefined, {
                         }
                 }
         }
-});
+}, new FastifyAdaptor());
 
 //Add a basic endpoint
 Appserver.endpoint("/burn", "get", {

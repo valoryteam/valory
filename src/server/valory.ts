@@ -5,7 +5,7 @@ global.Promise = require("bluebird");
 import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
 import {assign, forIn, omitBy, isNil, set} from "lodash";
-import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "./loader";
+import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "../compiler/loader";
 import {readFileSync} from "fs";
 import {join} from "path";
 import {ErrorCallback, Steed, SteedFunction} from "steed";
