@@ -145,6 +145,9 @@ export class Valory {
 		}
 	}
 
+	/**
+	 * Register an endpoint with a given method
+	 */
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
 					middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
@@ -156,6 +159,9 @@ export class Valory {
 		}
 	}
 
+	/**
+	 * Build an ApiExchange from either an error name or an ErrorDef
+	 */
 	public buildError(error: string | ErrorDef, message?: string): ApiExchange {
 		const errorDef: ErrorDef = (typeof error === "string") ? this.errors[error] : error;
 		return {
@@ -168,47 +174,74 @@ export class Valory {
 		};
 	}
 
+	/**
+	 * Register GET endpoint
+	 */
 	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true) {
 		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register POST endpoint
+	 */
 	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true) {
 		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register DELETE endpoint
+	 */
 	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				  documented: boolean = true) {
 		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register HEAD endpoint
+	 */
 	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true) {
 		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register PATCH endpoint
+	 */
 	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				 documented: boolean = true) {
 		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register PUT endpoint
+	 */
 	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true) {
 		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented);
 	}
 
+	/**
+	 * Register a global middleware run before every endpoint
+	 */
 	public addGlobalMiddleware(middleware: ApiMiddleware) {
 		ValoryLog.debug("Adding global middleware:", middleware.name);
 		this.globalMiddleware.push(middleware);
 	}
 
+	/**
+	 * Start server and build appserver export object
+	 */
 	public start(options: any): { valory: ValoryMetadata } {
 		ValoryLog.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
 	}
 
+	/**
+	 * Shuts down the server core
+	 */
 	public shutdown() {
 		this.server.shutdown();
 	}

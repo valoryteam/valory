@@ -75,7 +75,7 @@ var {{= it.hash }} =
 
       /* Return error array if enabled */
       if (!it.singleError) {
-        code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(validationErrors.length===0){return true;}else{return validationErrors;}");
+        code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(vErrors == null || vErrors.length===0){return true;}else{return vErrors;}");
       }
 
       /* Fix oneOf error return */

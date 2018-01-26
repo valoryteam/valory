@@ -29,14 +29,6 @@ const errorSup = "undefinedVars";
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
-const ajv = new Ajv({
-	coerceTypes: true,
-	useDefaults: "shared",
-	sourceCode: true,
-	errorDataPath: "property",
-	unicode: false,
-	allErrors: false,
-});
 
 // TODO: Fix discriminator errors
 export async function compile(spec: Spec, options?: ICompilerOptions) {
@@ -77,6 +69,14 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 
 	merge(defaultCompilerOptions, options);
 	options = defaultCompilerOptions;
+	const ajv = new Ajv({
+		coerceTypes: true,
+		useDefaults: "shared",
+		sourceCode: true,
+		errorDataPath: "property",
+		unicode: false,
+		allErrors: !options.singleError,
+	});
 	CompileLog.info("Validating swagger");
 	await validate(cloneDeep(spec));
 	CompileLog.info("Preprocessing swagger");

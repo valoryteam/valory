@@ -219,7 +219,7 @@ api.post("/formtest", {
 		statusCode: 401,
 		headers: {},
 	};
-}, [TestMiddleware]);
+});
 
 api.post("/burn", {
 	description: "Awful, horrible burns",
