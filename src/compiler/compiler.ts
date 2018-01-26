@@ -4,12 +4,11 @@ import {Spec} from "swagger-schema-official";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import * as Ajv from "ajv";
-import {metrohash64} from "metrohash";
 import * as fs from "fs";
 import {
 	CompilationLevel,
 	CompilerOutput,
-	FUNCTION_PREFIX,
+	FUNCTION_PREFIX, HASH_SEED,
 	ICompilerOptions,
 	ValidatorModuleContent,
 } from "./compilerheaders";
@@ -26,9 +25,9 @@ dotJs.log = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
+const XXH = require("xxhashjs");
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
-
 
 // TODO: Fix discriminator errors
 export async function compile(spec: Spec, options?: ICompilerOptions) {
@@ -85,7 +84,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger);
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)){
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])){
-			const hash = FUNCTION_PREFIX + metrohash64(`${path}:${method}`);
+			const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
 			const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
 			endpointLogger.info("Building method schema");
 			const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)[method], method, path,
@@ -121,7 +120,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	CompileLog.info("Building intermediate module");
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
-		defHash: metrohash64(stringify(spec.definitions)),
+		defHash: XXH.h32(stringify(spec.definitions), HASH_SEED).toString(),
 		exportHashes: output.debugArtifacts.hashes,
 		swagger: spec,
 	}));

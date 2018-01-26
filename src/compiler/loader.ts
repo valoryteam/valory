@@ -2,14 +2,14 @@ import {Schema, Spec} from "swagger-schema-official";
 import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
-import {metrohash64} from "metrohash";
-import {ICompilerOptions, ValidatorModule} from "./compilerheaders";
+import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
 import {ValoryLog} from "../server/valory";
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
 export const COMPILED_SWAGGER_PATH = resolveCompSwagPath();
 const stringify = require("fast-json-stable-stringify");
+const XXH = require("xxhashjs");
 
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
 									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions) {
@@ -24,7 +24,7 @@ export async function compileAndSave(swagger: Spec, compilePath: string, additio
 
 export function loadModule(definitions: {[x: string]: Schema}): ValidatorModule {
 	const module: ValidatorModule = require(COMPILED_SWAGGER_PATH);
-	if (metrohash64(stringify(definitions)) !== module.defHash) {
+	if (XXH.h32(stringify(definitions), HASH_SEED).toString() !== module.defHash) {
 		throw Error("Compiled swagger is out of date. Please run valory CLI.");
 	}
 	return module;

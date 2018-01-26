@@ -62,7 +62,6 @@
 		"lodash": "^4.17.4",
 		"lodash-deep": "^2.0.0",
 		"map-keys-deep-lodash": "^1.0.1",
-		"metrohash": "^2.3.0",
 		"nomnom": "^1.8.1",
 		"pino": "^4.10.3",
 		"require-relative": "^0.8.7",
@@ -70,7 +69,8 @@
 		"swagger-parser": "^4.0.1",
 		"tmp": "^0.0.33",
 		"tstl": "^1.6.4",
-		"valory-adaptor-fastify": "^1.0.3"
+		"valory-adaptor-fastify": "^1.0.3",
+		"xxhashjs": "^0.2.2"
 	},
 	"bin": {
 		"valory": "dist/server/valory.js"
