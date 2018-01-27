@@ -1,14 +1,14 @@
 import {cloneDeep, forEach, get, set, unset, map} from "lodash";
 import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
-import {metrohash64} from "metrohash";
-import {ExtendedSchema, MangledKey} from "./compilerheaders";
+import {ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
 import {PriorityQueue} from "tstl";
 
 const mergeAllOf = require("json-schema-merge-allof");
 const mapKeysDeep: <T>(obj: T, callback: (value: any, key: string) => string) => T = require("map-keys-deep-lodash");
 
 const deep: Deep = require("lodash-deep");
+const XXH = require("xxhashjs");
 
 const MANGLED_PREFIX = "p";
 const periodRegex = /[.]+?/g;
@@ -133,7 +133,7 @@ export function mangleKeys(schema: ExtendedSchema): {schema: ExtendedSchema, man
 			return "api_enum";
 		}
 		if (!safeKey.test(key)) {
-			const mangled = MANGLED_PREFIX + metrohash64(key);
+			const mangled = MANGLED_PREFIX + XXH.h32(key, HASH_SEED).toString();
 			mangledKeys.push({original: key, mangled});
 			return mangled;
 		}
