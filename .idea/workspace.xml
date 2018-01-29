@@ -1,0 +1,976 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e5dad222-75bc-4ef9-b704-417c4f90d7de" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="testApi.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/testApi.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2196">
+              <caret line="124" column="116" lean-forward="false" selection-start-line="124" selection-start-column="116" selection-end-line="124" selection-end-column="116" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="testApi.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="522">
+              <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="loader.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="198">
+              <caret line="11" column="32" lean-forward="false" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#53#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="compilerheaders.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="522">
+              <caret line="29" column="21" lean-forward="false" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="compiler.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1638">
+              <caret line="107" column="39" lean-forward="false" selection-start-line="107" selection-start-column="39" selection-end-line="107" selection-end-column="39" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="moduleTemplate.dot" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/moduleTemplate.dot">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="216">
+              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".compswag.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dist/compiler/.compswag.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="360">
+              <caret line="20" column="110" lean-forward="false" selection-start-line="20" selection-start-column="110" selection-end-line="20" selection-end-column="110" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="preprocessor.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-174">
+              <caret line="44" column="9" lean-forward="true" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
+              <folding>
+                <element signature="e#0#64#0" expanded="true" />
+                <element signature="e#2585#2586#0" expanded="true" />
+                <element signature="e#2622#2623#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="108">
+              <caret line="6" column="5" lean-forward="true" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/package.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="630">
+              <caret line="35" column="37" lean-forward="false" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>'</find>
+      <find>&quot;</find>
+      <find>ApiHandler</find>
+      <find>child</find>
+      <find>process</find>
+      <find>vErrors</find>
+      <find>dtype</find>
+      <find>request.body.burnType.pet.dtype should be equal to constant</find>
+      <find>return false</find>
+      <find>this.logger</find>
+      <find>schemaPro</find>
+      <find>validate.errors</find>
+      <find>[oneOf]</find>
+      <find>[const]</find>
+      <find>enum</find>
+      <find>const</find>
+      <find>[const</find>
+      <find>null</find>
+      <find>oneOf</find>
+      <find>[one</find>
+      <find>[oneOf</find>
+      <find>co</find>
+      <find>close</find>
+      <find>secure: boolean = false,</find>
+      <find>secure,</find>
+      <find>decor</find>
+      <find>handler.middlewareName</find>
+      <find>(handler as any).middlewareName</find>
+      <find>validationError</find>
+      <find>metro</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>,</replace>
+      <replace>&quot;</replace>
+      <replace>'</replace>
+      <replace>ValoryLog</replace>
+      <replace>validationErrors</replace>
+      <replace>(handler as any).middlewareName</replace>
+      <replace>handler.name</replace>
+    </replaceStrings>
+  </component>
+  <component name="GhostReviewsManagerService">
+    <projectManager projectId="valory">
+      <reviews />
+      <uncommitted-review-parts />
+    </projectManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/dev/compiler-test.ts" />
+        <option value="$PROJECT_DIR$/../valory/swagger.json" />
+        <option value="$PROJECT_DIR$/node_modules/ts-priority-queue/src/BinaryHeapStrategy.ts" />
+        <option value="vm:551" />
+        <option value="$PROJECT_DIR$/src/compiler/method.ts" />
+        <option value="$PROJECT_DIR$/../valory/index.js" />
+        <option value="$PROJECT_DIR$/src/dev/schema-test.ts" />
+        <option value="$PROJECT_DIR$/src/index.ts" />
+        <option value="$PROJECT_DIR$/dist/server/valory.js" />
+        <option value="$PROJECT_DIR$/src/server/loader.ts" />
+        <option value="$PROJECT_DIR$/dist/server/.compswag.js" />
+        <option value="$PROJECT_DIR$/tslint.json" />
+        <option value="$PROJECT_DIR$/build_scripts/install.sh" />
+        <option value="$PROJECT_DIR$/build_scripts/install_nvm.sh" />
+        <option value="$PROJECT_DIR$/.npmignore" />
+        <option value="$PROJECT_DIR$/build_scripts/pre_build.sh" />
+        <option value="$PROJECT_DIR$/build_scripts/retrieve_git_meta.sh" />
+        <option value="$PROJECT_DIR$/swagger.json" />
+        <option value="$PROJECT_DIR$/buildspec.yml" />
+        <option value="$PROJECT_DIR$/tsconfig.json" />
+        <option value="$PROJECT_DIR$/src/test/test.ts" />
+        <option value="$PROJECT_DIR$/src/server/adaptors/fastify-adaptor.ts" />
+        <option value="$PROJECT_DIR$/src/test/testApi.ts" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/build_scripts/build.sh" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/server/valory.ts" />
+        <option value="$PROJECT_DIR$/test.ts" />
+        <option value="$PROJECT_DIR$/templates/validatorTemplate.dot" />
+        <option value="$PROJECT_DIR$/src/dev/testApi.ts" />
+        <option value="$PROJECT_DIR$/src/compiler/compilerheaders.ts" />
+        <option value="$PROJECT_DIR$/src/compiler/compiler.ts" />
+        <option value="$PROJECT_DIR$/src/compiler/loader.ts" />
+        <option value="$PROJECT_DIR$/templates/moduleTemplate.dot" />
+        <option value="$PROJECT_DIR$/dist/compiler/.compswag.js" />
+        <option value="$PROJECT_DIR$/src/compiler/preprocessor.ts" />
+        <option value="$PROJECT_DIR$/.gitignore" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER">
+    <package-json value="$PROJECT_DIR$/package.json" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="551" />
+    <option name="y" value="204" />
+    <option name="width" value="1420" />
+    <option name="height" value="780" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="dist" type="462c0819:PsiDirectoryNode" />
+              <item name="compiler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="docs" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="compiler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.TypeScript" />
+    <property name="node.js.path.for.package.jscs" value="project" />
+    <property name="node.js.selected.package.jscs" value="" />
+    <property name="node.js.path.for.package.eslint" value="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" />
+    <property name="node.js.selected.package.eslint" value="$USER_HOME$/.nvm/versions/node/v8.1.3/lib/node_modules/eslint" />
+    <property name="node.js.path.for.package.standard" value="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" />
+    <property name="node.js.selected.package.standard" value="$USER_HOME$/.nvm/versions/node/v8.1.3/lib/node_modules/eslint" />
+    <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
+    <property name="javascript.nodejs.core.library.configured.version" value="8.9.4" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.tslint" value="$USER_HOME$/.nvm/versions/node/v8.1.3/lib/node_modules/tslint" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="HbShouldOpenHtmlAsHb" value="" />
+    <property name="SearchEverywhereHistoryKey" value="pre&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;refo&#9;ACTION&#9;ShowReformatFileDialog&#10;reformat&#9;ACTION&#9;ReformatCode&#10;reform&#9;ACTION&#9;ReformatCode&#10;compiler&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compiler.ts&#10;Task&#9;ACTION&#9;tasks.close&#10;test&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;testAp&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/testApi.ts&#10;testA&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;fast&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;val&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;mod&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;bluebird-&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/bluebird-global&#10;testApi&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;fastify&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;valor&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/valory.js&#10;retr&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;retriev&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;Tasks&#9;ACTION&#9;tasks.and.contexts&#10;pac&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;Project&#9;ACTION&#9;ActivateProjectToolWindow&#10;P&#9;FILE&#9;file:///home/john/workspace/valory2/templates/validatorTemplate.dot&#10;valory&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;test.ts&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;index.d.ts&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/@types/swagger-schema-official/index.d.ts&#10;Push&#9;ACTION&#9;Vcs.Push&#10;push&#9;ACTION&#9;Vcs.Push&#10;module&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;.comp&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;edit task&#9;ACTION&#9;tasks.edit&#10;.com&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;loader&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/loader.ts&#10;compilerhe&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compilerheaders.ts&#10;prep&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;package&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;ref&#9;ACTION&#9;Refactorings.QuickListPopupAction" />
+    <property name="nodejs_interpreter_path" value="$USER_HOME$/.nvm/versions/node/v8.9.4/bin/node" />
+    <property name="tasks.open.task.update.state.enabled" value="true" />
+    <property name="tasks.close.task.update.state.enabled" value="true" />
+    <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/node_modules/mocha" />
+    <property name="ignore_missing_gitignore" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/compiler" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Mocha.Test">
+    <configuration name="Compile Test" type="NodeJSConfigurationType" factoryName="Node.js" application-parameters="../dev/testApi.js -v 1" path-to-js-file="valory.js" working-dir="$PROJECT_DIR$/dist/server">
+      <envs>
+        <env name="PRETTYLOG" value="true" />
+      </envs>
+    </configuration>
+    <configuration name="Schema Test" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" path-to-js-file="schema-test.js" working-dir="$PROJECT_DIR$/dist/dev" />
+    <configuration name="Start Api" type="NodeJSConfigurationType" factoryName="Node.js" path-to-js-file="testApi.js" working-dir="$PROJECT_DIR$/dist/dev">
+      <envs>
+        <env name="LOGLEVEL" value="debug" />
+        <env name="PRETTYLOG" value="true" />
+      </envs>
+    </configuration>
+    <configuration name="Test" type="mocha-javascript-test-runner" factoryName="Mocha">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs>
+        <env name="NVM_PATH" value="$USER_HOME$/.nvm/versions/node/v8.9.4/bin" />
+      </envs>
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>DIRECTORY</test-kind>
+      <test-directory>$PROJECT_DIR$/dist/test</test-directory>
+      <recursive>true</recursive>
+    </configuration>
+    <configuration name="ValoryTest" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>mocha-typescript</ui>
+      <extra-mocha-options>--require ts-node/register</extra-mocha-options>
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/src/test/test.ts</test-file>
+      <test-names>
+        <name value="ValoryTest" />
+      </test-names>
+    </configuration>
+    <configuration name="ValoryTest.TestSimplePOST" type="mocha-javascript-test-runner" factoryName="Mocha" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs />
+      <ui>mocha-typescript</ui>
+      <extra-mocha-options>--require ts-node/register</extra-mocha-options>
+      <test-kind>TEST</test-kind>
+      <test-file>$PROJECT_DIR$/src/test/test.ts</test-file>
+      <test-names>
+        <name value="ValoryTest" />
+        <name value="TestSimplePOST" />
+      </test-names>
+    </configuration>
+    <list size="6">
+      <item index="0" class="java.lang.String" itemvalue="Mocha.Test" />
+      <item index="1" class="java.lang.String" itemvalue="Node.js.Schema Test" />
+      <item index="2" class="java.lang.String" itemvalue="Node.js.Compile Test" />
+      <item index="3" class="java.lang.String" itemvalue="Node.js.Start Api" />
+      <item index="4" class="java.lang.String" itemvalue="Mocha.ValoryTest" />
+      <item index="5" class="java.lang.String" itemvalue="Mocha.ValoryTest.TestSimplePOST" />
+    </list>
+    <recent_temporary>
+      <list size="5">
+        <item index="0" class="java.lang.String" itemvalue="Mocha.ValoryTest.TestSimplePOST" />
+        <item index="1" class="java.lang.String" itemvalue="Mocha.ValoryTest" />
+        <item index="2" class="java.lang.String" itemvalue="Mocha.ValoryTest.TestSimplePOST" />
+        <item index="3" class="java.lang.String" itemvalue="Mocha.ValoryTest" />
+        <item index="4" class="java.lang.String" itemvalue="Mocha.ValoryTest.TestSimplePOST" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task id="Default" summary="Default task">
+      <branch name="dev" repository="$PROJECT_DIR$" />
+      <changelist id="e5dad222-75bc-4ef9-b704-417c4f90d7de" name="Default" comment="" />
+      <created>1513628604667</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1515432860768</updated>
+      <workItem from="1513628605766" duration="7122000" />
+      <workItem from="1513638413597" duration="2220000" />
+      <workItem from="1513708983107" duration="6391000" />
+      <workItem from="1513784846841" duration="18354000" />
+      <workItem from="1513809908630" duration="4179000" />
+      <workItem from="1513814681784" duration="7362000" />
+      <workItem from="1513877655326" duration="115000" />
+      <workItem from="1513877781298" duration="8750000" />
+      <workItem from="1513892056660" duration="9907000" />
+      <workItem from="1513971918885" duration="3024000" />
+      <workItem from="1513992297280" duration="358000" />
+      <workItem from="1514480607468" duration="10194000" />
+      <workItem from="1514494084866" duration="1937000" />
+      <workItem from="1514566276404" duration="5508000" />
+      <workItem from="1514908278064" duration="5030000" />
+      <workItem from="1514919551159" duration="4637000" />
+      <workItem from="1514931171447" duration="42707000" />
+      <workItem from="1515100459636" duration="531000" />
+      <workItem from="1515101001281" duration="96000" />
+      <workItem from="1515101109104" duration="1563000" />
+      <workItem from="1515181885965" duration="13000" />
+      <workItem from="1515189733677" duration="330000" />
+      <workItem from="1515432807038" duration="53000" />
+    </task>
+    <task id="SERV-161" summary="Making sure Logger Child Instance works.">
+      <branch name="dev" repository="$PROJECT_DIR$" />
+      <created>1515097015037</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-161</url>
+      <option name="number" value="161" />
+      <option name="presentableId" value="SERV-161" />
+      <option name="project" value="SERV" />
+      <updated>1515184047824</updated>
+      <workItem from="1515102675955" duration="39000" />
+      <workItem from="1515179617752" duration="5000" />
+      <workItem from="1515179708896" duration="105000" />
+      <workItem from="1515180871620" duration="1014000" />
+      <workItem from="1515181898967" duration="1466000" />
+    </task>
+    <task id="SERV-160" summary="Discriminator Errors cleaned up.">
+      <branch name="dev" repository="$PROJECT_DIR$" original="true" />
+      <branch name="SERV-160" repository="$PROJECT_DIR$" />
+      <created>1515096990081</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-160</url>
+      <option name="number" value="160" />
+      <option name="presentableId" value="SERV-160" />
+      <option name="project" value="SERV" />
+      <updated>1515180870982</updated>
+      <workItem from="1515102715138" duration="2599000" />
+      <workItem from="1515165617126" duration="8008000" />
+      <workItem from="1515179622800" duration="86000" />
+      <workItem from="1515179813972" duration="120000" />
+      <workItem from="1515180042016" duration="828000" />
+    </task>
+    <task id="LOCAL-00001" summary="Fix child validation">
+      <created>1515180756754</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1515180756754</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Added pretty print logging (off by default)">
+      <created>1515182043540</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1515182043540</updated>
+    </task>
+    <task id="SERV-166" summary="Complete Fastify adaptor">
+      <branch name="dev" repository="$PROJECT_DIR$" original="true" />
+      <branch name="SERV-166" repository="$PROJECT_DIR$" />
+      <created>1515183898465</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-166</url>
+      <option name="number" value="166" />
+      <option name="presentableId" value="SERV-166" />
+      <option name="project" value="SERV" />
+      <updated>1515189733229</updated>
+      <workItem from="1515184047888" duration="5192000" />
+    </task>
+    <task id="SERV-165" summary="Unit Tests for Valory">
+      <branch name="dev" repository="$PROJECT_DIR$" original="true" />
+      <branch name="SERV-165" repository="$PROJECT_DIR$" />
+      <created>1515097683372</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-165</url>
+      <option name="number" value="165" />
+      <option name="presentableId" value="SERV-165" />
+      <option name="project" value="SERV" />
+      <updated>1515432806680</updated>
+      <workItem from="1515190064700" duration="4111000" />
+      <workItem from="1515402347780" duration="2376000" />
+      <workItem from="1515426384178" duration="19000" />
+      <workItem from="1515426413136" duration="6391000" />
+    </task>
+    <task id="SERV-168" summary="Setup CI/CD pipeline on CodeBuild">
+      <branch name="dev" repository="$PROJECT_DIR$" original="true" />
+      <branch name="SERV-168" repository="$PROJECT_DIR$" />
+      <created>1515432756510</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-168</url>
+      <option name="number" value="168" />
+      <option name="presentableId" value="SERV-168" />
+      <option name="project" value="SERV" />
+      <updated>1515528442746</updated>
+      <workItem from="1515432860829" duration="232000" />
+      <workItem from="1515433101325" duration="1382000" />
+      <workItem from="1515489042446" duration="13745000" />
+    </task>
+    <task active="true" id="SERV-156" summary="Make extensions possible with Valory ">
+      <branch name="master" repository="$PROJECT_DIR$" original="true" />
+      <branch name="SERV-156" repository="$PROJECT_DIR$" />
+      <created>1513624948752</created>
+      <option name="issue" value="true" />
+      <url>https://modopayments.atlassian.net/browse/SERV-156</url>
+      <option name="number" value="156" />
+      <option name="presentableId" value="SERV-156" />
+      <option name="project" value="SERV" />
+      <updated>1515630146905</updated>
+      <workItem from="1515528442830" duration="7898000" />
+      <workItem from="1515604541142" duration="21665000" />
+      <workItem from="1515689707072" duration="178000" />
+      <workItem from="1515700566680" duration="973000" />
+      <workItem from="1515703741143" duration="4113000" />
+      <workItem from="1516125748651" duration="13138000" />
+      <workItem from="1516909675824" duration="24000" />
+      <workItem from="1517002301729" duration="4422000" />
+      <workItem from="1517007863167" duration="1312000" />
+      <workItem from="1517010849468" duration="209000" />
+      <workItem from="1517011071787" duration="180000" />
+      <workItem from="1517237656443" duration="144000" />
+      <workItem from="1517237811440" duration="1212000" />
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <option name="createChangelist" value="false" />
+    <servers>
+      <JIRA shared="false" url="https://modopayments.atlassian.net">
+        <option name="apiType" value="REST_2_0" />
+        <commitMessageFormat>{id} {summary}</commitMessageFormat>
+        <password>dffadfc3df99df84df9bdf9edf9bdf9f</password>
+        <option name="inCloud" value="true" />
+        <option name="jiraVersion" value="1001.0.0-SNAPSHOT" />
+        <option name="loginAnonymously" value="false" />
+        <option name="preferredCloseTaskState">
+          <CustomTaskState id="31" predefined="false" name="Done" />
+        </option>
+        <option name="preferredOpenTaskState">
+          <CustomTaskState id="21" predefined="false" name="In Progress" />
+        </option>
+        <option name="searchQuery" value="assignee = currentUser() and resolution = Unresolved order by updated" />
+        <option name="shouldFormatCommitMessage" value="false" />
+        <option name="useHttpAuthentication" value="true" />
+        <option name="useProxy" value="false" />
+        <username>john.conley</username>
+      </JIRA>
+    </servers>
+  </component>
+  <component name="TestHistory">
+    <history-entry file="Test - 2018.01.08 at 11h 17m 18s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.08 at 11h 17m 31s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.10 at 18h 12m 22s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.10 at 18h 12m 39s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.10 at 18h 13m 12s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.26 at 16h 39m 23s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.26 at 16h 44m 00s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="Test - 2018.01.26 at 16h 44m 07s.xml">
+      <configuration name="Test" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="ValoryTest_TestSimplePOST - 2018.01.08 at 10h 46m 07s.xml">
+      <configuration name="ValoryTest.TestSimplePOST" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+    <history-entry file="ValoryTest_TestSimplePOST - 2018.01.08 at 10h 46m 13s.xml">
+      <configuration name="ValoryTest.TestSimplePOST" configurationId="mocha-javascript-test-runner" />
+    </history-entry>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="243567000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="551" y="204" width="3840" height="2126" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3234107" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20938446" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20288248" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16315235" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Reviews" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996973" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.110173956" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="News Feed" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32999474" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3975782" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="UpsourceProjectSettings">
+    <option name="chosenProjectId" value="valory" />
+    <option name="projectId2FileIdPrefix">
+      <map>
+        <entry key="valory" value="/" />
+      </map>
+    </option>
+    <option name="projectId2RootUrl">
+      <map>
+        <entry key="valory" value="file://$PROJECT_DIR$" />
+      </map>
+    </option>
+    <option name="upsourceUrl" value="https://upsource.modoapi.com/" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Fix child validation" />
+    <MESSAGE value="Added pretty print logging (off by default)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added pretty print logging (off by default)" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/compiler/loader.ts</url>
+          <line>17</line>
+          <option name="timeStamp" value="88" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/dist/compiler/.compswag.js</url>
+          <line>22</line>
+          <option name="timeStamp" value="89" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/src/compiler/loader.ts</url>
+          <line>26</line>
+          <option name="timeStamp" value="91" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="dart-exception">
+          <properties />
+        </breakpoint>
+      </default-breakpoints>
+      <option name="time" value="92" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/node_modules/steed/steed.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="83" column="4" lean-forward="false" selection-start-line="83" selection-start-column="4" selection-end-line="83" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/fastify/lib/decorate.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/fastify/lib/request.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/fastify/fastify.js" />
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/bluebird/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="610" column="9" lean-forward="false" selection-start-line="610" selection-start-column="9" selection-end-line="610" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/server/loader.js" />
+    <entry file="file://$PROJECT_DIR$/tsconfig.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="234">
+          <caret line="13" column="45" lean-forward="false" selection-start-line="13" selection-start-column="45" selection-end-line="13" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/test.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2088">
+          <caret line="116" column="0" lean-forward="false" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/adaptors/fastify-adaptor.ts" />
+    <entry file="file://$PROJECT_DIR$/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/typescript-server.js" />
+    <entry file="file://$PROJECT_DIR$/dist/typescript-server.d.ts" />
+    <entry file="file://$PROJECT_DIR$/dist/dev/testApi.js" />
+    <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/nodejs/8.9.4/core-modules/module.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9324">
+          <caret line="537" column="14" lean-forward="false" selection-start-line="537" selection-start-column="14" selection-end-line="537" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/fastify-plugin/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="612">
+          <caret line="34" column="2" lean-forward="false" selection-start-line="34" selection-start-column="2" selection-end-line="34" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/fastify-formbody/formbody.js" />
+    <entry file="file://$PROJECT_DIR$/src/compiler/method.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="45" lean-forward="false" selection-start-line="2" selection-start-column="45" selection-end-line="2" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/swagger-schema-official/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2256">
+          <caret line="7" column="18" lean-forward="false" selection-start-line="7" selection-start-column="18" selection-end-line="7" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="22" column="16" lean-forward="false" selection-start-line="22" selection-start-column="16" selection-end-line="22" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/docs/interfaces/_server_valory_.apimiddleware.md" />
+    <entry file="file://$PROJECT_DIR$/docs/enums/_server_valory_.httpmethod.md" />
+    <entry file="file://$PROJECT_DIR$/docs/modules/_dev_schema_test_.md" />
+    <entry file="file://$PROJECT_DIR$/docs/modules/_compiler_compiler_.md" />
+    <entry file="file://$PROJECT_DIR$/docs/modules/_server_valory_.md" />
+    <entry file="file://$PROJECT_DIR$/docs/classes/_server_valory_.valory.md" />
+    <entry file="file://$PROJECT_DIR$/docs/enums/httpmethod.md" />
+    <entry file="file://$PROJECT_DIR$/typedoc-config.json" />
+    <entry file="file://$PROJECT_DIR$/docs/interfaces/mangledkey.md" />
+    <entry file="file://$PROJECT_DIR$/docs/classes/valory.md" />
+    <entry file="file://$PROJECT_DIR$/docs/modules/_valory_.md" />
+    <entry file="file://$PROJECT_DIR$/docs/README.md" />
+    <entry file="file://$PROJECT_DIR$/build_scripts/retrieve_git_meta.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="5" column="16" lean-forward="false" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_scripts/pre_build.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="1" column="24" lean-forward="false" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_scripts/post_build.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="15" lean-forward="false" selection-start-line="2" selection-start-column="15" selection-end-line="2" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_scripts/install_nvm.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build_scripts/build.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="10" column="2" lean-forward="false" selection-start-line="10" selection-start-column="2" selection-end-line="10" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="702">
+            <caret line="57" column="25" lean-forward="false" selection-start-line="57" selection-start-column="25" selection-end-line="57" selection-end-column="25" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/compiler/compiler.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.ts" />
+    <entry file="file://$PROJECT_DIR$/templates/validatorTemplate.dot">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1314">
+          <caret line="73" column="59" lean-forward="false" selection-start-line="73" selection-start-column="59" selection-end-line="73" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/valory.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="918">
+          <caret line="59" column="0" lean-forward="false" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="35" column="37" lean-forward="false" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/testApi.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2196">
+          <caret line="124" column="116" lean-forward="false" selection-start-line="124" selection-start-column="116" selection-end-line="124" selection-end-column="116" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="522">
+          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="522">
+          <caret line="29" column="21" lean-forward="false" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="32" lean-forward="false" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1638">
+          <caret line="107" column="39" lean-forward="false" selection-start-line="107" selection-start-column="39" selection-end-line="107" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/moduleTemplate.dot">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/compiler/.compswag.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="20" column="110" lean-forward="false" selection-start-line="20" selection-start-column="110" selection-end-line="20" selection-end-column="110" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-174">
+          <caret line="44" column="9" lean-forward="true" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
+          <folding>
+            <element signature="e#0#64#0" expanded="true" />
+            <element signature="e#2585#2586#0" expanded="true" />
+            <element signature="e#2622#2623#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="6" column="5" lean-forward="true" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
