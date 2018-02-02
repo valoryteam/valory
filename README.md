@@ -7,6 +7,8 @@
 * [Usage](#usage)
 * [Release History](#release-history)
 * [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
+* [Adaptors](#adaptors)
+* [Middleware](#middleware)
 
 ##Description
 Valory is small framework designed to standardize the process of writing well documented, bulletproof api's using whatever server backend you want. 
@@ -104,3 +106,14 @@ node "API ENTRYPOINT"
 ```
 
 By default, this will also host a documentation site at the site root
+
+
+##Adaptors
+* [valory-adaptor-fastify](https://www.npmjs.com/package/valory-adaptor-fastify)
+    * Adaptor for use with fastify framework, good option for use as a standalone api server
+* [valory-adaptor-claudia](https://www.npmjs.com/package/valory-adaptor-claudia)
+    * Adaptor for use with [Claudia](https://www.npmjs.com/package/claudia) and [claudia-api-builder](https://www.npmjs.com/package/claudia-api-builder). Allows valory to be deployed as a serverless application in AWS Lambda.
+
+##Middleware
+* [valory-middleware-jwt](https://www.npmjs.com/package/valory-middleware-jwt)
+    * Simple JWT auth middleware
