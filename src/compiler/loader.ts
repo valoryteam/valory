@@ -3,10 +3,11 @@ import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
-import {ValoryLog} from "../server/valory";
+import {ApiServer, ValoryLog} from "../server/valory";
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
+export const ROOT_PATH = path.join(module.paths[2], "..");
 export const COMPILED_SWAGGER_PATH = resolveCompSwagPath();
 const stringify = require("fast-json-stable-stringify");
 const XXH = require("xxhashjs");

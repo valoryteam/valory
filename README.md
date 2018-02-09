@@ -105,7 +105,7 @@ left to do is run it directly
 node "API ENTRYPOINT"
 ```
 
-By default, this will also host a documentation site at the site root
+By default, this will also host a [ReDoc](https://www.npmjs.com/package/redoc) powered documentation site at the site root.
 
 
 ##Adaptors

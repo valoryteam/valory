@@ -1,16 +1,17 @@
-#!/usr/bin/env node
+import {FastifyAdaptor} from "valory-adaptor-fastify";
 
 global.Promise = require("bluebird");
 
 import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
 import {assign, forIn, omitBy, isNil, set} from "lodash";
-import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule} from "../compiler/loader";
+import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
 import {readFileSync} from "fs";
-import {join} from "path";
 import {ErrorCallback, Steed, SteedFunction} from "steed";
 import P = require("pino");
 import {Logger} from "pino";
+import {loadConfig} from "../lib/config";
+import pathMod = require("path");
 const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");
@@ -20,11 +21,19 @@ const fastConcat = require("fast.js/array/concat");
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
 const VALORYLOGGERVAR = "LOGLEVEL";
+export const VALORYCONFIGFILE = "valory.json";
 export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 export const ValoryLog = P({level: process.env[VALORYLOGGERVAR] || "info",
 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+
+export interface ValoryConfig {
+	adaptorModule: string;
+	apiEntrypoint: string;
+	adaptorConfiguration: {[key: string]: string};
+	workerConfiguration: {};
+}
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -68,6 +77,7 @@ export enum HttpMethod {
 }
 
 export interface ApiServer {
+	locallyRunnable: boolean;
 	register: (path: string, method: HttpMethod, handler: (request: ApiExchange) =>
 		ApiExchange | Promise<ApiExchange>) => void;
 	allowDocSite: boolean;
@@ -102,11 +112,13 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 
 export class Valory {
 	private COMPILERMODE: boolean = (process.env.VALORYCOMPILER === "TRUE");
+	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private globalMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
+	private config: ValoryConfig = null;
 	private metadata: ValoryMetadata = {
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
@@ -117,6 +129,13 @@ export class Valory {
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
 		ValoryLog.info("Starting valory");
+		// const configPath = valoryConfigPath();
+		// try {
+		// 	this.config = loadConfig(pathMod.resolve(configPath));
+		// } catch {
+		// 	throw Error("Failed to load valory config");
+		// }
+		// ValoryLog.info(this.config);
 		this.apiDef = {
 			swagger: "2.0",
 			info,
@@ -126,16 +145,21 @@ export class Valory {
 			consumes,
 			produces,
 		};
+
 		this.server = server;
+		// this.server = new (require(this.config.adaptorModule))() as ApiServer;
 		assign(this.errors, errors);
 
 		if (!this.COMPILERMODE) {
+			if (this.TESTMODE) {
+				this.server = new FastifyAdaptor();
+			}
 			const mod: ValidatorModule | Error = fastTry(() => loadModule(definitions));
 			if (mod instanceof Error) {
 				throw mod;
 			} else {
 				this.validatorModule = mod;
-				if (server.allowDocSite) {
+				if (this.server.allowDocSite) {
 					this.registerDocSite();
 				}
 			}
@@ -287,7 +311,7 @@ export class Valory {
 	}
 
 	private registerDocSite() {
-		const redoc = readFileSync(join(__dirname, REDOCPATH), {encoding: "utf8"});
+		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
 		const swaggerBlob = this.validatorModule.swaggerBlob;
 		this.server.register("/swagger.json", HttpMethod.GET, (req) => {
 			return {
@@ -348,81 +372,10 @@ function generateErrorTable(errors: { [x: string]: ErrorDef }): Tag {
 	return omitBy(tagDef, isNil) as Tag;
 }
 
-if (!module.parent) {
-	process.env.VALORYCOMPILER = "TRUE";
-	const relative = require("require-relative");
-	const args = require("nomnom").options({
-		entrypoint: {
-			position: 0,
-			help: "Main entrypoint for the api",
-			required: true,
-		},
-		host: {
-			position: 1,
-			help: "The host for your api e.g. somewebsite.com",
-		},
-		scheme: {
-			abbr: "s",
-			help: "The access method for your api. e.g. https",
-			default: "https",
-		},
-		basePath: {
-			abbr: "r",
-			help: "Api path relative to the host. It must start with a slash. e.g. /store/dev",
-			callback: (resourcePath: string) => {
-				return (resourcePath.startsWith("/")) ? true : "Resource path MUST start with a '/'";
-			},
-			required: true,
-			default: "/",
-		},
-		outputFile: {
-			abbr: "o",
-			help: "File to write output to",
-			default: join(process.cwd(), "swagger.json"),
-		},
-		version: {
-			abbr: "v",
-			help: "Api version string e.g. '1.0.0'",
-			required: true,
-			transform: (v: number) => {
-				return v.toString();
-			},
-		},
-		singleError: {
-			flag: true,
-			help: "Only return a single validation error at a time",
-			default: false,
-		},
-		compilationLevel: {
-			abbr: "l",
-			help: "Compilation level ['SIMPLE', 'ADVANCED', 'WHITESPACE_ONLY']",
-			required: true,
-			default: "ADVANCED",
-			callback: (level: string) => {
-				"use strict";
-				return (["SIMPLE", "ADVANCED", "WHITESPACE_ONLY"]
-					.indexOf(level) > -1) ? true : "Must be one of [\"SIMPLE\", \"ADVANCED\", \"WHITESPACE_ONLY\"]";
-			},
-			enum: ["SIMPLE", "ADVANCED", "WHITESPACE_ONLY"],
-		},
-		debugMode: {
-			abbr: "d",
-			help: "Enable debug mode for the compiler",
-			default: false,
-			flag: true,
-		},
-	}).parse();
-	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
-		? args.entrypoint : "./" + args.entrypoint;
-	const valExport: {valory: ValoryMetadata} = relative(args.entrypoint, process.cwd());
-	const api = valExport.valory.swagger;
-	api.schemes = args.schemes;
-	api.host = args.host;
-	api.info.version = args.version;
-	const output = omitBy(api, isNil) as Spec;
-	const compLevel = CompilationLevel[args.compilationLevel] as any;
-	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
-		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: compLevel,
-			singleError: args.singleError})
-		.then(() => {ValoryLog.info("Compilation Complete"); process.exit(0); });
+function valoryConfigPath(): string {
+	if (process.env.VALORYCONFIG) {
+		return process.env.VALORYCONFIG;
+	} else {
+		return pathMod.join(ROOT_PATH, "valory.json");
+	}
 }

@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5dad222-75bc-4ef9-b704-417c4f90d7de" name="Default" comment="" />
+    <list default="true" id="e5dad222-75bc-4ef9-b704-417c4f90d7de" name="Default" comment="">
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/lib/cli.ts" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/src/lib/config.ts" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/valory.json" />
+      <change beforePath="" afterPath="$PROJECT_DIR$/yarn-error.log" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+      <change beforePath="$PROJECT_DIR$/src/compiler/compilerheaders.ts" afterPath="$PROJECT_DIR$/src/compiler/compilerheaders.ts" />
+      <change beforePath="$PROJECT_DIR$/src/compiler/loader.ts" afterPath="$PROJECT_DIR$/src/compiler/loader.ts" />
+      <change beforePath="$PROJECT_DIR$/src/server/valory.ts" afterPath="$PROJECT_DIR$/src/server/valory.ts" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -13,114 +24,116 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="testApi.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/test/testApi.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2196">
-              <caret line="124" column="116" lean-forward="false" selection-start-line="124" selection-start-column="116" selection-end-line="124" selection-end-column="116" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="testApi.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="522">
-              <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="loader.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="198">
-              <caret line="11" column="32" lean-forward="false" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
-              <folding>
-                <element signature="e#0#53#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="compilerheaders.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="522">
-              <caret line="29" column="21" lean-forward="false" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="compiler.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1638">
-              <caret line="107" column="39" lean-forward="false" selection-start-line="107" selection-start-column="39" selection-end-line="107" selection-end-column="39" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="moduleTemplate.dot" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/moduleTemplate.dot">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
-              <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".compswag.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/dist/compiler/.compswag.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="20" column="110" lean-forward="false" selection-start-line="20" selection-start-column="110" selection-end-line="20" selection-end-column="110" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="preprocessor.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-174">
-              <caret line="44" column="9" lean-forward="false" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
-              <folding>
-                <element signature="e#0#64#0" expanded="true" />
-                <element signature="e#2585#2586#0" expanded="true" />
-                <element signature="e#2622#2623#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="6" column="5" lean-forward="false" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="630">
-              <caret line="35" column="37" lean-forward="false" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
+    <splitter split-orientation="horizontal" split-proportion="0.5">
+      <split-first>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+          <file leaf-file-name="compiler.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="384">
+                  <caret line="149" column="0" lean-forward="false" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="compilerheaders.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="18">
+                  <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="cli.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/lib/cli.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="271">
+                  <caret line="153" column="38" lean-forward="false" selection-start-line="153" selection-start-column="38" selection-end-line="153" selection-end-column="38" />
+                  <folding>
+                    <element signature="e#21#112#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="preprocessor.ts" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="270">
+                  <caret line="15" column="25" lean-forward="false" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="25" />
+                  <folding>
+                    <element signature="e#0#64#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="tstl.d.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/node_modules/tstl/lib/tstl.d.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="270">
+                  <caret line="324" column="11" lean-forward="false" selection-start-line="324" selection-start-column="11" selection-end-line="324" selection-end-column="11" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-first>
+      <split-second>
+        <leaf>
+          <file leaf-file-name="valory.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/server/valory.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-3572">
+                  <caret line="142" column="24" lean-forward="false" selection-start-line="142" selection-start-column="24" selection-end-line="142" selection-end-column="24" />
+                  <folding>
+                    <element signature="e#95#173#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="adaptor-fastify.js" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.js">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="-227">
+                  <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="testApi.ts" pinned="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="573">
+                  <caret line="132" column="116" lean-forward="false" selection-start-line="132" selection-start-column="102" selection-end-line="132" selection-end-column="116" />
+                  <folding>
+                    <element signature="e#0#45#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="loader.ts" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="738">
+                  <caret line="41" column="1" lean-forward="false" selection-start-line="41" selection-start-column="1" selection-end-line="41" selection-end-column="1" />
+                  <folding>
+                    <element signature="e#0#53#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+        </leaf>
+      </split-second>
+    </splitter>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -131,11 +144,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>'</find>
-      <find>&quot;</find>
-      <find>ApiHandler</find>
-      <find>child</find>
-      <find>process</find>
       <find>vErrors</find>
       <find>dtype</find>
       <find>request.body.burnType.pet.dtype should be equal to constant</find>
@@ -161,6 +169,11 @@
       <find>(handler as any).middlewareName</find>
       <find>validationError</find>
       <find>metro</find>
+      <find>met</find>
+      <find>type</find>
+      <find>: process.cwd()</find>
+      <find>path</find>
+      <find>COMPILED_SWAGGER_PATH</find>
     </findStrings>
     <replaceStrings>
       <replace>,</replace>
@@ -170,6 +183,7 @@
       <replace>validationErrors</replace>
       <replace>(handler as any).middlewareName</replace>
       <replace>handler.name</replace>
+      <replace>: join(process.cwd(), &quot;valory.json&quot;)</replace>
     </replaceStrings>
   </component>
   <component name="GhostReviewsManagerService">
@@ -203,7 +217,6 @@
         <option value="$PROJECT_DIR$/tslint.json" />
         <option value="$PROJECT_DIR$/build_scripts/install.sh" />
         <option value="$PROJECT_DIR$/build_scripts/install_nvm.sh" />
-        <option value="$PROJECT_DIR$/.npmignore" />
         <option value="$PROJECT_DIR$/build_scripts/pre_build.sh" />
         <option value="$PROJECT_DIR$/build_scripts/retrieve_git_meta.sh" />
         <option value="$PROJECT_DIR$/swagger.json" />
@@ -212,20 +225,23 @@
         <option value="$PROJECT_DIR$/src/test/test.ts" />
         <option value="$PROJECT_DIR$/src/server/adaptors/fastify-adaptor.ts" />
         <option value="$PROJECT_DIR$/src/test/testApi.ts" />
-        <option value="$PROJECT_DIR$/package.json" />
         <option value="$PROJECT_DIR$/build_scripts/build.sh" />
-        <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/src/server/valory.ts" />
         <option value="$PROJECT_DIR$/test.ts" />
         <option value="$PROJECT_DIR$/templates/validatorTemplate.dot" />
-        <option value="$PROJECT_DIR$/src/dev/testApi.ts" />
-        <option value="$PROJECT_DIR$/src/compiler/compilerheaders.ts" />
         <option value="$PROJECT_DIR$/src/compiler/compiler.ts" />
-        <option value="$PROJECT_DIR$/src/compiler/loader.ts" />
         <option value="$PROJECT_DIR$/templates/moduleTemplate.dot" />
         <option value="$PROJECT_DIR$/dist/compiler/.compswag.js" />
-        <option value="$PROJECT_DIR$/src/compiler/preprocessor.ts" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/.npmignore" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/compiler/compilerheaders.ts" />
+        <option value="$PROJECT_DIR$/src/lib/config.ts" />
+        <option value="$PROJECT_DIR$/src/compiler/loader.ts" />
+        <option value="$PROJECT_DIR$/src/server/valory.ts" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/src/lib/cli.ts" />
+        <option value="$PROJECT_DIR$/src/dev/testApi.ts" />
+        <option value="$PROJECT_DIR$/src/compiler/preprocessor.ts" />
       </list>
     </option>
   </component>
@@ -244,10 +260,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="551" />
-    <option name="y" value="204" />
-    <option name="width" value="1420" />
-    <option name="height" value="780" />
+    <option name="x" value="490" />
+    <option name="y" value="298" />
+    <option name="width" value="1430" />
+    <option name="height" value="782" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -274,22 +290,6 @@
             <path>
               <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
               <item name="valory2" type="462c0819:PsiDirectoryNode" />
-              <item name="dist" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="valory2" type="462c0819:PsiDirectoryNode" />
-              <item name="dist" type="462c0819:PsiDirectoryNode" />
-              <item name="compiler" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="valory2" type="462c0819:PsiDirectoryNode" />
-              <item name="docs" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="valory2" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -297,6 +297,24 @@
               <item name="valory2" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="compiler" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="dev" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
+              <item name="valory2" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="server" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="valory2" type="b2602c69:ProjectViewProjectNode" />
@@ -312,7 +330,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.TypeScript" />
+    <property name="settings.editor.selected.configurable" value="settings.typescriptcompiler" />
     <property name="node.js.path.for.package.jscs" value="project" />
     <property name="node.js.selected.package.jscs" value="" />
     <property name="node.js.path.for.package.eslint" value="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" />
@@ -325,11 +343,11 @@
     <property name="node.js.selected.package.tslint" value="$USER_HOME$/.nvm/versions/node/v8.1.3/lib/node_modules/tslint" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../baml-appserver/src/config.ts" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
-    <property name="SearchEverywhereHistoryKey" value="pre&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;refo&#9;ACTION&#9;ShowReformatFileDialog&#10;reformat&#9;ACTION&#9;ReformatCode&#10;reform&#9;ACTION&#9;ReformatCode&#10;compiler&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compiler.ts&#10;Task&#9;ACTION&#9;tasks.close&#10;test&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;testAp&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/testApi.ts&#10;testA&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;fast&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;val&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;mod&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;bluebird-&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/bluebird-global&#10;testApi&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;fastify&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;valor&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/valory.js&#10;retr&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;retriev&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;Tasks&#9;ACTION&#9;tasks.and.contexts&#10;pac&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;Project&#9;ACTION&#9;ActivateProjectToolWindow&#10;P&#9;FILE&#9;file:///home/john/workspace/valory2/templates/validatorTemplate.dot&#10;valory&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;test.ts&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;index.d.ts&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/@types/swagger-schema-official/index.d.ts&#10;Push&#9;ACTION&#9;Vcs.Push&#10;push&#9;ACTION&#9;Vcs.Push&#10;module&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;.comp&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;edit task&#9;ACTION&#9;tasks.edit&#10;.com&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;loader&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/loader.ts&#10;compilerhe&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compilerheaders.ts&#10;prep&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;package&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;ref&#9;ACTION&#9;Refactorings.QuickListPopupAction" />
+    <property name="SearchEverywhereHistoryKey" value="tstl&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/tstl/lib/tstl.d.ts&#10;pac&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;adaptor-fast&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.js&#10;fasti&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.d.ts&#10;testApi&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;COMPILED_SWAGGER_PATH&#9;null&#9;null&#10;nomnom&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/nomnom/nomnom.js&#10;pre&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;refo&#9;ACTION&#9;ShowReformatFileDialog&#10;reformat&#9;ACTION&#9;ReformatCode&#10;reform&#9;ACTION&#9;ReformatCode&#10;compiler&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compiler.ts&#10;Task&#9;ACTION&#9;tasks.close&#10;test&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;testAp&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/testApi.ts&#10;testA&#9;FILE&#9;file:///home/john/workspace/valory2/src/dev/testApi.ts&#10;fast&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;val&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;mod&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;bluebird-&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/bluebird-global&#10;fastify&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/adaptors/fastify-adaptor.ts&#10;valor&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/valory.js&#10;retr&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;retriev&#9;FILE&#9;file:///home/john/workspace/valory2/build_scripts/retrieve_git_meta.sh&#10;Tasks&#9;ACTION&#9;tasks.and.contexts&#10;Project&#9;ACTION&#9;ActivateProjectToolWindow&#10;P&#9;FILE&#9;file:///home/john/workspace/valory2/templates/validatorTemplate.dot&#10;valory&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/valory.ts&#10;test.ts&#9;FILE&#9;file:///home/john/workspace/valory2/src/test/test.ts&#10;index.d.ts&#9;FILE&#9;file:///home/john/workspace/valory2/node_modules/@types/swagger-schema-official/index.d.ts&#10;Push&#9;ACTION&#9;Vcs.Push&#10;push&#9;ACTION&#9;Vcs.Push&#10;module&#9;FILE&#9;file:///home/john/workspace/valory2/templates/moduleTemplate.dot&#10;.comp&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;edit task&#9;ACTION&#9;tasks.edit&#10;.com&#9;FILE&#9;file:///home/john/workspace/valory2/dist/server/.compswag.js&#10;loader&#9;FILE&#9;file:///home/john/workspace/valory2/src/server/loader.ts&#10;compilerhe&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/compilerheaders.ts&#10;prep&#9;FILE&#9;file:///home/john/workspace/valory2/src/compiler/preprocessor.ts&#10;package&#9;FILE&#9;file:///home/john/workspace/valory2/package.json&#10;ref&#9;ACTION&#9;Refactorings.QuickListPopupAction" />
     <property name="nodejs_interpreter_path" value="$USER_HOME$/.nvm/versions/node/v8.9.4/bin/node" />
     <property name="tasks.open.task.update.state.enabled" value="true" />
     <property name="tasks.close.task.update.state.enabled" value="true" />
@@ -353,17 +371,17 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Mocha.Test">
-    <configuration name="Compile Test" type="NodeJSConfigurationType" factoryName="Node.js" application-parameters="../dev/testApi.js -v 1" path-to-js-file="valory.js" working-dir="$PROJECT_DIR$/dist/server">
+  <component name="RunManager" selected="Node.js.Start Api">
+    <configuration name="Compile Test" type="NodeJSConfigurationType" factoryName="Node.js" application-parameters="compile ../dev/testApi.js -v 1" path-to-js-file="cli.js" working-dir="$PROJECT_DIR$/dist/lib">
       <envs>
         <env name="PRETTYLOG" value="true" />
       </envs>
     </configuration>
     <configuration name="Schema Test" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="$USER_HOME$/.nvm/versions/node/v8.1.3/bin/node" path-to-js-file="schema-test.js" working-dir="$PROJECT_DIR$/dist/dev" />
-    <configuration name="Start Api" type="NodeJSConfigurationType" factoryName="Node.js" path-to-js-file="testApi.js" working-dir="$PROJECT_DIR$/dist/dev">
+    <configuration name="Start Api" type="NodeJSConfigurationType" factoryName="Node.js" application-parameters="start ../dev/testApi.js --prettylog -l debug" path-to-js-file="cli.js" working-dir="$PROJECT_DIR$/dist/lib">
       <envs>
         <env name="LOGLEVEL" value="debug" />
-        <env name="PRETTYLOG" value="true" />
+        <env name="PRETTYLOGt" value="true" />
       </envs>
     </configuration>
     <configuration name="Test" type="mocha-javascript-test-runner" factoryName="Mocha">
@@ -573,7 +591,13 @@
       <workItem from="1517010849468" duration="209000" />
       <workItem from="1517011071787" duration="180000" />
       <workItem from="1517237656443" duration="144000" />
-      <workItem from="1517237811440" duration="1383000" />
+      <workItem from="1517237811440" duration="3091000" />
+      <workItem from="1517418062108" duration="924000" />
+      <workItem from="1517516369300" duration="2769000" />
+      <workItem from="1517591297104" duration="1426000" />
+      <workItem from="1517606821220" duration="5188000" />
+      <workItem from="1517852347099" duration="1635000" />
+      <workItem from="1518091040552" duration="11888000" />
     </task>
     <option name="localTasksCounter" value="3" />
     <option name="createChangelist" value="false" />
@@ -632,7 +656,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="243738000" />
+    <option name="totallyTimeSpent" value="269276000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -644,29 +668,30 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="551" y="204" width="3840" height="2126" extended-state="6" />
+    <frame x="0" y="34" width="1920" height="1046" extended-state="6" />
+    <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3293348" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24944568" sideWeight="0.5213447" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3226164" sideWeight="0.48932764" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3234107" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20938446" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24944568" sideWeight="0.47865528" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20288248" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.16315235" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Reviews" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996973" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.13553895" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Reviews" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996973" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.110173956" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="News Feed" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32999474" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="News Feed" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32999474" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3975782" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.46784922" sideWeight="0.48078975" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3292683" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -699,19 +724,15 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/compiler/loader.ts</url>
-          <line>17</line>
-          <option name="timeStamp" value="88" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/dist/compiler/.compswag.js</url>
-          <line>22</line>
-          <option name="timeStamp" value="89" />
+          <url>file://$PROJECT_DIR$/src/server/valory.ts</url>
+          <line>138</line>
+          <option name="timeStamp" value="102" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/src/compiler/loader.ts</url>
-          <line>26</line>
-          <option name="timeStamp" value="91" />
+          <line>36</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="104" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -719,53 +740,11 @@
           <properties />
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="92" />
+      <option name="time" value="105" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/node_modules/steed/steed.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="83" column="4" lean-forward="false" selection-start-line="83" selection-start-column="4" selection-end-line="83" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/node_modules/fastify/lib/decorate.js" />
-    <entry file="file://$PROJECT_DIR$/node_modules/fastify/lib/request.js" />
-    <entry file="file://$PROJECT_DIR$/node_modules/fastify/fastify.js" />
-    <entry file="file://$PROJECT_DIR$/node_modules/@types/bluebird/index.d.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="610" column="9" lean-forward="false" selection-start-line="610" selection-start-column="9" selection-end-line="610" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dist/server/loader.js" />
-    <entry file="file://$PROJECT_DIR$/tsconfig.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="234">
-          <caret line="13" column="45" lean-forward="false" selection-start-line="13" selection-start-column="45" selection-end-line="13" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/test.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2088">
-          <caret line="116" column="0" lean-forward="false" selection-start-line="116" selection-start-column="0" selection-end-line="116" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/adaptors/fastify-adaptor.ts" />
-    <entry file="file://$PROJECT_DIR$/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.d.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dist/typescript-server.js" />
-    <entry file="file://$PROJECT_DIR$/dist/typescript-server.d.ts" />
     <entry file="file://$PROJECT_DIR$/dist/dev/testApi.js" />
     <entry file="file://$APPLICATION_CONFIG_DIR$/javascript/nodejs/8.9.4/core-modules/module.js">
       <provider selected="true" editor-type-id="text-editor">
@@ -782,13 +761,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/fastify-formbody/formbody.js" />
-    <entry file="file://$PROJECT_DIR$/src/compiler/method.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="45" lean-forward="false" selection-start-line="2" selection-start-column="45" selection-end-line="2" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/@types/swagger-schema-official/index.d.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2256">
@@ -850,16 +822,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/README.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="702">
-            <caret line="57" column="25" lean-forward="false" selection-start-line="57" selection-start-column="25" selection-end-line="57" selection-end-column="25" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dist/compiler/compiler.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -875,89 +837,59 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/server/valory.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="918">
-          <caret line="59" column="0" lean-forward="false" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
-          <caret line="35" column="37" lean-forward="false" selection-start-line="35" selection-start-column="37" selection-end-line="35" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/testApi.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2196">
           <caret line="124" column="116" lean-forward="false" selection-start-line="124" selection-start-column="116" selection-end-line="124" selection-end-column="116" />
-          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
+    <entry file="file://$PROJECT_DIR$/.npmignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="31" column="14" lean-forward="false" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
-          <folding />
+        <state relative-caret-position="54">
+          <caret line="3" column="6" lean-forward="false" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
+    <entry file="file://$PROJECT_DIR$/src/compiler/method.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="522">
-          <caret line="29" column="21" lean-forward="false" selection-start-line="29" selection-start-column="21" selection-end-line="29" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
-          <caret line="11" column="32" lean-forward="false" selection-start-line="11" selection-start-column="32" selection-end-line="11" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#53#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1638">
-          <caret line="107" column="39" lean-forward="false" selection-start-line="107" selection-start-column="39" selection-end-line="107" selection-end-column="39" />
+        <state relative-caret-position="36">
+          <caret line="2" column="43" lean-forward="false" selection-start-line="2" selection-start-column="35" selection-end-line="2" selection-end-column="43" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/moduleTemplate.dot">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+        <state relative-caret-position="720">
+          <caret line="40" column="0" lean-forward="false" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dist/compiler/.compswag.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="20" column="110" lean-forward="false" selection-start-line="20" selection-start-column="110" selection-end-line="20" selection-end-column="110" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-174">
-          <caret line="44" column="9" lean-forward="false" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#64#0" expanded="true" />
-            <element signature="e#2585#2586#0" expanded="true" />
-            <element signature="e#2622#2623#0" expanded="true" />
-          </folding>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="1926">
+            <caret line="107" column="86" lean-forward="false" selection-start-line="107" selection-start-column="86" selection-end-line="107" selection-end-column="86" />
+            <folding>
+              <marker date="1517592448250" expanded="true" signature="1512:1808" ph="{...}" />
+              <marker date="1517592448250" expanded="true" signature="1532:1806" ph="{&quot;type&quot;: &quot;object&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="1592:1642" ph="[...]" />
+              <marker date="1517592448250" expanded="true" signature="1672:1796" ph="{...}" />
+              <marker date="1517592448250" expanded="true" signature="1704:1778" ph="{&quot;type&quot;: &quot;string&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="1892:2093" ph="{&quot;description&quot;: &quot;Awful, horrible burns&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="1985:2091" ph="{...}" />
+              <marker date="1517592448250" expanded="true" signature="2008:2081" ph="{&quot;description&quot;: &quot;Returns a burn&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="2255:2817" ph="{&quot;description&quot;: &quot;Burn a name&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="2345:2687" ph="[...]" />
+              <marker date="1517592448250" expanded="true" signature="2363:2677" ph="{&quot;name&quot;: &quot;body&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="2475:2623" ph="{&quot;$ref&quot;: &quot;##/definitions/BurnName&quot;...}" />
+              <marker date="1517592448250" expanded="true" signature="2708:2815" ph="{...}" />
+              <marker date="1517592448250" expanded="true" signature="2731:2805" ph="{&quot;description&quot;: &quot;Returns a thing&quot;...}" />
+            </folding>
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
@@ -965,7 +897,170 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="108">
           <caret line="6" column="5" lean-forward="false" selection-start-line="6" selection-start-column="5" selection-end-line="6" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/compiler/.compswag.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="396">
+          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../baml-appserver/src/config.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="492">
+          <caret line="39" column="7" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/compilerheaders.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/lib/cli.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-850">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/@types/nomnom/index.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1382">
+          <caret line="228" column="15" lean-forward="false" selection-start-line="228" selection-start-column="15" selection-end-line="228" selection-end-column="15" />
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/nomnom/nomnom.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="453" column="17" lean-forward="false" selection-start-line="453" selection-start-column="13" selection-end-line="453" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/compiler.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="149" column="0" lean-forward="false" selection-start-line="149" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/server/valory.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="846">
+          <caret line="62" column="36" lean-forward="true" selection-start-line="62" selection-start-column="36" selection-end-line="62" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/fast-safe-stringify/index.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="126">
+          <caret line="7" column="16" lean-forward="true" selection-start-line="7" selection-start-column="16" selection-end-line="7" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/config.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-17">
+          <caret line="15" column="28" lean-forward="false" selection-start-line="15" selection-start-column="28" selection-end-line="15" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="198">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/valory-adaptor-fastify/dist/adaptor-fastify.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-227">
+          <caret line="16" column="19" lean-forward="false" selection-start-line="16" selection-start-column="19" selection-end-line="16" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/server/valory.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3572">
+          <caret line="142" column="24" lean-forward="false" selection-start-line="142" selection-start-column="24" selection-end-line="142" selection-end-column="24" />
+          <folding>
+            <element signature="e#95#173#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/loader.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="738">
+          <caret line="41" column="1" lean-forward="false" selection-start-line="41" selection-start-column="1" selection-end-line="41" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#53#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dev/testApi.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="132" column="116" lean-forward="false" selection-start-line="132" selection-start-column="102" selection-end-line="132" selection-end-column="116" />
+          <folding>
+            <element signature="e#0#45#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/cli.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="153" column="38" lean-forward="false" selection-start-line="153" selection-start-column="38" selection-end-line="153" selection-end-column="38" />
+          <folding>
+            <element signature="e#21#112#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="414">
+          <caret line="71" column="25" lean-forward="true" selection-start-line="71" selection-start-column="25" selection-end-line="71" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/node_modules/tstl/lib/tstl.d.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="324" column="11" lean-forward="false" selection-start-line="324" selection-start-column="11" selection-end-line="324" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/compiler/preprocessor.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="15" column="25" lean-forward="false" selection-start-line="15" selection-start-column="25" selection-end-line="15" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#64#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
