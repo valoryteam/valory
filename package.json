@@ -82,8 +82,7 @@
 		"branch": "master",
 		"verifyConditions": [
 			"@semantic-release/npm"
-		],
-		"publish": []
+		]
 	},
 	"config": {
 		"commitizen": {
