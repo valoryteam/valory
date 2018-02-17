@@ -38,6 +38,7 @@ export interface ValoryConfig {
 export interface ApiExchange {
 	headers: { [key: string]: any };
 	body: any;
+	rawBody?: any;
 	formData?: { [key: string]: any };
 	query?: { [key: string]: any };
 	path?: { [key: string]: any };
@@ -111,7 +112,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
-	private COMPILERMODE: boolean = (process.env.VALORYCOMPILER === "TRUE");
+	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private globalMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
