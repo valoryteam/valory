@@ -25,8 +25,7 @@ export const VALORYCONFIGFILE = "valory.json";
 export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
-export const ValoryLog = P({level: process.env[VALORYLOGGERVAR] || "info",
-	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+export let ValoryLog: Logger;
 
 export interface ValoryConfig {
 	adaptorModule: string;
@@ -129,6 +128,8 @@ export class Valory {
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
+		ValoryLog = P({level: process.env[VALORYLOGGERVAR] || "info",
+			prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 		ValoryLog.info("Starting valory");
 		// const configPath = valoryConfigPath();
 		// try {
@@ -203,7 +204,7 @@ export class Valory {
 	 * Convenience method to build a return exchange when only body and/or header customization is required
 	 */
 	public buildSuccess(body: any, headers: {[key: string]: any} = {}): ApiExchange {
-		if (headers["Content-Type"] == null){
+		if (headers["Content-Type"] == null) {
 			if (typeof body === "object") {
 				headers["Content-Type"] = "application/json";
 			} else if (typeof body === "string") {
