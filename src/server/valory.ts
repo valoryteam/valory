@@ -200,6 +200,24 @@ export class Valory {
 	}
 
 	/**
+	 * Convenience method to build a return exchange when only body and/or header customization is required
+	 */
+	public buildSuccess(body: any, headers: {[key: string]: any} = {}): ApiExchange {
+		if (headers["Content-Type"] == null){
+			if (typeof body === "object") {
+				headers["Content-Type"] = "application/json";
+			} else if (typeof body === "string") {
+				headers["Content-Type"] = "text/plain";
+			}
+		}
+		return {
+			body,
+			headers,
+			statusCode: 200,
+		};
+	}
+
+	/**
 	 * Register GET endpoint
 	 */
 	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],

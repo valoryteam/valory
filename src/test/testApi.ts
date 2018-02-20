@@ -174,11 +174,7 @@ api.get("/burn/{name}", {
 		},
 	},
 }, (req, logger) => {
-	return {
-		body: req,
-		statusCode: 200,
-		headers: {},
-	};
+	return api.buildSuccess(req);
 });
 
 api.post("/formtest", {
@@ -200,13 +196,7 @@ api.post("/formtest", {
 }, (req, logger) => {
 	// logger.info(req);
 
-	return {
-		body: req.attachments,
-		statusCode: 200,
-		headers: {
-			"Content-Type": "application/json",
-		},
-	};
+	return api.buildSuccess(req.attachments);
 }, [TestMiddleware]);
 
 api.post("/burn", {
@@ -256,11 +246,7 @@ api.post("/burn", {
 }, (req, logger) => {
 	// logger.info(req);
 
-	return {
-		body: req,
-		statusCode: 200,
-		headers: {},
-	};
+	return api.buildSuccess(req);
 });
 
 const ex = api.start({port: 8080});
