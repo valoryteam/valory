@@ -5,3 +5,4 @@ swagger.json
 yarn.lock
 src/**/*.js
 docs/
+.idea/
