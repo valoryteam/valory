@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {ValoryConfig, VALORYCONFIGFILE, ValoryLog, ValoryMetadata} from "../server/valory";
+import {ValoryConfig, VALORYCONFIGFILE, ValoryMetadata, VALORYPRETTYLOGGERVAR, VALORYLOGGERVAR} from "../server/valory";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Spec} from "swagger-schema-official";
 import {compileAndSave} from "../compiler/loader";
@@ -9,8 +9,7 @@ import {join} from "path";
 import nomnom = require("nomnom");
 import {prompt} from "inquirer";
 import {existsSync, writeFileSync} from "fs";
-
-const VALORYLOGGERVAR = "LOGLEVEL";
+import P = require("pino");
 
 async function initConfig(args: any) {
 	const configPath = join(process.cwd(), VALORYCONFIGFILE);
@@ -41,6 +40,9 @@ function compilerRunner(args: any) {
 	// let config = {};
 	process.env.VALORYCOMPILER = "TRUE";
 	const relative = require("require-relative");
+	if (args.prettylog) {process.env.PRETTYLOG = "true"; }
+	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
 		? args.entrypoint : "./" + args.entrypoint;
 	const valExport: {valory: ValoryMetadata} = relative(args.entrypoint, process.cwd());
@@ -53,7 +55,7 @@ function compilerRunner(args: any) {
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
 		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: compLevel,
 			singleError: args.singleError})
-		.then(() => {ValoryLog.info("Compilation Complete"); process.exit(0); });
+		.then(() => {Logger.info("Compilation Complete"); process.exit(0); });
 }
 
 function cliRunner(args: any) {
@@ -129,6 +131,11 @@ nomnom.command("compile").options({
 		help: "Enable debug mode for the compiler",
 		default: false,
 		flag: true,
+	},
+	prettylog: {
+		default: false,
+		flag: true,
+		help: "Prettyify log messages",
 	},
 }).callback(compilerRunner).help("run the valory compiler");
 

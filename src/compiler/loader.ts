@@ -3,7 +3,8 @@ import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
-import {ApiServer, ValoryLog} from "../server/valory";
+import {ApiServer, VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
+import P = require("pino");
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -15,7 +16,9 @@ const XXH = require("xxhashjs");
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
 									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions) {
 	const compiled = await require("./compiler").compile(swagger, compilerOptions);
-	ValoryLog.info("Saving compiled swagger to: " + compilePath);
+	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+	Logger.info("Saving compiled swagger to: " + compilePath);
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
 	omit(trimmedSpec, undocumentedPaths);

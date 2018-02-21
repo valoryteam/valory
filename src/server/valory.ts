@@ -20,12 +20,11 @@ const fastConcat = require("fast.js/array/concat");
 // const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
-const VALORYLOGGERVAR = "LOGLEVEL";
+export const VALORYLOGGERVAR = "LOGLEVEL";
 export const VALORYCONFIGFILE = "valory.json";
 export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
-export let ValoryLog: Logger;
 
 export interface ValoryConfig {
 	adaptorModule: string;
@@ -111,6 +110,8 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	public Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private globalMiddleware: ApiMiddleware[] = [];
@@ -128,16 +129,14 @@ export class Valory {
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
-		ValoryLog = P({level: process.env[VALORYLOGGERVAR] || "info",
-			prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
-		ValoryLog.info("Starting valory");
+		this.Logger.info("Starting valory");
 		// const configPath = valoryConfigPath();
 		// try {
 		// 	this.config = loadConfig(pathMod.resolve(configPath));
 		// } catch {
 		// 	throw Error("Failed to load valory config");
 		// }
-		// ValoryLog.info(this.config);
+		// this.Logger.info(this.config);
 		this.apiDef = {
 			swagger: "2.0",
 			info,
@@ -166,7 +165,7 @@ export class Valory {
 				}
 			}
 		} else {
-			ValoryLog.info("Starting in compiler mode");
+			this.Logger.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
 		}
 	}
@@ -177,7 +176,7 @@ export class Valory {
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
 					middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
-		ValoryLog.debug(`Registering endpoint ${path}:${stringMethod}`);
+		this.Logger.debug(`Registering endpoint ${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
 			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented);
 		} else {
@@ -270,7 +269,7 @@ export class Valory {
 	 * Register a global middleware run before every endpoint
 	 */
 	public addGlobalMiddleware(middleware: ApiMiddleware) {
-		ValoryLog.debug("Adding global middleware:", middleware.name);
+		this.Logger.debug("Adding global middleware:", middleware.name);
 		this.globalMiddleware.push(middleware);
 	}
 
@@ -278,7 +277,7 @@ export class Valory {
 	 * Start server and build appserver export object
 	 */
 	public start(options: any): { valory: ValoryMetadata } {
-		ValoryLog.info("Valory startup complete");
+		this.Logger.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
 	}
@@ -303,7 +302,7 @@ export class Valory {
 			throw Error("Compiled swagger is out of date. Please run valory cli");
 		}
 		const route = `${path}:${stringMethod}`;
-		const childLogger = ValoryLog.child({endpoint: route});
+		const childLogger = this.Logger.child({endpoint: route});
 		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware);
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiExchange): Promise<ApiExchange> => {
