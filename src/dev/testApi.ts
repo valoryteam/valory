@@ -1,6 +1,7 @@
 import {Info} from "swagger-schema-official";
 import {ApiMiddleware, ErrorDef, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
+import {ApiExchange} from "valory";
 
 const info: Info = {
 	title: "Test api",
@@ -143,7 +144,18 @@ const TestMiddleware: ApiMiddleware = {
 	},
 };
 
-// api.addGlobalMiddleware(TestMiddleware);
+api.setErrorFormatter((error, message): ApiExchange => {
+	return {
+		statusCode: error.statusCode,
+		body: {
+			status_code: error.errorCode,
+			message: (message != null) ? message : error.defaultMessage,
+		},
+		headers: {"Content-Type": "application/json"},
+	};
+});
+
+api.addGlobalMiddleware(TestMiddleware);
 
 api.get("/burn", {
 	description: "Awful, horrible burns",

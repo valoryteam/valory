@@ -12,6 +12,7 @@ import P = require("pino");
 import {Logger} from "pino";
 import {loadConfig} from "../lib/config";
 import pathMod = require("path");
+import {ApiExchange} from "valory";
 const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");
@@ -26,12 +27,25 @@ export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
+const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiExchange => {
+	return {
+		statusCode: error.statusCode,
+		body: {
+			code: error.errorCode,
+			message: (message != null) ? message : error.defaultMessage,
+		},
+		headers: {"Content-Type": "application/json"},
+	};
+};
+
 export interface ValoryConfig {
 	adaptorModule: string;
 	apiEntrypoint: string;
 	adaptorConfiguration: {[key: string]: string};
 	workerConfiguration: {};
 }
+
+export type ErrorFormatter = (error: ErrorDef, message?: string) => ApiExchange;
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -112,8 +126,10 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 export class Valory {
 	public Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
+	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
 	private server: ApiServer;
@@ -185,18 +201,18 @@ export class Valory {
 	}
 
 	/**
+	 * Override the default error formatter
+	 */
+	public setErrorFormatter(formatter: ErrorFormatter) {
+		this.errorFormatter = formatter;
+	}
+
+	/**
 	 * Build an ApiExchange from either an error name or an ErrorDef
 	 */
 	public buildError(error: string | ErrorDef, message?: string): ApiExchange {
 		const errorDef: ErrorDef = (typeof error === "string") ? this.errors[error] : error;
-		return {
-			statusCode: errorDef.statusCode,
-			body: {
-				code: errorDef.errorCode,
-				message: (message != null) ? message : errorDef.defaultMessage,
-			},
-			headers: {"Content-Type": "application/json"},
-		};
+		return this.errorFormatter(errorDef, message);
 	}
 
 	/**
