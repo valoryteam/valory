@@ -4,6 +4,6 @@ package-lock.json
 swagger.json
 yarn.lock
 src/**/*.js
-docs/
+docs
 .idea/
-.nyc_output/
+.nyc_output
