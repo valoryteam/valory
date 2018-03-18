@@ -13,6 +13,7 @@ import {Logger} from "pino";
 import {loadConfig} from "../lib/config";
 import pathMod = require("path");
 import {ApiExchange} from "valory";
+import {Exception} from "tstl";
 const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");
@@ -124,9 +125,18 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	/**
+	 * Get the valory instance
+	 */
+	public static getInstance(): Valory {
+		if (Valory.instance == null) {
+			throw Error("Valory instance has not yet been created");
+		}
+		return Valory.instance;
+	}
+	private static instance: Valory;
 	public Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
-
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
@@ -145,6 +155,10 @@ export class Valory {
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
+		if (Valory.instance != null) {
+			throw Error("Only a single valory instance is allowed");
+		}
+		Valory.instance = this;
 		this.Logger.info("Starting valory");
 		// const configPath = valoryConfigPath();
 		// try {
@@ -166,7 +180,6 @@ export class Valory {
 		this.server = server;
 		// this.server = new (require(this.config.adaptorModule))() as ApiServer;
 		assign(this.errors, errors);
-
 		if (!this.COMPILERMODE) {
 			if (this.TESTMODE) {
 				this.server = new FastifyAdaptor();
