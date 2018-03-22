@@ -131,15 +131,12 @@ const errors: {[name: string]: ErrorDef} = {
 	},
 };
 
-const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [], new FastifyAdaptor());
+const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [],
+	new FastifyAdaptor(), "/api");
 
 const TestMiddleware: ApiMiddleware = {
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
-		// this.middlewareName = "TestMiddleware";
-		// logger.info(`Running middleware`);
-
-		// done(null, {key: "test", value: "thing"});
 		done(api.buildError("AccessDenied"));
 	},
 };

@@ -154,7 +154,7 @@ export class Valory {
 	};
 
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer) {
+				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer, basePath?: string) {
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
 		}
@@ -176,6 +176,11 @@ export class Valory {
 			consumes,
 			produces,
 		};
+
+		if (basePath != null) {
+			this.Logger.debug("Path prefix set:", basePath);
+			this.apiDef.basePath = basePath;
+		}
 
 		this.server = server;
 		// this.server = new (require(this.config.adaptorModule))() as ApiServer;
@@ -205,7 +210,7 @@ export class Valory {
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
 					middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
-		this.Logger.debug(`Registering endpoint ${path}:${stringMethod}`);
+		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
 			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented);
 		} else {
@@ -327,6 +332,9 @@ export class Valory {
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
 						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
+		if (this.apiDef.basePath != null) {
+			path = this.apiDef.basePath + path;
+		}
 		if (validator == null) {
 			throw Error("Compiled swagger is out of date. Please run valory cli");
 		}
