@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="UTF-8">
 <html>
 <head>
     <title>ModoPayments | Appserver</title>
@@ -45,7 +46,7 @@
                 window.location.href = window.location.href.replace(/#.*$/, '#');
             }
         });
-        Redoc.init("swagger.json",{
+        Redoc.init("%prefix%/swagger.json",{
         });
 
     });

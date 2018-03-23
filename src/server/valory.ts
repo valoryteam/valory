@@ -367,19 +367,20 @@ export class Valory {
 	}
 
 	private registerDocSite() {
-		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
+		const prefix = this.apiDef.basePath || "";
+		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"}).replace("%prefix%", prefix);
 		const swaggerBlob = this.validatorModule.swaggerBlob;
-		this.server.register("/swagger.json", HttpMethod.GET, (req) => {
+		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			return {
 				body: swaggerBlob,
-				headers: {"Content-Type": "text/plain"},
+				headers: {"Content-Type": "text/plain", },
 				query: null,
 				path: null,
 				statusCode: 200,
 				formData: null,
 			};
 		});
-		this.server.register("/", HttpMethod.GET, (req) => {
+		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
 			return {
 				body: redoc,
 				headers: {"Content-Type": "text/html"},
