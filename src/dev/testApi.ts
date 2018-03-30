@@ -2,6 +2,8 @@ import {Info} from "swagger-schema-official";
 import {ApiMiddleware, ErrorDef, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ApiExchange} from "valory";
+import {ApiRequest} from "../server/request";
+import * as P from "pino";
 
 const info: Info = {
 	title: "Test api",
@@ -140,6 +142,13 @@ const TestMiddleware: ApiMiddleware = {
 		done(api.buildError("AccessDenied"));
 	},
 };
+//
+// class TestMiddleware implements ApiMiddleware<Valory> {
+// 	public static middlewareName = "TestMiddleware";
+// 	public handler(req: ApiRequest, logger: P.Logger, done) {
+// 		done(api.buildError("AccessDenied"));
+// 	}
+// }
 
 api.setErrorFormatter((error, message): ApiExchange => {
 	return {
@@ -193,6 +202,7 @@ api.get("/burn/{name}", {
 		},
 	},
 }, (req, logger) => {
+	const thing = (new ApiRequest(req as any)).getAttachment(TestMiddleware.name);
 	return api.buildSuccess("yay");
 });
 

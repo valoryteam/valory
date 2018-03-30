@@ -14,6 +14,7 @@ import {loadConfig} from "../lib/config";
 import pathMod = require("path");
 import {ApiExchange} from "valory";
 import {Exception} from "tstl";
+import {AttachmentKey} from "./request";
 const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");
@@ -28,7 +29,7 @@ export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
-const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiExchange => {
+const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 	return {
 		statusCode: error.statusCode,
 		body: {
@@ -46,7 +47,7 @@ export interface ValoryConfig {
 	workerConfiguration: {};
 }
 
-export type ErrorFormatter = (error: ErrorDef, message?: string) => ApiExchange;
+export type ErrorFormatter = (error: ErrorDef, message?: string) => ApiResponse;
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -55,18 +56,27 @@ export interface ApiExchange {
 	formData?: { [key: string]: any };
 	query?: { [key: string]: any };
 	path?: { [key: string]: any };
-	statusCode: number;
+	statusCode?: number;
 	attachments?: {[key: string]: any};
 	route?: string;
 }
 
+export interface ApiResponse extends ApiExchange {
+	statusCode: number;
+}
+
 export type ApiMiddlewareHandler = (req: ApiExchange, logger: Logger,
-									done: (error?: ApiExchange, attachment?: any) => void) => void;
+									done: (error?: ApiResponse, attachment?: any) => void) => void;
 
 export interface ApiMiddleware {
 	name: string;
 	handler: ApiMiddlewareHandler;
 }
+
+// declare class ApiMiddleware<T> {
+// 	public static middlewareName: AttachmentKey<T>;
+//
+// }
 
 export interface ErrorDef {
 	statusCode: number;
@@ -79,7 +89,7 @@ export interface RequestContext {
 }
 
 export type ApiHandler = (request: ApiExchange, logger: Logger, requestContext: RequestContext)
-	=> Promise<ApiExchange> | ApiExchange;
+	=> Promise<ApiResponse> | ApiResponse;
 
 export enum HttpMethod {
 	POST,
@@ -93,7 +103,7 @@ export enum HttpMethod {
 export interface ApiServer {
 	locallyRunnable: boolean;
 	register: (path: string, method: HttpMethod, handler: (request: ApiExchange) =>
-		ApiExchange | Promise<ApiExchange>) => void;
+		ApiResponse | Promise<ApiResponse>) => void;
 	allowDocSite: boolean;
 	getExport: (metadata: ValoryMetadata, options: any) => { valory: ValoryMetadata };
 	shutdown: () => void;
@@ -373,7 +383,7 @@ export class Valory {
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			return {
 				body: swaggerBlob,
-				headers: {"Content-Type": "text/plain", },
+				headers: {"Content-Type": "text/plain" },
 				query: null,
 				path: null,
 				statusCode: 200,
