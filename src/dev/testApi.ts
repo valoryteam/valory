@@ -1,9 +1,7 @@
 import {Info} from "swagger-schema-official";
-import {ApiMiddleware, ErrorDef, Valory} from "../server/valory";
+import {ApiMiddleware, ApiResponse, ErrorDef, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ApiExchange} from "valory";
-import {ApiRequest} from "../server/request";
-import * as P from "pino";
 
 const info: Info = {
 	title: "Test api",
@@ -134,9 +132,9 @@ const errors: {[name: string]: ErrorDef} = {
 };
 
 const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [],
-	new FastifyAdaptor());
+	new FastifyAdaptor() as any);
 
-const TestMiddleware: ApiMiddleware = {
+const TestMiddleware: ApiMiddleware<string> = {
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
 		done(api.buildError("AccessDenied"));
@@ -150,7 +148,7 @@ const TestMiddleware: ApiMiddleware = {
 // 	}
 // }
 
-api.setErrorFormatter((error, message): ApiExchange => {
+api.setErrorFormatter((error, message): ApiResponse => {
 	return {
 		statusCode: error.statusCode,
 		body: {
@@ -202,7 +200,6 @@ api.get("/burn/{name}", {
 		},
 	},
 }, (req, logger) => {
-	const thing = (new ApiRequest(req as any)).getAttachment(TestMiddleware.name);
 	return api.buildSuccess("yay");
 });
 

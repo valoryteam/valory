@@ -82,8 +82,8 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
 	CompileLog.info("Dereferencing swagger");
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger);
-	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)){
-		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])){
+	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
+		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
 			const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
 			const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
 			endpointLogger.info("Building method schema");

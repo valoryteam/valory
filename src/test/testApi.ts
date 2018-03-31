@@ -122,9 +122,10 @@ const definitions = {
 	},
 };
 
-const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, [], new FastifyAdaptor());
+const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, [],
+	new FastifyAdaptor() as any);
 
-const TestMiddleware: ApiMiddleware = {
+const TestMiddleware: ApiMiddleware<string> = {
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
 		done(null, {test: req.headers["testheader"]});

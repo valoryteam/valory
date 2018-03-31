@@ -11,8 +11,9 @@
 		"prepare": "npm run build",
 		"release": "semantic-release",
 		"commitmsg": "commitlint -e $GIT_PARAMS",
+		"lint": "tslint --project .",
 		"docgen": "typedoc --target ES6 --module commonjs --excludePrivate --out docs --excludeNotExported --excludeExternals --mode file src/server/",
-		"precommit": "npm run test"
+		"precommit": "npm run lint && npm run build && npm run test"
 	},
 	"author": "John Conley",
 	"license": "ISC",
@@ -71,7 +72,7 @@
 		"swagger-parser": "^4.0.1",
 		"tmp": "^0.0.33",
 		"tstl": "^1.6.11",
-		"valory-adaptor-fastify": "^1.1.1",
+		"valory-adaptor-fastify": "^2.0.1",
 		"xxhashjs": "^0.2.2"
 	},
 	"bin": {
