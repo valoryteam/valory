@@ -132,7 +132,7 @@ const errors: {[name: string]: ErrorDef} = {
 };
 
 const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [],
-	new FastifyAdaptor() as any);
+	new FastifyAdaptor());
 
 const TestMiddleware: ApiMiddleware<string> = {
 	name: "TestMiddleware",

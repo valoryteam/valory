@@ -57,12 +57,12 @@ export interface ApiResponse extends ApiExchange {
 	statusCode: number;
 }
 
-export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
-									done: (error?: ApiResponse, attachment?: any) => void) => void;
+export type ApiMiddlewareHandler<T> = (req: ApiRequest, logger: Logger,
+									done: (error?: ApiResponse, attachment?: T) => void) => void;
 
 export interface ApiMiddleware<T> {
 	name: AttachmentKey<T>;
-	handler: ApiMiddlewareHandler;
+	handler: ApiMiddlewareHandler<T>;
 }
 
 // declare class ApiMiddleware<T> {
@@ -189,7 +189,7 @@ export class Valory {
 		assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
 			if (this.TESTMODE) {
-				this.server = new FastifyAdaptor() as any;
+				this.server = new FastifyAdaptor();
 			}
 			const mod: ValidatorModule | Error = fastTry(() => loadModule(definitions));
 			if (mod instanceof Error) {

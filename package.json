@@ -72,7 +72,7 @@
 		"swagger-parser": "^4.0.1",
 		"tmp": "^0.0.33",
 		"tstl": "^1.6.11",
-		"valory-adaptor-fastify": "^2.0.1",
+		"valory-adaptor-fastify": "^2.0.2",
 		"xxhashjs": "^0.2.2"
 	},
 	"bin": {
