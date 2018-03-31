@@ -126,7 +126,7 @@ const api = new Valory(info, {}, ["application/json"], ["application/json"], def
 	new FastifyAdaptor() as any);
 
 const TestMiddleware: ApiMiddleware<{test: string}> = {
-	name: "TestMiddleware",
+	middlewareName: "TestMiddleware",
 	handler: (req, logger, done) => {
 		done(null, {test: req.headers["testheader"]});
 	},

@@ -135,7 +135,7 @@ const api = new Valory(info, errors, ["application/json"], ["application/json"],
 	new FastifyAdaptor());
 
 const TestMiddleware: ApiMiddleware<string> = {
-	name: "TestMiddleware",
+	middlewareName: "TestMiddleware",
 	handler: (req, logger, done) => {
 		done(api.buildError("AccessDenied"));
 	},

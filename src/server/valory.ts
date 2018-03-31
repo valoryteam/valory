@@ -61,7 +61,7 @@ export type ApiMiddlewareHandler<T> = (req: ApiRequest, logger: Logger,
 									done: (error?: ApiResponse, attachment?: T) => void) => void;
 
 export interface ApiMiddleware<T> {
-	name: AttachmentKey<T>;
+	middlewareName: AttachmentKey<T>;
 	handler: ApiMiddlewareHandler<T>;
 }
 
@@ -305,7 +305,7 @@ export class Valory {
 	 * Register a global middleware run before every endpoint
 	 */
 	public addGlobalMiddleware<T>(middleware: ApiMiddleware<T>) {
-		this.Logger.debug("Adding global middleware:", middleware.name);
+		this.Logger.debug("Adding global middleware:", middleware.middlewareName);
 		this.globalMiddleware.push(middleware);
 	}
 
@@ -401,7 +401,7 @@ function processMiddleware(middlewares: Array<ApiMiddleware<any>>,
 	return new Promise<void | ApiResponse>((resolve) => {
 		let err: ApiExchange = null;
 		steed.eachSeries(middlewares, (handler: ApiMiddleware<any>, done) => {
-			const childLog = logger.child({middleware: handler.name});
+			const childLog = logger.child({middleware: handler.middlewareName});
 			childLog.debug("Running Middleware");
 			handler.handler(req, childLog, (error, data) => {
 				if (error != null) {
@@ -411,7 +411,7 @@ function processMiddleware(middlewares: Array<ApiMiddleware<any>>,
 				}
 
 				if (data != null) {
-					req.attachments[handler.name] = data;
+					req.attachments[handler.middlewareName] = data;
 				}
 				done();
 			});
