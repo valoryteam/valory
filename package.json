@@ -1,6 +1,6 @@
 {
   "name": "valory",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "",
   "typings": "dist/server/valory.d.ts",
   "main": "dist/server/valory.js",
@@ -46,7 +46,7 @@
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "semantic-release": "^11.0.2",
-    "typedoc": "^0.9.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.6.2",
     "valory": "latest"
   },
@@ -79,7 +79,7 @@
     "valory": "dist/lib/cli.js"
   },
   "release": {
-    "repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
+    "repositoryUrl": "ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
     "branch": "master",
     "verifyConditions": [
       "@semantic-release/npm"
