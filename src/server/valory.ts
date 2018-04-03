@@ -57,12 +57,12 @@ export interface ApiResponse extends ApiExchange {
 	statusCode: number;
 }
 
-export type ApiMiddlewareHandler<T> = (req: ApiRequest, logger: Logger,
-									done: (error?: ApiResponse, attachment?: T) => void) => void;
+export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
+									done: (error?: ApiResponse) => void) => void;
 
-export interface ApiMiddleware<T> {
-	middlewareName: AttachmentKey<T>;
-	handler: ApiMiddlewareHandler<T>;
+export interface ApiMiddleware {
+	name: string;
+	handler: ApiMiddlewareHandler;
 }
 
 // declare class ApiMiddleware<T> {
@@ -127,6 +127,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
 	/**
 	 * Get the valory instance
 	 */
@@ -142,7 +143,7 @@ export class Valory {
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
-	private globalMiddleware: Array<ApiMiddleware<any>> = [];
+	private globalMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
@@ -189,7 +190,7 @@ export class Valory {
 		assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
 			if (this.TESTMODE) {
-				this.server = new FastifyAdaptor();
+				this.server = new FastifyAdaptor() as any;
 			}
 			const mod: ValidatorModule | Error = fastTry(() => loadModule(definitions));
 			if (mod instanceof Error) {
@@ -210,7 +211,7 @@ export class Valory {
 	 * Register an endpoint with a given method
 	 */
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-					middleware: Array<ApiMiddleware<any>> = [], documented: boolean = true) {
+					middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		const stringMethod = HttpMethod[method].toLowerCase();
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
@@ -256,7 +257,7 @@ export class Valory {
 	/**
 	 * Register GET endpoint
 	 */
-	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true) {
 		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented);
 	}
@@ -264,7 +265,7 @@ export class Valory {
 	/**
 	 * Register POST endpoint
 	 */
-	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true) {
 		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented);
 	}
@@ -272,7 +273,7 @@ export class Valory {
 	/**
 	 * Register DELETE endpoint
 	 */
-	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				  documented: boolean = true) {
 		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented);
 	}
@@ -280,7 +281,7 @@ export class Valory {
 	/**
 	 * Register HEAD endpoint
 	 */
-	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true) {
 		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented);
 	}
@@ -288,7 +289,7 @@ export class Valory {
 	/**
 	 * Register PATCH endpoint
 	 */
-	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				 documented: boolean = true) {
 		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented);
 	}
@@ -296,7 +297,7 @@ export class Valory {
 	/**
 	 * Register PUT endpoint
 	 */
-	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: Array<ApiMiddleware<any>> = [],
+	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true) {
 		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented);
 	}
@@ -304,8 +305,8 @@ export class Valory {
 	/**
 	 * Register a global middleware run before every endpoint
 	 */
-	public addGlobalMiddleware<T>(middleware: ApiMiddleware<T>) {
-		this.Logger.debug("Adding global middleware:", middleware.middlewareName);
+	public addGlobalMiddleware(middleware: ApiMiddleware) {
+		this.Logger.debug("Adding global middleware:", middleware.name);
 		this.globalMiddleware.push(middleware);
 	}
 
@@ -326,13 +327,13 @@ export class Valory {
 	}
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-							stringMethod: string, middleware: Array<ApiMiddleware<any>> = [], documented: boolean = true) {
+							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true) {
 		// TODO: add undocumented support
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
-						handler: ApiHandler, stringMethod: string, middleware: Array<ApiMiddleware<any>> = [],
+						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
 						documented: boolean = true) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
 		if (this.apiDef.basePath != null) {
@@ -343,12 +344,12 @@ export class Valory {
 		}
 		const route = `${path}:${stringMethod}`;
 		const childLogger = this.Logger.child({endpoint: route});
-		const middlewares: Array<ApiMiddleware<any>> = fastConcat(this.globalMiddleware, middleware);
+		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware);
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
 			// TODO: implement authorizer support
 			const requestId = uuid();
-			req.attachments.requestId = requestId;
+			req.putAttachment(Valory.RequestIDKey, requestId);
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
 			childLogger.debug(req, "Received request");
 			const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, childLogger);
@@ -396,23 +397,23 @@ export class Valory {
 	}
 }
 
-function processMiddleware(middlewares: Array<ApiMiddleware<any>>,
+function processMiddleware(middlewares: ApiMiddleware[],
 						   req: ApiRequest, logger: Logger): Promise<void | ApiResponse> {
 	return new Promise<void | ApiResponse>((resolve) => {
 		let err: ApiExchange = null;
-		steed.eachSeries(middlewares, (handler: ApiMiddleware<any>, done) => {
-			const childLog = logger.child({middleware: handler.middlewareName});
+		steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
+			const childLog = logger.child({middleware: handler.name});
 			childLog.debug("Running Middleware");
-			handler.handler(req, childLog, (error, data) => {
+			handler.handler(req, childLog, (error) => {
 				if (error != null) {
 					err = error;
 					done(error);
 					return;
 				}
 
-				if (data != null) {
-					req.attachments[handler.middlewareName] = data;
-				}
+				// if (data != null) {
+				// 	req.attachments[handler.name] = data;
+				// }
 				done();
 			});
 		}, (error) => {

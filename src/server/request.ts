@@ -1,5 +1,11 @@
 import {ApiExchange} from "./valory";
-export type AttachmentKey<T> = string;
+// import {AttachmentDict} from "../lib/attachmentdict";
+const uuid = require("hyperid")();
+
+export interface AttachmentKey<T> {
+	id: string;
+	readonly marker: T;
+}
 
 export interface ApiRequestOptions {
     headers: { [key: string]: any; };
@@ -12,6 +18,12 @@ export interface ApiRequestOptions {
 }
 
 export class ApiRequest implements ApiExchange {
+	public static createKey<T>(): AttachmentKey<T> {
+		return {
+			id: uuid(),
+			marker: 0 as any,
+		};
+	}
     public headers: { [key: string]: any; };
     public body: any;
     public rawBody: any;
@@ -19,7 +31,8 @@ export class ApiRequest implements ApiExchange {
     public query: { [key: string]: any; };
     public path: { [key: string]: any; };
     public route: string;
-    public attachments: {[key: string]: any} = {};
+	private attachments: {[key: string]: any} = {};
+    // public attachments: AttachmentDict;
 
     constructor(options: ApiRequestOptions) {
         this.headers = options.headers;
@@ -32,13 +45,13 @@ export class ApiRequest implements ApiExchange {
     }
 
 	public putAttachment<T>(key: AttachmentKey<T>, value: T): void {
-		if (this.attachments[key] == null) {
+		if (this.attachments[key.id] != null) {
 			throw Error("Refusing to clobber existing attachment");
 		}
-		this.attachments[key] = value;
+		this.attachments[key.id] = value;
 	}
 
 	public getAttachment<T>(key: AttachmentKey<T>): T | null {
-		return this.attachments[key] as (T | null);
+		return this.attachments[key.id] as (T | null);
 	}
 }

@@ -1,6 +1,7 @@
 import {Info} from "swagger-schema-official";
 import {ApiMiddleware, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
+import {ApiRequest, AttachmentKey} from "../server/request";
 
 const info: Info = {
 	title: "Test api",
@@ -125,10 +126,13 @@ const definitions = {
 const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, [],
 	new FastifyAdaptor() as any);
 
-const TestMiddleware: ApiMiddleware<{test: string}> = {
-	middlewareName: "TestMiddleware",
+const TestMiddlewareKey = ApiRequest.createKey<string>();
+const TestMiddleware: ApiMiddleware = {
+	name: "TestMiddleware",
 	handler: (req, logger, done) => {
-		done(null, {test: req.headers["testheader"]});
+
+		req.putAttachment(TestMiddlewareKey, "teststring");
+		done(null);
 	},
 };
 
@@ -196,8 +200,7 @@ api.post("/formtest", {
 	},
 }, (req, logger) => {
 	// logger.info(req);
-
-	return api.buildSuccess(req.attachments);
+	return api.buildSuccess({TestMiddleware: {test: req.getAttachment(TestMiddlewareKey)} });
 }, [TestMiddleware]);
 
 api.post("/burn", {

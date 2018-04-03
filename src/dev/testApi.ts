@@ -2,6 +2,7 @@ import {Info} from "swagger-schema-official";
 import {ApiMiddleware, ApiResponse, ErrorDef, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ApiExchange} from "valory";
+import {ApiRequest} from "../server/request";
 
 const info: Info = {
 	title: "Test api",
@@ -132,11 +133,14 @@ const errors: {[name: string]: ErrorDef} = {
 };
 
 const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [],
-	new FastifyAdaptor());
+	new FastifyAdaptor() as any);
 
-const TestMiddleware: ApiMiddleware<string> = {
-	middlewareName: "TestMiddleware",
+const TestKey = ApiRequest.createKey<string>();
+
+const TestMiddleware: ApiMiddleware = {
+	name: "TestMiddleware",
 	handler: (req, logger, done) => {
+		req.putAttachment(TestKey, "string");
 		done(api.buildError("AccessDenied"));
 	},
 };
