@@ -1,93 +1,93 @@
 {
-	"name": "valory",
-	"version": "0.1.1",
-	"description": "",
-	"typings": "dist/server/valory.d.ts",
-	"main": "dist/server/valory.js",
-	"scripts": {
-		"pretest": "npm run build",
-		"test": "mocha dist/test/test.js",
-		"build": "tsc",
-		"prepare": "npm run build",
-		"release": "semantic-release",
-		"commitmsg": "commitlint -e $GIT_PARAMS",
-		"lint": "tslint --project .",
-		"docgen": "typedoc --target ES6 --module commonjs --excludePrivate --out docs --excludeNotExported --excludeExternals --mode file src/server/",
-		"precommit": "npm run lint && npm run build && npm run test"
-	},
-	"author": "John Conley",
-	"license": "ISC",
-	"files": [
-		"dist",
-		"package.json",
-		"README.md",
-		"html",
-		"templates"
-	],
-	"devDependencies": {
-		"@commitlint/cli": "^6.0.1",
-		"@commitlint/config-conventional": "^5.2.3",
-		"@types/bluebird-global": "^3.5.3",
-		"@types/chai": "^4.1.0",
-		"@types/inquirer": "^0.0.36",
-		"@types/lodash": "^4.14.92",
-		"@types/mocha": "^2.2.46",
-		"@types/node": "^9.3.0",
-		"@types/nomnom": "^0.0.28",
-		"@types/pino": "^4.7.0",
-		"@types/request-promise": "^4.1.39",
-		"@types/steed": "^1.1.2",
-		"@types/swagger-parser": "^4.0.2",
-		"chai": "^4.1.2",
-		"cz-conventional-changelog": "^2.1.0",
-		"husky": "^0.14.3",
-		"mocha": "^4.1.0",
-		"mocha-typescript": "^1.1.12",
-		"request": "^2.83.0",
-		"request-promise": "^4.2.2",
-		"semantic-release": "^11.0.2",
-		"typedoc": "^0.9.0",
-		"typescript": "^2.6.2",
-		"valory": "latest"
-	},
-	"dependencies": {
-		"@types/swagger-schema-official": "^2.0.8",
-		"ajv": "^5.5.2",
-		"bluebird": "^3.5.1",
-		"dot": "^1.1.2",
-		"fast-json-stable-stringify": "^2.0.0",
-		"fast.js": "^0.1.1",
-		"google-closure-compiler": "^20171203.0.0",
-		"hyperid": "^1.2.0",
-		"inquirer": "^5.1.0",
-		"js-beautify": "^1.7.5",
-		"json-schema-merge-allof": "^0.6.0",
-		"lodash": "^4.17.4",
-		"lodash-deep": "^2.0.0",
-		"map-keys-deep-lodash": "^1.0.1",
-		"nomnom": "^1.8.1",
-		"pino": "^4.10.3",
-		"require-relative": "^0.8.7",
-		"steed": "^1.1.3",
-		"swagger-parser": "^4.0.1",
-		"tmp": "^0.0.33",
-		"tstl": "^1.6.11",
-		"valory-adaptor-fastify": "^2.0.2",
-		"xxhashjs": "^0.2.2"
-	},
-	"bin": {
-		"valory": "dist/lib/cli.js"
-	},
-	"release": {
-		"repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
-		"branch": "master",
-		"verifyConditions": [
-			"@semantic-release/npm"
-		]
-	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	}
+  "name": "valory",
+  "version": "2.1.0",
+  "description": "",
+  "typings": "dist/server/valory.d.ts",
+  "main": "dist/server/valory.js",
+  "scripts": {
+    "pretest": "npm run build",
+    "test": "mocha dist/test/test.js",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "release": "semantic-release",
+    "commitmsg": "commitlint -e $GIT_PARAMS",
+    "lint": "tslint --project .",
+    "docgen": "typedoc --target ES6 --module commonjs --excludePrivate --out docs --excludeNotExported --excludeExternals --mode file src/server/",
+    "precommit": "npm run lint && npm run build && npm run test"
+  },
+  "author": "John Conley",
+  "license": "ISC",
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "html",
+    "templates"
+  ],
+  "devDependencies": {
+    "@commitlint/cli": "^6.0.1",
+    "@commitlint/config-conventional": "^5.2.3",
+    "@types/bluebird-global": "^3.5.3",
+    "@types/chai": "^4.1.0",
+    "@types/inquirer": "^0.0.36",
+    "@types/lodash": "^4.14.92",
+    "@types/mocha": "^2.2.46",
+    "@types/node": "^9.3.0",
+    "@types/nomnom": "^0.0.28",
+    "@types/pino": "^4.7.0",
+    "@types/request-promise": "^4.1.39",
+    "@types/steed": "^1.1.2",
+    "@types/swagger-parser": "^4.0.2",
+    "chai": "^4.1.2",
+    "cz-conventional-changelog": "^2.1.0",
+    "husky": "^0.14.3",
+    "mocha": "^4.1.0",
+    "mocha-typescript": "^1.1.12",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "semantic-release": "^11.0.2",
+    "typedoc": "^0.9.0",
+    "typescript": "^2.6.2",
+    "valory": "latest"
+  },
+  "dependencies": {
+    "@types/swagger-schema-official": "^2.0.8",
+    "ajv": "^5.5.2",
+    "bluebird": "^3.5.1",
+    "dot": "^1.1.2",
+    "fast-json-stable-stringify": "^2.0.0",
+    "fast.js": "^0.1.1",
+    "google-closure-compiler": "^20171203.0.0",
+    "hyperid": "^1.2.0",
+    "inquirer": "^5.1.0",
+    "js-beautify": "^1.7.5",
+    "json-schema-merge-allof": "^0.6.0",
+    "lodash": "^4.17.4",
+    "lodash-deep": "^2.0.0",
+    "map-keys-deep-lodash": "^1.0.1",
+    "nomnom": "^1.8.1",
+    "pino": "^4.10.3",
+    "require-relative": "^0.8.7",
+    "steed": "^1.1.3",
+    "swagger-parser": "^4.0.1",
+    "tmp": "^0.0.33",
+    "tstl": "^1.6.11",
+    "valory-adaptor-fastify": "^2.1.0",
+    "xxhashjs": "^0.2.2"
+  },
+  "bin": {
+    "valory": "dist/lib/cli.js"
+  },
+  "release": {
+    "repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
+    "branch": "master",
+    "verifyConditions": [
+      "@semantic-release/npm"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
