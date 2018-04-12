@@ -1,7 +1,6 @@
 import {Info} from "swagger-schema-official";
 import {ApiMiddleware, ApiResponse, ErrorDef, Valory} from "../server/valory";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
-import {ApiExchange} from "valory";
 import {ApiRequest} from "../server/request";
 
 const info: Info = {

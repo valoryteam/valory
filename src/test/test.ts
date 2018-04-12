@@ -1,9 +1,9 @@
 import {expect} from "chai";
 import * as path from "path";
-import requestPromise = require("request-promise");
-import {Options, RequestPromiseOptions} from "request-promise";
+import {Options} from "request-promise";
 import {execSync} from "child_process";
-import {suite, test, slow, timeout} from "mocha-typescript";
+import {suite, test, timeout} from "mocha-typescript";
+import requestPromise = require("request-promise");
 
 const valoryPath = path.join(__dirname, "../lib/cli.js");
 const testApiPath = path.join(__dirname, "testApi.js");

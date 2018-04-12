@@ -8,13 +8,14 @@ import * as fs from "fs";
 import {
 	CompilationLevel,
 	CompilerOutput,
-	FUNCTION_PREFIX, HASH_SEED,
+	FUNCTION_PREFIX,
+	HASH_SEED,
 	ICompilerOptions,
 	ValidatorModuleContent,
 } from "./compilerheaders";
 import {join} from "path";
-import Pino = require("pino");
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
+import Pino = require("pino");
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -26,6 +27,7 @@ const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
 const XXH = require("xxhashjs");
+const time = require("microtime");
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
@@ -76,6 +78,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		unicode: false,
 		allErrors: !options.singleError,
 	});
+	const start = time.now();
 	CompileLog.info("Validating swagger");
 	await validate(cloneDeep(spec));
 	CompileLog.info("Preprocessing swagger");
@@ -160,7 +163,8 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 
 	CompileLog.info("Final post process");
 	output.module = finalProcess(output.debugArtifacts.postCompileModule);
-
+	const end = time.now();
+	CompileLog.info("Compilation finished in:", ((end - start) / 1000000).toFixed(3) + "s");
 	return output;
 }
 

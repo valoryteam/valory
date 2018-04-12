@@ -1,14 +1,15 @@
 #!/usr/bin/env node
 
-import {ValoryConfig, VALORYCONFIGFILE, ValoryMetadata, VALORYPRETTYLOGGERVAR, VALORYLOGGERVAR} from "../server/valory";
+import {ValoryConfig, VALORYCONFIGFILE, VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../server/valory";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Spec} from "swagger-schema-official";
 import {compileAndSave} from "../compiler/loader";
-import {omitBy, isNil} from "lodash";
+import {isNil, omitBy} from "lodash";
 import {join} from "path";
-import nomnom = require("nomnom");
+
 import {prompt} from "inquirer";
-import {existsSync, writeFileSync} from "fs";
+import {writeFileSync} from "fs";
+import yargs = require("yargs");
 import P = require("pino");
 
 async function initConfig(args: any) {
@@ -49,7 +50,7 @@ function compilerRunner(args: any) {
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
-	api.info.version = args.version;
+	api.info.version = args.apiVersion;
 	const output = omitBy(api, isNil) as Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
@@ -69,104 +70,99 @@ function cliRunner(args: any) {
 	relative(args.entrypoint, process.cwd());
 }
 
-nomnom.command("compile").options({
-	// config: {
-	// 	abbr: "c",
-	// 	help: "Where to look for valory.json. Defaults to cwd",
-	// 	default: join(process.cwd(), "valory.json"),
-	// },
-	entrypoint: {
-		position: 1,
-		help: "Main entrypoint for the api",
-		required: true,
-	},
-	host: {
-		position: 2,
-		help: "The host for your api e.g. somewebsite.com",
-	},
-	scheme: {
-		abbr: "s",
-		help: "The access method for your api. e.g. https",
-		default: "https",
-	},
-	basePath: {
-		abbr: "r",
-		help: "Api path relative to the host. It must start with a slash. e.g. /store/dev",
-		callback: ((resourcePath: string) => {
-			return (resourcePath.startsWith("/")) ? true : "Resource path MUST start with a '/'";
-		}) as any,
-		required: true,
-		default: "/",
-	},
-	outputFile: {
-		abbr: "o",
-		help: "File to write output to",
-		default: join(process.cwd(), "swagger.json"),
-	},
-	version: {
-		abbr: "v",
-		help: "Api version string e.g. '1.0.0'",
-		default: "1.0.0",
-		type: "string",
-	},
-	singleError: {
-		flag: true,
-		help: "Only return a single validation error at a time",
-		default: false,
-	},
-	compilationLevel: {
-		abbr: "l",
-		help: "Compilation level ['SIMPLE', 'ADVANCED', 'WHITESPACE_ONLY']",
-		required: true,
-		default: "ADVANCED",
-		// callback: (level: string) => {
-		// 	"use strict";
-		// 	return (["SIMPLE", "ADVANCED", "WHITESPACE_ONLY"]
-		// 		.indexOf(level) > -1) ? true : "Must be one of [\"SIMPLE\", \"ADVANCED\", \"WHITESPACE_ONLY\"]";
-		// },
-		choices: ["SIMPLE", "ADVANCED", "WHITESPACE_ONLY"],
-	},
-	debugMode: {
-		abbr: "d",
-		help: "Enable debug mode for the compiler",
-		default: false,
-		flag: true,
-	},
-	prettylog: {
-		default: false,
-		flag: true,
-		help: "Prettyify log messages",
-	},
-}).callback(compilerRunner).help("run the valory compiler");
+yargs
+	.command("compile <entrypoint>", "Compile valory project", (inst) => {
+		inst
+			.positional("entrypoint", {
+				description: "Main entrypoint for the api",
+			})
+			.options({
+				host: {
+					description: "The host for your api e.g. somewebsite.com",
+					type: "string",
+				},
+				scheme: {
+					alias: "s",
+					description: "The access method for your api",
+					choices: ["http", "https"],
+					default: "https",
+					type: "string",
+				},
+				basePath: {
+					alias: "r",
+					description: "Api path relative to the host. It must start with a slash.",
+					coerce: ((resourcePath: string) => {
+						if (resourcePath.startsWith("/")) {
+							return resourcePath;
+						} else {
+							throw Error("Resource path MUST start with a '/'");
+						}
+					}),
+					default: "/",
+					type: "string",
+				},
+				outputFile: {
+					alias: "o",
+					desc: "File to write swagger output to.",
+					default: join(process.cwd(), "swagger.json"),
+					type: "string",
+				},
+				apiVersion: {
+					desc: "Api version string",
+					default: "1.0.0",
+					type: "string",
+				},
+				singleError: {
+					desc: "Only return a single validation error at a time",
+					boolean: true,
+					default: false,
+				},
+				compilationLevel: {
+					alias: "l",
+					desc: "Compilation level to pass to closure compiler",
+					choices: ["SIMPLE", "ADVANCED", "WHITESPACE_ONLY"],
+					default: "ADVANCED",
+				},
+				debugMode: {
+					alias: "d",
+					desc: "Enable debug mode for the compiler.",
+					boolean: true,
+					default: false,
+				},
+				prettylog: {
+					desc: "Prettyify log output",
+					boolean: true,
+					default: false,
+				},
+			});
 
-nomnom.command("test").options({
-	// config: {
-	// 	abbr: "c",
-	// 	help: "Where to look for valory.json. Defaults to cwd",
-	// 	default: join(process.cwd(), "valory.json"),
-	// },
-	entrypoint: {
-		position: 1,
-		help: "Main entrypoint for the api",
-		required: true,
-	},
-	port: {
-		abbr: "p",
-		help: "Port to run appserver on",
-		default: 8080,
-	},
-	prettylog: {
-		default: false,
-		flag: true,
-		help: "Prettyify log messages",
-	},
-	loglevel: {
-		abbr: "l",
-		help: "logging level",
-		default: "info",
-	},
-}).callback(cliRunner).help("Start a test server");
+		return inst;
+	}, compilerRunner)
+	.command("test <entrypoint>", "Start a test server", (inst) => {
+		inst.positional("entrypoint", {
+				description: "Main entrypoint for the api",
+			})
+			.options({
+				port: {
+					alias: "p",
+					desc: "Port to run the appserver on",
+					default: 8080,
+					type: "number",
+				},
+				prettylog: {
+					desc: "Prettyify log output",
+					boolean: true,
+					default: false,
+				},
+				loglevel: {
+					alias: "l",
+					desc: "logging level",
+					type: "string",
+					default: "info",
+				},
+			});
 
-// nomnom.command("init").callback(initConfig);
-
-nomnom.parse();
+		return inst;
+	}, cliRunner)
+	.demandCommand()
+	.parse();

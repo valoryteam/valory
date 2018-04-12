@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, get, set, unset, map} from "lodash";
+import {cloneDeep, forEach, get, map, set, unset} from "lodash";
 import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
 import {ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";

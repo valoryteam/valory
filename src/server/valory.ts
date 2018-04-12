@@ -1,19 +1,18 @@
 import {FastifyAdaptor} from "valory-adaptor-fastify";
+import {ValidatorModule} from "../compiler/compilerheaders";
+import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
+import {assign, forIn, isNil, omitBy, set} from "lodash";
+import {COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
+import {readFileSync} from "fs";
+import {Steed} from "steed";
+import {Logger} from "pino";
+import {ApiRequest, AttachmentKey} from "./request";
 
 global.Promise = require("bluebird");
 
-import {CompilationLevel, ValidatorModule} from "../compiler/compilerheaders";
-import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
-import {assign, forIn, omitBy, isNil, set} from "lodash";
-import {compileAndSave, COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
-import {readFileSync} from "fs";
-import {ErrorCallback, Steed, SteedFunction} from "steed";
 import P = require("pino");
-import {Logger} from "pino";
-import {loadConfig} from "../lib/config";
 import pathMod = require("path");
-import {Exception} from "tstl";
-import {ApiRequest, AttachmentKey} from "./request";
+
 const steed: Steed = require("steed")();
 
 const fastTry = require("fast.js/function/try");

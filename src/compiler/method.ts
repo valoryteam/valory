@@ -1,7 +1,7 @@
-import {each, forEach} from "lodash";
+import {each} from "lodash";
 import {BodyParameter, Operation, Parameter, Schema} from "swagger-schema-official";
-import {DisallowedFormats} from "./compiler";
 import {ExtendedSchema, RequestFieldMap} from "./compilerheaders";
+
 const stringify = require("fast-json-stable-stringify");
 
 export interface MethodOutput {

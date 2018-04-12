@@ -3,7 +3,7 @@ import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
-import {ApiServer, VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
+import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
 import P = require("pino");
 
 const SWAGGER_FILE = "swagger.json";
