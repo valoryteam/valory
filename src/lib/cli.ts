@@ -1,41 +1,38 @@
 #!/usr/bin/env node
 
-import {ValoryConfig, VALORYCONFIGFILE, VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../server/valory";
+import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../server/valory";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Spec} from "swagger-schema-official";
 import {compileAndSave} from "../compiler/loader";
 import {isNil, omitBy} from "lodash";
 import {join} from "path";
-
-import {prompt} from "inquirer";
-import {writeFileSync} from "fs";
 import yargs = require("yargs");
 import P = require("pino");
 
-async function initConfig(args: any) {
-	const configPath = join(process.cwd(), VALORYCONFIGFILE);
-
-	const options = await prompt([
-		{
-			name: "adaptorModule",
-			type: "input",
-			message: "Server adaptor module",
-			default: "valory-adaptor-fastify",
-		},
-		{
-			name: "apiEntrypoint",
-			type: "input",
-			message: "API entrypoint file",
-		},
-	]);
-	const configObj: ValoryConfig = {
-		adaptorModule: options.adaptorModule,
-		apiEntrypoint: options.apiEntrypoint,
-		adaptorConfiguration: {},
-		workerConfiguration: {},
-	};
-	writeFileSync(configPath, JSON.stringify(configObj));
-}
+// async function initConfig(args: any) {
+// 	const configPath = join(process.cwd(), VALORYCONFIGFILE);
+//
+// 	const options = await prompt([
+// 		{
+// 			name: "adaptorModule",
+// 			type: "input",
+// 			message: "Server adaptor module",
+// 			default: "valory-adaptor-fastify",
+// 		},
+// 		{
+// 			name: "apiEntrypoint",
+// 			type: "input",
+// 			message: "API entrypoint file",
+// 		},
+// 	]);
+// 	const configObj: ValoryConfig = {
+// 		adaptorModule: options.adaptorModule,
+// 		apiEntrypoint: options.apiEntrypoint,
+// 		adaptorConfiguration: {},
+// 		workerConfiguration: {},
+// 	};
+// 	writeFileSync(configPath, JSON.stringify(configObj));
+// }
 
 function compilerRunner(args: any) {
 	// let config = {};
