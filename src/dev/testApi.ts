@@ -162,7 +162,7 @@ api.setErrorFormatter((error, message): ApiResponse => {
 	};
 });
 
-api.addGlobalMiddleware(TestMiddleware);
+api.addGlobalPostMiddleware(TestMiddleware);
 
 api.get("/burn", {
 	description: "Awful, horrible burns",
