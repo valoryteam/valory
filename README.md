@@ -4,8 +4,7 @@
 ##Contents
 * [Description](#description)
 * [Installation](#installation)
-* [Usage](#usage)
-* [Release History](#release-history)
+* [Usage](#basic-usage)
 * [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 * [Adaptors](#adaptors)
 * [Middleware](#middleware)
@@ -35,74 +34,65 @@ For easy access to the cli, you should add it globally as well
 npm install -g valory
 ```
 
-##Usage
+##Basic Usage
 Using Valory is pretty straightforward.
-```javascript
-const Sentencer = require("sentencer");
-const Valory = require('valory').Valory;
+```typescript
+import {Valory} from "valory";
+import {Info} from "swagger-schema-official"
+import {FastifyAdaptor} from "valory-adaptor-fastify"
 
-// We also need a server core adaptor
-const FastifyAdaptor = require("valory-adaptor-fastify").FastifyAdaptor;
+// Define basic info for the api
+const info: Info = {
+	title: "Test api",
+	version: "1",
+};
 
-//Create a valory instance
-const Appserver = new Valory({title: 'burnApi'}, [], undefined, undefined, {
-        BurnName: {
-                type: "object",
-                required: [
-                        "name"
-                ],
-                properties: {
-                        name: {
-                                type: "string"
-                        }
-                }
-        }
-}, new FastifyAdaptor());
+// Create the valory singleton
+Valory.createInstance({
+    info,
+    server: new FastifyAdaptor(),
+});
 
-//Add a basic endpoint
-Appserver.endpoint("/burn", "get", {
-        description: "Awful, horrible burns",
-        summary: "/burn",
-        responses: {
-                200: {
-                        description: "Returns a burn"
-                }
-        }
-},function(){return Sentencer.make("You are {{ an_adjective }} {{ noun }}");}, true);
+// Retrieve the valory instance (can be called anywhere)
+const api = Valory.getInstance();
 
-//Add an endpoint with parameters
-Appserver.endpoint("/burnPerson", "post", {
-        description: "Burn a name",
-        summary: "/burnPerson",
-        parameters: [
-                {
-                        required: true,
-                        name: "body",
-                        schema: {
-                                $ref: "#/definitions/BurnName" //You can even ref definitions you created in with valory
-                        },
-                        in: "body"
-                }
-        ],
-        responses: {
-                200: {
-                        description: "Returns a thing"
-                }
-        }
-}, function(request){return Sentencer.make(request.body.name + " is {{ an_adjective }} {{ noun }}");}, true);
 
-//At the very end, call the start method with any required options for your server and export the result
-module.exports = Appserver.start({port: 8080});
+// Register an enpoint with the full expressive power of swagger 2.0
+api.get("/somepath", {
+	description: "Does a thing",
+	summary: "Do a thing",
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+	parameters: [],
+}, (req) => {
+	// The handler can be sync or async
+	
+	// Build a successful response with the helper
+	return api.buildSuccess("Thing");
+});
+
+// Build and export the app, passing any adaptor specific config data
+export = api.start({port: 8080});
 ```
-And that's all you need for a fully functional api.  All you have to do now is run
-```bash
-valory "API ENTRYPOINT" "API DOMAIN NAME" -v "version string"
-```
-That command will generate a swagger.json file and compile the swagger down to validator functions. Then all you have
-left to do is run it directly
 
+Once you have your api written, you have to compile it.
 ```bash
-node "API ENTRYPOINT"
+# This obviously requires you to install valory globaly
+
+# Make sure to point to the compiled js file if using typescript
+valory compile path/to/api.js
+```
+
+Now all you need to do is run it
+```bash
+# This will be adaptor specific
+node path/to/api.js
+
+# Valory provides a adaptor agnostic test command
+valory test path/to/api.js
 ```
 
 By default, this will also host a [ReDoc](https://www.npmjs.com/package/redoc) powered documentation site at the site root.

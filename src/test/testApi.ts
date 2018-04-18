@@ -123,8 +123,11 @@ const definitions = {
 	},
 };
 
-const api = new Valory(info, {}, ["application/json"], ["application/json"], definitions, [],
-	new FastifyAdaptor() as any);
+const api = Valory.createInstance({
+	info,
+	server: new FastifyAdaptor() as any,
+	definitions,
+});
 
 const TestMiddlewareKey = ApiRequest.createKey<string>();
 const TestMiddleware: ApiMiddleware = {

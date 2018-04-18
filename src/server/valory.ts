@@ -69,6 +69,17 @@ export interface ApiMiddleware {
 //
 // }
 
+export interface ValoryOptions {
+	info: Info;
+	server: ApiServer;
+	errors?: { [x: string]: ErrorDef };
+	consumes?: string[];
+	produces?: string[];
+	definitions?: { [x: string]: Schema };
+	tags?: Tag[];
+	basePath?: string;
+}
+
 export interface ErrorDef {
 	statusCode: number;
 	errorCode: number;
@@ -127,6 +138,15 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 
 export class Valory {
 	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
+
+	/**
+	 * Create the Valory instance
+	 */
+	public static createInstance(options: ValoryOptions): Valory {
+		Valory.directInstantiation = false;
+		return new Valory(options.info, options.errors || {}, options.consumes, options.produces, options.definitions || {},
+			options.tags || [], options.server, options.basePath);
+	}
 	/**
 	 * Get the valory instance
 	 */
@@ -137,6 +157,7 @@ export class Valory {
 		return Valory.instance;
 	}
 	private static instance: Valory;
+	private static directInstantiation = true;
 	public Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
@@ -155,10 +176,17 @@ export class Valory {
 		swagger: null,
 	};
 
+	/**
+	 * @deprecated use Valory.createInstance instead
+	 */
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer, basePath?: string) {
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
+		}
+		if (Valory.directInstantiation) {
+			this.Logger.warn("Direct instantiation of Valory is deprecated and will " +
+				"break in the next major version. Use Valory.createInstance instead.");
 		}
 		Valory.instance = this;
 		this.Logger.info("Starting valory");
