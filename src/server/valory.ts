@@ -21,9 +21,9 @@ const fastConcat = require("fast.js/array/concat");
 // const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
-export const VALORYLOGGERVAR = "LOGLEVEL";
-export const VALORYCONFIGFILE = "valory.json";
-export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
+/** @hidden */ export const VALORYLOGGERVAR = "LOGLEVEL";
+/** @hidden */ export const VALORYCONFIGFILE = "valory.json";
+/** @hidden */ export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
@@ -38,12 +38,12 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 	};
 };
 
-export interface ValoryConfig {
-	adaptorModule: string;
-	apiEntrypoint: string;
-	adaptorConfiguration: {[key: string]: string};
-	workerConfiguration: {};
-}
+// export interface ValoryConfig {
+// 	adaptorModule: string;
+// 	apiEntrypoint: string;
+// 	adaptorConfiguration: {[key: string]: string};
+// 	workerConfiguration: {};
+// }
 
 export type ErrorFormatter = (error: ErrorDef, message?: string) => ApiResponse;
 
@@ -168,7 +168,6 @@ export class Valory {
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
-	private config: ValoryConfig = null;
 	private metadata: ValoryMetadata = {
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
@@ -177,7 +176,7 @@ export class Valory {
 	};
 
 	/**
-	 * @deprecated use Valory.createInstance instead
+	 * @deprecated use [[Valory.createInstance]] instead
 	 */
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer, basePath?: string) {

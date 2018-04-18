@@ -3,8 +3,8 @@ import {ApiExchange} from "./valory";
 const uuid = require("hyperid")();
 
 export interface AttachmentKey<T> {
-	id: string;
-	readonly marker: T;
+	readonly id: string;
+	/** @hidden */ readonly marker: T;
 }
 
 export interface ApiRequestOptions {

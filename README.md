@@ -22,7 +22,7 @@ Valory is small framework designed to standardize the process of writing well do
 **What it don't do**
 * Make you write your code and docs separately
 
-##Installation
+## Installation
 First, go and get yourself a jre/jdk (at least version 7) and make sure the path is correctly configured.
 
 Next, you'll need to add Valory to your project
