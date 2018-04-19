@@ -138,6 +138,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 
 export class Valory {
 	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
+	public static ResponseKey: AttachmentKey<ApiResponse> = ApiRequest.createKey<ApiResponse>();
 
 	/**
 	 * Create the Valory instance
@@ -164,6 +165,7 @@ export class Valory {
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
+	private globalPostMiddleware: ApiMiddleware[] = [];
 	private apiDef: Spec;
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
@@ -237,7 +239,7 @@ export class Valory {
 	 * Register an endpoint with a given method
 	 */
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-					middleware: ApiMiddleware[] = [], documented: boolean = true) {
+					middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		const stringMethod = HttpMethod[method].toLowerCase();
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
@@ -284,7 +286,7 @@ export class Valory {
 	 * Register GET endpoint
 	 */
 	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-			   documented: boolean = true) {
+			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented);
 	}
 
@@ -292,7 +294,7 @@ export class Valory {
 	 * Register POST endpoint
 	 */
 	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				documented: boolean = true) {
+				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented);
 	}
 
@@ -300,7 +302,7 @@ export class Valory {
 	 * Register DELETE endpoint
 	 */
 	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				  documented: boolean = true) {
+				  documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented);
 	}
 
@@ -308,7 +310,7 @@ export class Valory {
 	 * Register HEAD endpoint
 	 */
 	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				documented: boolean = true) {
+				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented);
 	}
 
@@ -316,7 +318,7 @@ export class Valory {
 	 * Register PATCH endpoint
 	 */
 	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				 documented: boolean = true) {
+				 documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented);
 	}
 
@@ -324,7 +326,7 @@ export class Valory {
 	 * Register PUT endpoint
 	 */
 	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-			   documented: boolean = true) {
+			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented);
 	}
 
@@ -334,6 +336,14 @@ export class Valory {
 	public addGlobalMiddleware(middleware: ApiMiddleware) {
 		this.Logger.debug("Adding global middleware:", middleware.name);
 		this.globalMiddleware.push(middleware);
+	}
+
+	/**
+	 * Register a global post middleware run after every endpoint
+	 */
+	public addGlobalPostMiddleware(middleware: ApiMiddleware) {
+		this.Logger.debug("Adding global post middleware:", middleware.name);
+		this.globalPostMiddleware.push(middleware);
 	}
 
 	/**
@@ -353,14 +363,14 @@ export class Valory {
 	}
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
-							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true) {
-		// TODO: add undocumented support
+							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
+							postMiddleware: ApiMiddleware[] = []) {
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
 						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
-						documented: boolean = true) {
+						documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
 		if (this.apiDef.basePath != null) {
 			path = this.apiDef.basePath + path;
@@ -371,9 +381,9 @@ export class Valory {
 		const route = `${path}:${stringMethod}`;
 		const childLogger = this.Logger.child({endpoint: route});
 		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware);
+		const postMiddlewares = fastConcat(this.globalPostMiddleware, postMiddleware);
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
-			// TODO: implement authorizer support
 			const requestId = uuid();
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
@@ -390,7 +400,17 @@ export class Valory {
 					headers: {"Content-Type": "application/json"},
 				};
 			} else {
-				return await handler(req, childLogger, {requestId});
+				const response = await handler(req, childLogger, {requestId});
+				if (postMiddlewares.length === 0) {
+					return response;
+				} else {
+					req.putAttachment(Valory.ResponseKey, response);
+					const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
+					if (postMiddlewareResp != null) {
+						return (postMiddlewareResp as ApiResponse);
+					}
+					return response;
+				}
 			}
 		};
 		this.server.register(path, method, wrapper);

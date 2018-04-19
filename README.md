@@ -162,7 +162,28 @@ valoryInstance.addGlobalMiddleware(somekindamiddleware);
 
 // Add a global post middleware run after every request
 valoryInstance.addGlobalPostMiddleware(somekindamiddleware);
+
+// To add local middleware, pass them as arrays in the endpoint specification 
+valoryInstance.get("/somepath", {
+	description: "Does a thing",
+	summary: "Do a thing",
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+	parameters: [],
+}, (req) => {
+	return valoryInstance.buildSuccess("Thing");
+}, [array, of, middleware], true, [array, of, post, middleware]);
 ```
+
+**Execution order**
+1. Global Middleware
+2. Local Middleware
+3. Request Handler
+4. Global Post Middleware
+5. Local Post Middleware
 
 ## Attachments
 
