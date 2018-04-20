@@ -2,16 +2,17 @@
 *A fast, swagger based, server agnostic web framework*
 
 ## Contents
+* [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 * [Description](#description)
 * [Installation](#installation)
-* [Usage](#basic-usage)
-* [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
-* [Adaptors](#adaptors)
+* [Basic Usage](#basic-usage)
 * [Middleware](#middleware)
+* [Attachments](#attachments)
+* [Errors](#errors)
 * [Extensions](#extensions)
 
 ## Description
-Valory is small framework designed to standardize the process of writing well documented, bulletproof api's using whatever server backend you want. 
+Valory is small framework designed to standardize the process of writing well documented, bulletproof api's using whatever server backend you want.
 
 **What it do**
 * Uses swagger to specify endpoints
@@ -26,9 +27,9 @@ Valory is small framework designed to standardize the process of writing well do
 ## Installation
 First, go and get yourself a jre/jdk (at least version 7) and make sure the path is correctly configured.
 
-Next, you'll need to add Valory to your project
+Next, you'll need to add Valory to your project along with a server adaptor
 ```bash
-npm install valory
+npm install valory valory-adaptor-fastify
 ```
 For easy access to the cli, you should add it globally as well
 ```bash
@@ -186,15 +187,127 @@ valoryInstance.get("/somepath", {
 5. Local Post Middleware
 
 ## Attachments
+Attachments are a way to attach additional data to a request. This is especially useful when you want data generated in a middleware to be available to the request handler.
+```typescript
+class middleware implements ApiMiddleware {
+	/**
+	 * First, you'll need an attachment key. This both identifies your data and holds 
+	 * type information. It works best as static property, that way you can access from
+	 * the request handler without needing the middleware instance.
+	 **/
+	public static DataKey: AttachmentKey<string> = ApiRequest.createKey<string>();
 
+	public name = "NameForTheMiddleware";
+
+	public handler(request: ApiRequest, logger: Logger, done: (res?: ApiResponse) => void) {
+		const authHeader = request.headers.authorization;
+
+		// You can then use that key to attach data to the request
+		req.putAttachment(middleware.DataKey, authHeader);
+
+		done();
+	}
+}
+
+/**
+ * You can then access that data anywhere down the chain including the request handler
+ * and subsequent middleware.
+ **/
+valoryInstance.get("/somepath", {
+	description: "Does a thing",
+	summary: "Do a thing",
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+	parameters: [],
+}, (req) => {
+	// Use the key you created earlier to retrieve the data.
+	const attachmentData = req.getAttachment(middleware.DataKey);
+
+	return valoryInstance.buildSuccess(attachmentData);
+}, [new middleware()]);
+``` 
+**Important Notes**
+* Because of the key, this entire process is type safe
+* putAttachment will not clobber existing attachments. Duplicate keys will result in an exception
+* getAttachment will return not complain if a key does not exist, it will simply return null
 
 ## Errors
+Valory provides a simple way to manage reusable error messages. Just pass a map of [[ErrorDef]] objects when creating the valory instance.
+
+**Creating Errors**
+```typescript
+const errors: {[name: string]: ErrorDef} = {
+    // The key is used as the error name
+    SomeError: {
+        statusCode: 200, // http status code
+        errorCode: 1337, // error code returned in the response body
+        defaultMessage: "Something bad happened", // default message in the response body
+    }
+};
+
+// Errors must be registered when you initially create the valory instance
+Valory.createInstance({
+    info,
+    server: new FastifyAdaptor(),
+
+    errors: [error], // You can include as many errors as you want
+});
+```
+**Using Errors**
+```typescript
+valoryInstance.get("/somepath", {
+	description: "Does a thing",
+	summary: "Do a thing",
+	responses: {
+		200: {
+			description: "Returns a thing",
+		},
+	},
+	parameters: [],
+}, (req) => {
+	// Use the key you created earlier to retrieve the data.
+	const attachmentData = req.getAttachment(middleware.DataKey);
+
+    // Use the buildError method on the valory instance to convert any error into an [[ApiResponse]]
+	return valoryInstance.buildError("SomeError", "default message override");
+});
+```
+
+### Overriding the default error format
+By default, errors are output in the format:
+```
+body: {
+   code: "The errorCode",
+   message: "The error message",
+}
+```
+If this behaviour is not to your liking, you can override it by specifying an alternate [[ErrorFormatter]].
+```typescript
+// Just accept an ErrorDef and a message string, and then return an ApiRequest
+const errorFormatter: ErrorFormatter = (error, message): ApiResponse => {
+    return {
+        statusCode: error.statusCode,
+        body: {
+            status_code: error.errorCode,
+            message: (message != null) ? message : error.defaultMessage,
+        },
+        headers: {"Content-Type": "application/json"},
+    };
+}
+
+// Then set the error formatter
+valoryInstance.setErrorFormatter(errorFormatter);
+```
 
 ## Extensions
+These are the officially maintained adaptors and middleware available for Valory.
 
 **Adaptors**
 * [valory-adaptor-fastify](https://www.npmjs.com/package/valory-adaptor-fastify)
-    * Adaptor for use with fastify framework, good option for use as a standalone api server
+    * Adaptor for use with fastify framework, good option for use as a standalone app server
 * [valory-adaptor-claudia](https://www.npmjs.com/package/valory-adaptor-claudia)
     * Adaptor for use with [Claudia](https://www.npmjs.com/package/claudia) and [claudia-api-builder](https://www.npmjs.com/package/claudia-api-builder). Allows valory to be deployed as a serverless application in AWS Lambda.
 
