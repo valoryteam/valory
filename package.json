@@ -2,8 +2,8 @@
   "name": "valory",
   "version": "2.2.0",
   "description": "",
-  "typings": "dist/server/valory.d.ts",
-  "main": "dist/server/valory.js",
+  "typings": "dist/main.d.ts",
+  "main": "dist/main.js",
   "scripts": {
     "pretest": "npm run build",
     "test": "mocha dist/test/test.js",

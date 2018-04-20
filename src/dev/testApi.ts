@@ -1,7 +1,6 @@
 import {Info} from "swagger-schema-official";
-import {ApiMiddleware, ApiResponse, ErrorDef, Valory} from "../server/valory";
+import {ApiMiddleware, ApiResponse, ErrorDef, Valory, ApiRequest} from "../main";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
-import {ApiRequest} from "../server/request";
 
 const info: Info = {
 	title: "Test api",
