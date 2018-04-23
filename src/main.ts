@@ -12,6 +12,8 @@ export {
 	RequestContext,
 	ValoryMetadata,
 	ValoryOptions,
+	VALORYLOGGERVAR,
+	VALORYPRETTYLOGGERVAR,
 } from "./server/valory";
 export {
 	ApiRequest,

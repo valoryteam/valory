@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../server/valory";
+import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Spec} from "swagger-schema-official";
 import {compileAndSave} from "../compiler/loader";
