@@ -1,6 +1,6 @@
 {
   "name": "valory",
-  "version": "2.2.0",
+  "version": "2.6.0",
   "description": "",
   "typings": "dist/main.d.ts",
   "main": "dist/main.js",
