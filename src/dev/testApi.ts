@@ -1,5 +1,5 @@
 import {Info} from "swagger-schema-official";
-import {ApiMiddleware, ApiResponse, ErrorDef, Valory, ApiRequest} from "../main";
+import {ApiMiddleware, ApiRequest, ApiResponse, ErrorDef, Valory} from "../main";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 
 const info: Info = {
@@ -122,7 +122,96 @@ const definitions = {
 	},
 };
 
-const errors: {[name: string]: ErrorDef} = {
+const defObj = {
+	status_code: {
+		description: "Status code for the call. Successful call will return 1",
+		type: "integer",
+		example: 1,
+	},
+	merchant_ref: {
+		description: "Merchant reference code – used by Payeezy system will be reflected in your settlement" +
+		" records and webhook notifications. \n" +
+		"It is an \"optional\" field",
+		type: "string",
+		example: "Astonishing-Sale",
+	},
+	transaction_type: {
+		description: "Type of transaction that merchant would want to process",
+		type: "string",
+		example: "purchase",
+	},
+	method: {
+		description: "Inputted transaction method",
+		type: "string",
+	},
+	amount: {
+		description: "amount",
+		type: "string",
+		example: "12.99",
+	},
+	partial_redemption: {
+		description: "Default set to false. When set to true, the transaction is enabled to complete using more than " +
+		"one credit card. A partially-authorized transaction will generate a Split Tender ID. Subsequent transactions to " +
+		"complete the authorization should include the Split Tender ID so that all the transactions comprising that" +
+		" authorization can be linked using the Split-Tender tab.",
+		type: "string",
+		example: "false",
+	},
+	currency_code: {
+		description: "Currency Code",
+		type: "string",
+		example: "USD",
+	},
+	credit_card: {
+		description: "credit card object",
+		type: "object",
+		properties: {
+			type: {
+				description: "Type of CC",
+				type: "string",
+				example: "visa",
+			},
+			cardholder_name: {
+				description: "Name of the CC holder",
+				type: "string",
+				example: "John Smith",
+			},
+			card_number: {
+				description: "CC Number",
+				type: "string",
+				example: "4788250000028291",
+			},
+			exp_date: {
+				description: "Expiration date",
+				type: "string",
+				example: "1020",
+			},
+			cvv: {
+				description: "CVV",
+				type: "string",
+				example: "123",
+			},
+		},
+	},
+	CreditCard: {
+		description: "Credit Card Payment",
+		allOf: [
+			{
+				$ref: "#/definitions/Payment",
+			},
+			{
+				type: "object",
+				properties: {
+					credit_card: {
+						$ref: "#/definitions/credit_card",
+					},
+				},
+			},
+		],
+	},
+};
+
+const errors: { [name: string]: ErrorDef } = {
 	AccessDenied: {
 		statusCode: 401,
 		errorCode: 1004,
@@ -130,14 +219,18 @@ const errors: {[name: string]: ErrorDef} = {
 	},
 };
 
-const api = new Valory(info, errors, ["application/json"], ["application/json"], definitions, [],
-	new FastifyAdaptor() as any);
+const api = Valory.createInstance({
+	info,
+	definitions: defObj as any,
+	server: new FastifyAdaptor() as any,
+});
 
 const TestKey = ApiRequest.createKey<string>();
 
 const TestMiddleware: ApiMiddleware = {
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
+		req.getAttachment(Valory.ResponseKey);
 		req.putAttachment(TestKey, "string");
 		done(api.buildError("AccessDenied"));
 	},
@@ -164,25 +257,26 @@ api.setErrorFormatter((error, message): ApiResponse => {
 api.addGlobalPostMiddleware(TestMiddleware);
 
 api.get("/burn", {
-	description: "Awful, horrible burns",
-	summary: "Get burned",
-	responses: {
-		200: {
-			description: "Returns a thing",
+		description: "Awful, horrible burns",
+		summary: "Get burned",
+		responses: {
+			200: {
+				description: "Returns a thing",
+			},
 		},
+		parameters: [
+			{
+				required: true,
+				type: "string",
+				in: "header",
+				name: "authorization",
+				description: "JWT required",
+			},
+		],
+	}, (req) => {
+		return api.buildSuccess("yay");
 	},
-	parameters: [
-		{
-			required: true,
-			type: "string",
-			in: "header",
-			name: "authorization",
-			description: "JWT required",
-		},
-	],
-}, (req) => {
-	return api.buildSuccess("yay");
-});
+	null, true, [TestMiddleware]);
 
 api.get("/burn/{name}", {
 	description: "Burn someone",
@@ -281,4 +375,4 @@ api.post("/burn", {
 	};
 });
 
-module.exports = api.start({port: 8080});
+export = api.start({port: 8080});

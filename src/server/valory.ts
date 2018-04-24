@@ -349,7 +349,7 @@ export class Valory {
 	/**
 	 * Start server and build appserver export object
 	 */
-	public start(options: any): { valory: ValoryMetadata } {
+	public start(options: any): any {
 		this.Logger.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
 		return this.server.getExport(this.metadata, options);
