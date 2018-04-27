@@ -8,3 +8,4 @@ docs
 .idea/
 .nyc_output
 yarn-error.log
+.compswag.js

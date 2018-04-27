@@ -85,12 +85,13 @@ export function schemaPreprocess(schema: ExtendedSchema):
 		}
 
 		if (scanSchema.oneOf) {
-			if (scanSchema.oneOf.length === 1) {
-				scanSchema.allOf = scanSchema.oneOf;
-				delete scanSchema.oneOf;
-			} else {
-				oneOfQueue.push({depth, schema: scanSchema});
-			}
+			// if (scanSchema.oneOf.length === 1) {
+			// 	scanSchema.allOf = scanSchema.oneOf;
+			// 	delete scanSchema.oneOf;
+			// } else {
+			// 	oneOfQueue.push({depth, schema: scanSchema});
+			// }
+			oneOfQueue.push({depth, schema: scanSchema});
 			forEach(scanSchema.oneOf, (schemaChild) => {deepScan(schemaChild, depth + 1); });
 		}
 
