@@ -3,14 +3,13 @@ import * as path from "path";
 import {writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
-import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
+import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import P = require("pino");
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
 export const ROOT_PATH = path.join(module.paths[2], "..");
 export const COMPILED_SWAGGER_PATH = resolveCompSwagPath();
-const stringify = require("fast-json-stable-stringify");
 const XXH = require("xxhashjs");
 
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
@@ -22,13 +21,13 @@ export async function compileAndSave(swagger: Spec, compilePath: string, additio
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
 	omit(trimmedSpec, undocumentedPaths);
-	writeFileSync(compilePath.replace(COMPILED_SWAGGER_FILE, SWAGGER_FILE), stringify(trimmedSpec));
-	writeFileSync(path.join(additionalPath, SWAGGER_FILE), stringify(trimmedSpec));
+	writeFileSync(compilePath.replace(COMPILED_SWAGGER_FILE, SWAGGER_FILE), JSON.stringify(trimmedSpec));
+	writeFileSync(path.join(additionalPath, SWAGGER_FILE), JSON.stringify(trimmedSpec));
 }
 
 export function loadModule(definitions: {[x: string]: Schema}): ValidatorModule {
 	const module: ValidatorModule = require(COMPILED_SWAGGER_PATH);
-	if (XXH.h32(stringify(definitions), HASH_SEED).toString() !== module.defHash) {
+	if (XXH.h32(JSON.stringify(definitions), HASH_SEED).toString() !== module.defHash) {
 		throw Error("Compiled swagger is out of date. Please run valory CLI.");
 	}
 	return module;

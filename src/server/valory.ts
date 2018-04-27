@@ -12,13 +12,9 @@ global.Promise = require("bluebird");
 
 import P = require("pino");
 import pathMod = require("path");
+import {fastConcat} from "../lib/helpers";
 
 const steed: Steed = require("steed")();
-
-const fastTry = require("fast.js/function/try");
-const fastForEach = require("fast.js/array/forEach");
-const fastConcat = require("fast.js/array/concat");
-// const stringify = require("fast-json-stable-stringify");
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
 /** @hidden */ export const VALORYLOGGERVAR = "LOGLEVEL";
@@ -215,19 +211,17 @@ export class Valory {
 
 		this.server = server;
 		// this.server = new (require(this.config.adaptorModule))() as ApiServer;
-		assign(this.errors, errors);
+		Object.assign(this.errors, errors);
+		// assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
 			if (this.TESTMODE) {
 				this.server = new FastifyAdaptor() as any;
 			}
-			const mod: ValidatorModule | Error = fastTry(() => loadModule(definitions));
-			if (mod instanceof Error) {
-				throw mod;
-			} else {
-				this.validatorModule = mod;
-				if (this.server.allowDocSite) {
-					this.registerDocSite();
-				}
+			const mod: ValidatorModule = loadModule(definitions);
+			this.validatorModule = mod;
+			if (this.server.allowDocSite) {
+				this.registerDocSite();
+
 			}
 		} else {
 			this.Logger.info("Starting in compiler mode");

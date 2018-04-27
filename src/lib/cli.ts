@@ -5,45 +5,18 @@ import {CompilationLevel} from "../compiler/compilerheaders";
 import {Spec} from "swagger-schema-official";
 import {compileAndSave} from "../compiler/loader";
 import {isNil, omitBy} from "lodash";
-import {join} from "path";
+import {join, resolve} from "path";
 import yargs = require("yargs");
 import P = require("pino");
 
-// async function initConfig(args: any) {
-// 	const configPath = join(process.cwd(), VALORYCONFIGFILE);
-//
-// 	const options = await prompt([
-// 		{
-// 			name: "adaptorModule",
-// 			type: "input",
-// 			message: "Server adaptor module",
-// 			default: "valory-adaptor-fastify",
-// 		},
-// 		{
-// 			name: "apiEntrypoint",
-// 			type: "input",
-// 			message: "API entrypoint file",
-// 		},
-// 	]);
-// 	const configObj: ValoryConfig = {
-// 		adaptorModule: options.adaptorModule,
-// 		apiEntrypoint: options.apiEntrypoint,
-// 		adaptorConfiguration: {},
-// 		workerConfiguration: {},
-// 	};
-// 	writeFileSync(configPath, JSON.stringify(configObj));
-// }
-
 function compilerRunner(args: any) {
-	// let config = {};
 	process.env.VALORYCOMPILER = "TRUE";
-	const relative = require("require-relative");
 	if (args.prettylog) {process.env.PRETTYLOG = "true"; }
 	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
 		? args.entrypoint : "./" + args.entrypoint;
-	const valExport: {valory: ValoryMetadata} = relative(args.entrypoint, process.cwd());
+	const valExport: {valory: ValoryMetadata} = require(resolve(args.entrypoint));
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
@@ -61,10 +34,7 @@ function cliRunner(args: any) {
 	process.env.PORT = args.port;
 	if (args.prettylog) {process.env.PRETTYLOG = "true"; }
 	process.env[VALORYLOGGERVAR] = args.loglevel;
-	const relative = require("require-relative");
-	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
-		? args.entrypoint : "./" + args.entrypoint;
-	relative(args.entrypoint, process.cwd());
+	require(resolve(args.entrypoint));
 }
 
 yargs

@@ -16,6 +16,8 @@ import {
 import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
+import {cat} from "shelljs";
+import {convertTime} from "../lib/helpers";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -24,10 +26,8 @@ const tmp = require("tmp");
 const dotJs = require("dot");
 dotJs.log = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
-const stringify = require("fast-json-stable-stringify");
 const errorSup = "undefinedVars";
 const XXH = require("xxhashjs");
-const time = require("microtime");
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
@@ -78,7 +78,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		unicode: false,
 		allErrors: !options.singleError,
 	});
-	const start = time.now();
+	const start = process.hrtime();
 	CompileLog.info("Validating swagger");
 	await validate(cloneDeep(spec));
 	CompileLog.info("Preprocessing swagger");
@@ -123,7 +123,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	CompileLog.info("Building intermediate module");
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
-		defHash: XXH.h32(stringify(spec.definitions), HASH_SEED).toString(),
+		defHash: XXH.h32(JSON.stringify(spec.definitions), HASH_SEED).toString(),
 		exportHashes: output.debugArtifacts.hashes,
 		swagger: spec,
 	}));
@@ -163,8 +163,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 
 	CompileLog.info("Final post process");
 	output.module = finalProcess(output.debugArtifacts.postCompileModule);
-	const end = time.now();
-	CompileLog.info("Compilation finished in:", ((end - start) / 1000000).toFixed(3) + "s");
+	CompileLog.info("Compilation finished in:", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");
 	return output;
 }
 
