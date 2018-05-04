@@ -16,7 +16,6 @@ import {
 import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
-import {cat} from "shelljs";
 import {convertTime} from "../lib/helpers";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});

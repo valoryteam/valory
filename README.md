@@ -100,7 +100,7 @@ valory test path/to/api.js
 By default, this will also host a [ReDoc](https://www.npmjs.com/package/redoc) powered documentation site at the site root.
 
 ## Middleware
-Middlewares in valory are essentially just reusable objects (literals or class instances) that provide a name and a handler. There are two main ways of doing this
+Middlewares in valory are essentially just reusable objects (literals or class instances) that provide a name and a handler. All middleware are run regardless of request validation result. There are two main ways of doing this
 
 **Object literal form**
 ```typescript
@@ -155,7 +155,7 @@ const handler: ApiMiddlewareHandler = (request: ApiRequest, logger: Logger, done
 ```
 
 ### Registering middleware
-There are two main types of middleware; global and local. Global middleware is run with every endpoint, while local is registered on a per endpoint basis.  Additionally, there is post for of both global and local that is run after the request handler.
+There are two main types of middleware; global and local. Global middleware is run with every endpoint, while local is registered on a per endpoint basis.  Additionally, there is post for of both global and local that is run after the request handler.  Post middleware have access to both the handler response and full validation result through built in attachments.
 
 ```typescript
 // Add a global middleware run before every request

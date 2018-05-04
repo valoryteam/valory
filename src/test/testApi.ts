@@ -158,7 +158,7 @@ api.get("/burn", {
 	],
 }, (req) => {
 	return {
-		body: req,
+		body: req.headers,
 		statusCode: 200,
 		headers: {"Content-Type": "application/json"},
 	};
@@ -182,7 +182,7 @@ api.get("/burn/{name}", {
 		},
 	},
 }, (req, logger) => {
-	return api.buildSuccess(req);
+	return api.buildSuccess(req.headers);
 });
 
 api.post("/formtest", {
@@ -253,7 +253,7 @@ api.post("/burn", {
 }, (req, logger) => {
 	// logger.info(req);
 
-	return api.buildSuccess(req);
+	return api.buildSuccess(req.body);
 });
 
 const ex = api.start({port: 8080});

@@ -159,6 +159,7 @@ const TestKey = ApiRequest.createKey<string>();
 const TestMiddleware: ApiMiddleware = {
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
+		const validationResult = req.getAttachment(Valory.ValidationResultKey);
 		req.getAttachment(Valory.ResponseKey);
 		req.putAttachment(TestKey, "string");
 		done(api.buildError("AccessDenied"));
@@ -208,8 +209,29 @@ api.get("/burn", {
 		],
 	}, (req) => {
 		return api.buildSuccess("yay");
+	});
+
+api.get("/warmup", {
+		description: "Awful, horrible burns",
+		summary: "Get burned",
+		responses: {
+			200: {
+				description: "Returns a thing",
+			},
+		},
+		parameters: [
+			{
+				required: true,
+				type: "string",
+				in: "header",
+				name: "authorization",
+				description: "JWT required",
+			},
+		],
+	}, (req) => {
+		return api.buildSuccess("yay");
 	},
-	null, true, [TestMiddleware]);
+	undefined, true, [TestMiddleware]);
 
 api.get("/burn/{name}", {
 	description: "Burn someone",
@@ -313,5 +335,8 @@ timings.endpoints = timeFmt(endpointsTime);
 timings.total = timeFmt(loadTime + createTime + endpointsTime);
 
 console.log(JSON.stringify(timings, null , 2));
-export = api.start({port: 8080});
-process.exit(0);
+const ex = api.start({port: 8080});
+module.exports = {
+	valory: ex.valory,
+	server: (api as any).server.instance,
+};

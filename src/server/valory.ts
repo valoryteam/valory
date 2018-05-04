@@ -133,6 +133,8 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	public static ValidationResultKey: AttachmentKey<true | string[] | string>
+		= ApiRequest.createKey<true | string[] | string>();
 	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
 	public static ResponseKey: AttachmentKey<ApiResponse> = ApiRequest.createKey<ApiResponse>();
 
@@ -237,9 +239,9 @@ export class Valory {
 		const stringMethod = HttpMethod[method].toLowerCase();
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
-			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented);
+			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented, postMiddleware);
 		} else {
-			this.endpointRun(path, method, swaggerDef, handler, stringMethod, middleware, documented);
+			this.endpointRun(path, method, swaggerDef, handler, stringMethod, middleware, documented, postMiddleware);
 		}
 	}
 
@@ -281,7 +283,7 @@ export class Valory {
 	 */
 	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -289,7 +291,7 @@ export class Valory {
 	 */
 	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -297,7 +299,7 @@ export class Valory {
 	 */
 	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				  documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -305,7 +307,7 @@ export class Valory {
 	 */
 	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -313,7 +315,7 @@ export class Valory {
 	 */
 	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				 documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -321,7 +323,7 @@ export class Valory {
 	 */
 	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented);
+		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
 
 	/**
@@ -387,25 +389,23 @@ export class Valory {
 				return (middlewareResp as ApiResponse);
 			}
 			const result = validator(req);
+			let response: ApiResponse;
 			if (result !== true) {
-				return {
+				response = {
 					statusCode: 200,
 					body: {code: DefaultErrors.ValidationError.errorCode, message: result},
 					headers: {"Content-Type": "application/json"},
 				};
 			} else {
-				const response = await handler(req, childLogger, {requestId});
-				if (postMiddlewares.length === 0) {
-					return response;
-				} else {
-					req.putAttachment(Valory.ResponseKey, response);
-					const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
-					if (postMiddlewareResp != null) {
-						return (postMiddlewareResp as ApiResponse);
-					}
-					return response;
-				}
+				response = await handler(req, childLogger, {requestId});
 			}
+			req.putAttachment(Valory.ValidationResultKey, result);
+			req.putAttachment(Valory.ResponseKey, response);
+			const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
+			if (postMiddlewareResp != null) {
+				return (postMiddlewareResp as ApiResponse);
+			}
+			return response;
 		};
 		this.server.register(path, method, wrapper);
 	}
