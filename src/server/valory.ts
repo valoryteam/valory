@@ -41,7 +41,7 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 // 	workerConfiguration: {};
 // }
 
-export type ErrorFormatter = (error: ErrorDef, message?: string) => ApiResponse;
+export type ErrorFormatter = (error: ErrorDef, message?: string | string[]) => ApiResponse;
 
 export interface ApiExchange {
 	headers: { [key: string]: any };
@@ -255,7 +255,7 @@ export class Valory {
 	/**
 	 * Build an ApiExchange from either an error name or an ErrorDef
 	 */
-	public buildError(error: string | ErrorDef, message?: string): ApiResponse {
+	public buildError(error: string | ErrorDef, message?: string | string[]): ApiResponse {
 		const errorDef: ErrorDef = (typeof error === "string") ? this.errors[error] : error;
 		return this.errorFormatter(errorDef, message);
 	}
@@ -391,11 +391,7 @@ export class Valory {
 			const result = validator(req);
 			let response: ApiResponse;
 			if (result !== true) {
-				response = {
-					statusCode: 200,
-					body: {code: DefaultErrors.ValidationError.errorCode, message: result},
-					headers: {"Content-Type": "application/json"},
-				};
+				response = this.buildError("ValidationError", result as string[]);
 			} else {
 				response = await handler(req, childLogger, {requestId});
 			}

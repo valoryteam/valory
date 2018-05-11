@@ -1,29 +1,29 @@
 import {
 	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse,
-} from "valory";
-import {Info} from "swagger-schema-official";
+} from "../main";
+import {Info, Schema} from "swagger-schema-official";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 // Define basic info for the api
 const info: Info = {
 	title: "CNP POC API",
 	version: "1",
 };
-const definitions = {
+const definitions: {[name: string]: Schema} = {
 	status_code: {
 		description: "Status code for the call. Successful call will return 1",
 		type: "integer",
-		example: 1,
+		// example: 1,
 	},
 	merchant_ref: {
 		description: "Merchant reference code – used by Payeezy system will be reflected in your settlement records and" +
 		" webhook notifications. \nIt is an \"optional\" field",
 		type: "string",
-		example: "Astonishing-Sale",
+		// example: "Astonishing-Sale",
 	},
 	transaction_type: {
 		description: "Type of transaction that merchant would want to process",
 		type: "string",
-		example: "purchase",
+		// example: "purchase",
 	},
 	method: {
 		description: "Inputted transaction method",
@@ -32,7 +32,7 @@ const definitions = {
 	amount: {
 		description: "amount",
 		type: "string",
-		example: "12.99",
+		// example: "12.99",
 	},
 	partial_redemption: {
 		description: "Default set to false. When set to true, the transaction is enabled to complete using more than" +
@@ -40,12 +40,12 @@ const definitions = {
 		"to complete the authorization should include the Split Tender ID so that all the transactions comprising that " +
 		"authorization can be linked using the Split-Tender tab.",
 		type: "string",
-		example: "false",
+		// example: "false",
 	},
 	currency_code: {
 		description: "Currency Code",
 		type: "string",
-		example: "USD",
+		// example: "USD",
 	},
 	credit_card: {
 		description: "credit card object",
@@ -54,27 +54,27 @@ const definitions = {
 			type: {
 				description: "Type of CC",
 				type: "string",
-				example: "visa",
+				// example: "visa",
 			},
 			cardholder_name: {
 				description: "Name of the CC holder",
 				type: "string",
-				example: "John Smith",
+				// example: "John Smith",
 			},
 			card_number: {
 				description: "CC Number",
 				type: "string",
-				example: "4788250000028291",
+				// example: "4788250000028291",
 			},
 			exp_date: {
 				description: "Expiration date",
 				type: "string",
-				example: "1020",
+				// example: "1020",
 			},
 			cvv: {
 				description: "CVV",
 				type: "string",
-				example: "123",
+				// example: "123",
 			},
 		},
 	},
@@ -91,6 +91,7 @@ const definitions = {
 						$ref: "#/definitions/credit_card",
 					},
 				},
+				required: ["credit_card"],
 			},
 		],
 	},
@@ -113,6 +114,7 @@ const definitions = {
 				$ref: "#/definitions/amount",
 			},
 		},
+		required: ["method", "amount"],
 	},
 };
 const errors: { [name: string]: ErrorDef } = {
@@ -127,7 +129,7 @@ const api = Valory.createInstance({
 	info,
 	errors,
 	definitions: definitions as any,
-	server: new FastifyAdaptor(),
+	server: new FastifyAdaptor() as any,
 });
 const TestKey = ApiRequest.createKey<string>();
 const TestMiddleware: ApiMiddleware = {
