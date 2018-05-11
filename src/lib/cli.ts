@@ -25,7 +25,7 @@ function compilerRunner(args: any) {
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
 		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: compLevel,
-			singleError: args.singleError})
+			singleError: args.singleError}, args.debugArtifactPath)
 		.then(() => {Logger.info("Compilation Complete"); process.exit(0); });
 }
 
@@ -95,6 +95,11 @@ yargs
 					desc: "Enable debug mode for the compiler.",
 					boolean: true,
 					default: false,
+				},
+				debugArtifactPath: {
+					alias: "a",
+					desc: "When specified, intermediate compilation artifacts will be placed in a folder create here",
+					type: "string",
 				},
 				prettylog: {
 					desc: "Prettyify log output",

@@ -1,10 +1,11 @@
 import {Schema, Spec} from "swagger-schema-official";
 import * as path from "path";
-import {writeFileSync} from "fs";
+import {writeFileSync, existsSync, mkdirSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
 import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import P = require("pino");
+const hyperid = require("hyperid");
 
 const SWAGGER_FILE = "swagger.json";
 const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -13,7 +14,7 @@ export const COMPILED_SWAGGER_PATH = resolveCompSwagPath();
 const XXH = require("xxhashjs");
 
 export async function compileAndSave(swagger: Spec, compilePath: string, additionalPath: string
-									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions) {
+									 , undocumentedPaths: string[], compilerOptions: ICompilerOptions, debugPath?: string) {
 	const compiled = await require("./compiler").compile(swagger, compilerOptions);
 	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
@@ -21,6 +22,20 @@ export async function compileAndSave(swagger: Spec, compilePath: string, additio
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
 	omit(trimmedSpec, undocumentedPaths);
+	if (debugPath != null) {
+		if (!existsSync(debugPath)) {
+			mkdirSync(debugPath);
+		}
+		const id = Buffer.from(hyperid()()).toString("base64");
+		mkdirSync(path.join(debugPath, id));
+		Logger.info("Placing additional debug artifacts in:", path.join(debugPath, id));
+		for (const name of Object.keys(compiled.debugArtifacts)) {
+			const item = compiled.debugArtifacts[name];
+			if (typeof item === "string") {
+				writeFileSync(path.join(debugPath, id, name + ".js"), item);
+			}
+		}
+	}
 	writeFileSync(compilePath.replace(COMPILED_SWAGGER_FILE, SWAGGER_FILE), JSON.stringify(trimmedSpec));
 	writeFileSync(path.join(additionalPath, SWAGGER_FILE), JSON.stringify(trimmedSpec));
 }

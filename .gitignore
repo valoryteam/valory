@@ -9,3 +9,4 @@ docs
 .nyc_output
 yarn-error.log
 .compswag.js
+DEBUG_OUTPUT
