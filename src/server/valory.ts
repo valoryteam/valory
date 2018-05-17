@@ -1,7 +1,7 @@
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
-import {assign, forIn, isNil, omitBy, set} from "lodash";
+import {assign, forIn, isNil, omitBy, set, uniq} from "lodash";
 import {COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
 import {readFileSync} from "fs";
 import {Steed} from "steed";
@@ -56,6 +56,7 @@ export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
 									done: (error?: ApiResponse) => void) => void;
 
 export interface ApiMiddleware {
+	tag?: Array<Tag | string> | Tag | string;
 	name: string;
 	handler: ApiMiddlewareHandler;
 }
@@ -219,8 +220,7 @@ export class Valory {
 			if (this.TESTMODE) {
 				this.server = new FastifyAdaptor() as any;
 			}
-			const mod: ValidatorModule = loadModule(definitions);
-			this.validatorModule = mod;
+			this.validatorModule = loadModule(definitions);
 			if (this.server.allowDocSite) {
 				this.registerDocSite();
 
@@ -361,6 +361,27 @@ export class Valory {
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
 							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
 							postMiddleware: ApiMiddleware[] = []) {
+		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware,
+			this.globalPostMiddleware, postMiddleware);
+		for (const item of middlewares) {
+			if (item.tag != null) {
+				if (!(item.tag instanceof Array)) {
+					item.tag = [item.tag];
+				}
+				for (const def of (item.tag as Array<string | Tag>)) {
+					let tag = "";
+					if (typeof def === "string") {
+						tag = def;
+					} else {
+						this.apiDef.tags.push(def);
+						tag = def.name;
+					}
+					(swaggerDef.tags == null) ? swaggerDef.tags = [tag] : swaggerDef.tags.push(tag);
+				}
+			}
+		}
+		swaggerDef.tags = uniq(swaggerDef.tags);
+		this.apiDef.tags = uniq(this.apiDef.tags);
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 

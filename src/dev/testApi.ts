@@ -133,6 +133,10 @@ const api = Valory.createInstance({
 });
 const TestKey = ApiRequest.createKey<string>();
 const TestMiddleware: ApiMiddleware = {
+	tag: {
+		name: "GTFO",
+		description: "Access denied on this resource",
+	},
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
 		req.getAttachment(Valory.ResponseKey);
@@ -187,7 +191,7 @@ api.post("/v1/transactions", {
 	// The handler can be sync or async
 	// Build a successful response with the helper
 	return api.buildSuccess({});
-});
+}, [TestMiddleware]);
 
 // Build and export the app, passing any adaptor specific config data
 module.exports = api.start({port: process.env.PORT || 8080});

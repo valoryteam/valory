@@ -157,6 +157,10 @@ const api = Valory.createInstance({
 const TestKey = ApiRequest.createKey<string>();
 
 const TestMiddleware: ApiMiddleware = {
+	tag: ["Super chill", {
+		name: "Denier",
+		description: "Denies access",
+	}],
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
 		const validationResult = req.getAttachment(Valory.ValidationResultKey);
@@ -168,7 +172,7 @@ const TestMiddleware: ApiMiddleware = {
 const createEnd = process.hrtime(createStart);
 const createTime = convertTime(createEnd);
 timings.create = timeFmt(createTime);
-//
+
 // class TestMiddleware implements ApiMiddleware<Valory> {
 // 	public static middlewareName = "TestMiddleware";
 // 	public handler(req: ApiRequest, logger: P.Logger, done) {
@@ -187,7 +191,7 @@ timings.create = timeFmt(createTime);
 // 	};
 // });
 
-// api.addGlobalPostMiddleware(TestMiddleware);
+api.addGlobalPostMiddleware(TestMiddleware);
 
 const endpointsStart = process.hrtime();
 api.get("/burn", {
