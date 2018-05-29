@@ -1,4 +1,5 @@
 export {
+	SwaggerSchema,
 	Valory,
 	ApiMiddleware,
 	ApiResponse,

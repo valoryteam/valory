@@ -1,6 +1,6 @@
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ValidatorModule} from "../compiler/compilerheaders";
-import {Info, Operation, Schema, Spec, Tag} from "swagger-schema-official";
+import {BaseSchema, ExternalDocs, Info, Operation, Schema, Spec, Tag, XML} from "swagger-schema-official";
 import {assign, forIn, isNil, omitBy, set, uniq} from "lodash";
 import {COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
 import {readFileSync} from "fs";
@@ -65,6 +65,19 @@ export interface ApiMiddleware {
 // 	public static middlewareName: AttachmentKey<T>;
 //
 // }
+
+export interface SwaggerSchema extends BaseSchema {
+	$ref?: string;
+	allOf?: SwaggerSchema[];
+	additionalProperties?: SwaggerSchema;
+	properties?: {[propertyName: string]: SwaggerSchema};
+	discriminator?: string;
+	readOnly?: boolean;
+	xml?: XML;
+	externalDocs?: ExternalDocs;
+	example?: any;
+	required?: string[];
+}
 
 export interface ValoryOptions {
 	info: Info;
@@ -180,7 +193,7 @@ export class Valory {
 	 * @deprecated use [[Valory.createInstance]] instead
 	 */
 	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: Schema }, tags: Tag[], server: ApiServer, basePath?: string) {
+				definitions: { [x: string]: SwaggerSchema }, tags: Tag[], server: ApiServer, basePath?: string) {
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
 		}

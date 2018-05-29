@@ -1,7 +1,7 @@
 {{const code = it.validatorLib.join("");}}
-{{?code.indexOf("formats")>-1}}const formats = require("ajv/lib/compile/formats");({{?it.format}}'{{=it.format}}'{{?}});{{?}}
+{{?code.indexOf("formats")>-1}}const formats = require("ajv/lib/compile/formats")({{?it.format}}'{{=it.format}}'{{?}});{{?}}
 const hasher = require("xxhashjs")["h32"];
-const FUNCTION_PREFIX = "f"
+const FUNCTION_PREFIX = "f";
 
 function pushArr(target, other) {
     const len = other.length;

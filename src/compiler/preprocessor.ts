@@ -1,4 +1,4 @@
-import {cloneDeep, forEach, get, map, set, unset} from "lodash";
+import {cloneDeep, forEach, get, map, set, unset, isArray} from "lodash";
 import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
 import {ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
@@ -99,6 +99,14 @@ export function schemaPreprocess(schema: ExtendedSchema):
 			forEach(scanSchema.allOf, (schemaChild) => {deepScan(schemaChild, depth + 1); });
 		}
 
+		if (scanSchema.items) {
+			if (isArray(scanSchema.items)) {
+				forEach(scanSchema.items, (schemaChild) => {deepScan(schemaChild, depth + 1); });
+			} else {
+				deepScan(scanSchema.items as any, depth + 1);
+			}
+		}
+
 		if (scanSchema.additionalProperties) {
 			deepScan(scanSchema.additionalProperties, depth + 1);
 		}
@@ -106,6 +114,11 @@ export function schemaPreprocess(schema: ExtendedSchema):
 		if (scanSchema.enum && scanSchema.enum.length === 1) {
 			scanSchema.const = scanSchema.enum[0];
 			delete scanSchema.enum;
+		}
+
+		if (scanSchema.type === "file") {
+			CompileLog.info(`"file" type is implementation specific and therefore cannot be validated`);
+			delete scanSchema.type;
 		}
 
 		if (DisallowedFormats.indexOf(scanSchema.format) > -1) {
