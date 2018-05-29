@@ -124,12 +124,21 @@ const errors: { [name: string]: ErrorDef } = {
 		defaultMessage: "Access to this resource is denied",
 	},
 };
+
 // Create the valory singleton
 const api = Valory.createInstance({
 	info,
 	errors,
-	definitions: definitions as any,
+	definitions,
 	server: new FastifyAdaptor() as any,
+	parameters: {
+		fancy_header: {
+			name: "fancy_header",
+			in: "header",
+			required: true,
+			type: "string",
+		},
+	},
 });
 const TestKey = ApiRequest.createKey<string>();
 const TestMiddleware: ApiMiddleware = {
@@ -161,6 +170,9 @@ api.post("/v1/transactions", {
 	description: "Use this method to submit payments credit and debit cards. Supported transaction type is purchase",
 	tags: ["Credit Card Payments"],
 	parameters: [
+		{
+			$ref: "#/parameters/fancy_header",
+		},
 		{
 			name: "body",
 			in: "body",

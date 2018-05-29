@@ -1,6 +1,5 @@
 import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
-import {Spec} from "swagger-schema-official";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import * as Ajv from "ajv";
@@ -17,6 +16,7 @@ import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
 import {convertTime} from "../lib/helpers";
+import {Spec} from "../server/swagger";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -79,11 +79,11 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 	});
 	const start = process.hrtime();
 	CompileLog.info("Validating swagger");
-	await validate(cloneDeep(spec));
+	await validate(cloneDeep(spec as any));
 	CompileLog.info("Preprocessing swagger");
-	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec));
+	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec as any));
 	CompileLog.info("Dereferencing swagger");
-	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger);
+	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
 			const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();

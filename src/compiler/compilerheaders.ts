@@ -1,9 +1,8 @@
-import {Schema, Spec} from "swagger-schema-official";
-import {SwaggerSchema} from "../server/valory";
+import {Schema, Spec} from "../server/swagger";
 
 export const HASH_SEED = 3141997;
 
-export interface ExtendedSchema extends SwaggerSchema {
+export interface ExtendedSchema extends Schema {
 	const?: any;
 	oneOf?: ExtendedSchema[];
 }

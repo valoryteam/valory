@@ -52,7 +52,6 @@
     "valory": "latest"
   },
   "dependencies": {
-    "@types/swagger-schema-official": "^2.0.8",
     "ajv": "^6.4.0",
     "bluebird": "^3.5.1",
     "dot": "^1.1.2",

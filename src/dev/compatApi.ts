@@ -1,4 +1,4 @@
-import {ApiRequest, Valory, SwaggerSchema} from "../main";
+import {ApiRequest, Valory, Schema} from "../main";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {Tag} from "swagger-schema-official";
 
@@ -22,7 +22,7 @@ const consumes: string[] = [];
 
 const produces: string[] = [];
 
-const definitions: {[id: string]: SwaggerSchema} = {
+const definitions: {[id: string]: Schema} = {
 	Order: {
 		type: "object",
 		properties: {

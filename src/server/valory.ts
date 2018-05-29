@@ -1,6 +1,6 @@
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ValidatorModule} from "../compiler/compilerheaders";
-import {BaseSchema, ExternalDocs, Info, Operation, Schema, Spec, Tag, XML} from "swagger-schema-official";
+import * as Swagger from "./swagger";
 import {assign, forIn, isNil, omitBy, set, uniq} from "lodash";
 import {COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
 import {readFileSync} from "fs";
@@ -56,7 +56,7 @@ export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
 									done: (error?: ApiResponse) => void) => void;
 
 export interface ApiMiddleware {
-	tag?: Array<Tag | string> | Tag | string;
+	tag?: Array<Swagger.Tag | string> | Swagger.Tag | string;
 	name: string;
 	handler: ApiMiddlewareHandler;
 }
@@ -66,27 +66,16 @@ export interface ApiMiddleware {
 //
 // }
 
-export interface SwaggerSchema extends BaseSchema {
-	$ref?: string;
-	allOf?: SwaggerSchema[];
-	additionalProperties?: SwaggerSchema;
-	properties?: {[propertyName: string]: SwaggerSchema};
-	discriminator?: string;
-	readOnly?: boolean;
-	xml?: XML;
-	externalDocs?: ExternalDocs;
-	example?: any;
-	required?: string[];
-}
-
 export interface ValoryOptions {
-	info: Info;
+	info: Swagger.Info;
 	server: ApiServer;
 	errors?: { [x: string]: ErrorDef };
 	consumes?: string[];
 	produces?: string[];
-	definitions?: { [x: string]: Schema };
-	tags?: Tag[];
+	parameters?: {[name: string]: Swagger.QueryParameter | Swagger.BodyParameter};
+	responses?: {[name: string]: Swagger.Response };
+	definitions?: { [x: string]: Swagger.Schema };
+	tags?: Swagger.Tag[];
 	basePath?: string;
 }
 
@@ -125,7 +114,7 @@ export interface ValoryMetadata {
 	undocumentedEndpoints: string[];
 	valoryPath: string;
 	compiledSwaggerPath: string;
-	swagger: Spec;
+	swagger: Swagger.Spec;
 }
 
 const DefaultErrors: { [x: string]: ErrorDef } = {
@@ -158,7 +147,7 @@ export class Valory {
 	public static createInstance(options: ValoryOptions): Valory {
 		Valory.directInstantiation = false;
 		return new Valory(options.info, options.errors || {}, options.consumes, options.produces, options.definitions || {},
-			options.tags || [], options.server, options.basePath);
+			options.tags || [], options.server, options.basePath, options.parameters, options.responses);
 	}
 	/**
 	 * Get the valory instance
@@ -178,7 +167,7 @@ export class Valory {
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
 	private globalPostMiddleware: ApiMiddleware[] = [];
-	private apiDef: Spec;
+	private apiDef: Swagger.Spec;
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
@@ -192,8 +181,10 @@ export class Valory {
 	/**
 	 * @deprecated use [[Valory.createInstance]] instead
 	 */
-	constructor(info: Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: SwaggerSchema }, tags: Tag[], server: ApiServer, basePath?: string) {
+	constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
+				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], server: ApiServer, basePath?: string,
+				parameters: {[name: string]: Swagger.QueryParameter | Swagger.BodyParameter} = {},
+				responses: {[name: string]: Swagger.Response} = {}) {
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
 		}
@@ -218,6 +209,8 @@ export class Valory {
 			tags,
 			consumes,
 			produces,
+			parameters,
+			responses,
 		};
 
 		if (basePath != null) {
@@ -247,7 +240,7 @@ export class Valory {
 	/**
 	 * Register an endpoint with a given method
 	 */
-	public endpoint(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
+	public endpoint(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 					middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		const stringMethod = HttpMethod[method].toLowerCase();
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
@@ -294,7 +287,7 @@ export class Valory {
 	/**
 	 * Register GET endpoint
 	 */
-	public get(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public get(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -302,7 +295,7 @@ export class Valory {
 	/**
 	 * Register POST endpoint
 	 */
-	public post(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public post(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -310,7 +303,7 @@ export class Valory {
 	/**
 	 * Register DELETE endpoint
 	 */
-	public delete(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public delete(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				  documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -318,7 +311,7 @@ export class Valory {
 	/**
 	 * Register HEAD endpoint
 	 */
-	public head(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public head(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -326,7 +319,7 @@ export class Valory {
 	/**
 	 * Register PATCH endpoint
 	 */
-	public patch(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public patch(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 				 documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -334,7 +327,7 @@ export class Valory {
 	/**
 	 * Register PUT endpoint
 	 */
-	public put(path: string, swaggerDef: Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	public put(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented, postMiddleware);
 	}
@@ -371,7 +364,7 @@ export class Valory {
 		this.server.shutdown();
 	}
 
-	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Operation, handler: ApiHandler,
+	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
 							postMiddleware: ApiMiddleware[] = []) {
 		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware,
@@ -381,7 +374,7 @@ export class Valory {
 				if (!(item.tag instanceof Array)) {
 					item.tag = [item.tag];
 				}
-				for (const def of (item.tag as Array<string | Tag>)) {
+				for (const def of (item.tag as Array<string | Swagger.Tag>)) {
 					let tag = "";
 					if (typeof def === "string") {
 						tag = def;
@@ -398,7 +391,7 @@ export class Valory {
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
-	private endpointRun(path: string, method: HttpMethod, swaggerDef: Operation,
+	private endpointRun(path: string, method: HttpMethod, swaggerDef: Swagger.Operation,
 						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
 						documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
@@ -492,15 +485,15 @@ function processMiddleware(middlewares: ApiMiddleware[],
 	});
 }
 
-function generateErrorTable(errors: { [x: string]: ErrorDef }): Tag {
-	const tagDef: Tag = {name: "Errors", description: "", externalDocs: null};
+function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
+	const tagDef: Swagger.Tag = {name: "Errors", description: "", externalDocs: null};
 	let table = ERRORTABLEHEADER;
 	forIn(errors, (error: ErrorDef, name: string) => {
 		"use strict";
 		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";
 	});
 	tagDef.description = table;
-	return omitBy(tagDef, isNil) as Tag;
+	return omitBy(tagDef, isNil) as Swagger.Tag;
 }
 
 function valoryConfigPath(): string {
