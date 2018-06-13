@@ -11,12 +11,16 @@ import P = require("pino");
 
 function compilerRunner(args: any) {
 	process.env.VALORYCOMPILER = "TRUE";
-	if (args.prettylog) {process.env.PRETTYLOG = "true"; }
-	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
-		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+	if (args.prettylog) {
+		process.env.PRETTYLOG = "true";
+	}
+	const Logger = P({
+		level: process.env[VALORYLOGGERVAR] || "info",
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
+	});
 	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
 		? args.entrypoint : "./" + args.entrypoint;
-	const valExport: {valory: ValoryMetadata} = require(resolve(args.entrypoint));
+	const valExport: { valory: ValoryMetadata } = require(resolve(args.entrypoint));
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
@@ -24,15 +28,23 @@ function compilerRunner(args: any) {
 	const output = omitBy(api, isNil) as Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
 	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
-		valExport.valory.undocumentedEndpoints, {debug: args.debugMode, compilationLevel: compLevel,
-			singleError: args.singleError}, args.debugArtifactPath)
-		.then(() => {Logger.info("Compilation Complete"); process.exit(0); });
+		valExport.valory.undocumentedEndpoints, {
+			debug: args.debugMode, compilationLevel: compLevel,
+			singleError: args.singleError,
+			discrimFastFail: args.discrimFastFail,
+		}, args.debugArtifactPath)
+		.then(() => {
+			Logger.info("Compilation Complete");
+			process.exit(0);
+		});
 }
 
 function cliRunner(args: any) {
 	process.env.TEST_MODE = "TRUE";
 	process.env.PORT = args.port;
-	if (args.prettylog) {process.env.PRETTYLOG = "true"; }
+	if (args.prettylog) {
+		process.env.PRETTYLOG = "true";
+	}
 	process.env[VALORYLOGGERVAR] = args.loglevel;
 	require(resolve(args.entrypoint));
 }
@@ -84,6 +96,11 @@ yargs
 					boolean: true,
 					default: false,
 				},
+				discrimFastFail: {
+					desc: "Enables discriminator fast fail EXPERIMENTAL",
+					boolean: true,
+					default: false,
+				},
 				compilationLevel: {
 					alias: "l",
 					desc: "Compilation level to pass to closure compiler",
@@ -112,8 +129,8 @@ yargs
 	}, compilerRunner)
 	.command("test <entrypoint>", "Start a test server", (inst) => {
 		inst.positional("entrypoint", {
-				description: "Main entrypoint for the api",
-			})
+			description: "Main entrypoint for the api",
+		})
 			.options({
 				port: {
 					alias: "p",

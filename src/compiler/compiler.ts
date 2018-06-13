@@ -65,6 +65,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		debug: false,
 		singleError: true,
 		compilationLevel: CompilationLevel.ADVANCED,
+		discrimFastFail: false,
 	};
 
 	merge(defaultCompilerOptions, options);
@@ -77,6 +78,9 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 		unicode: false,
 		allErrors: !options.singleError,
 	});
+	if (options.discrimFastFail) {
+		CompileLog.warn("discriminator fast fail is enabled EXPERIMENTAL");
+	}
 	const start = process.hrtime();
 	CompileLog.info("Validating swagger");
 	await validate(cloneDeep(spec as any));
@@ -95,7 +99,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 			const schemaProcessed = schemaPreprocess(schema);
 			endpointLogger.info("Compiling schema validator");
 			const initialCompile = ajv.compile(schemaProcessed.schema);
-			endpointLogger.info("Objectifying oneOf's");
+			endpointLogger.info("Objectifying anyOf's");
 			resolve(schemaProcessed.resQueue);
 			endpointLogger.info("Mangling keys");
 			const mangled = mangleKeys(schemaProcessed.schema);
@@ -110,6 +114,7 @@ export async function compile(spec: Spec, options?: ICompilerOptions) {
 				schema: mangled.schema,
 				singleError: options.singleError,
 				discriminators: output.debugArtifacts.preSwagger.discriminators,
+				discrimFastFail: options.discrimFastFail,
 			});
 			output.debugArtifacts.hashes.push(hash);
 			output.debugArtifacts.initialSchema.push(schema);

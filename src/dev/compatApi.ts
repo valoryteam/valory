@@ -232,6 +232,7 @@ const api = Valory.createInstance({
 	produces,
 	tags,
 	definitions,
+	errors,
 });
 
 // Global Middleware should be registered here

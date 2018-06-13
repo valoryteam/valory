@@ -1,7 +1,7 @@
 import {cloneDeep, forEach, get, map, set, unset, isArray} from "lodash";
 import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
-import {ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
+import {DiscriminatorMap, ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
 import {PriorityQueue} from "tstl";
 
 const mergeAllOf = require("json-schema-merge-allof");
@@ -26,10 +26,10 @@ export interface OneOfMarker {
 	schema: ExtendedSchema;
 }
 
-export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminators: string[]} {
-	const pathMap: {[key: string]: {propName: string, oneOfPath: string}} = {};
+export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminators: DiscriminatorMap} {
+	const pathMap: {[key: string]: {propName: string, anyOfPath: string}} = {};
 	const removePaths: string[] = [];
-
+	const discrimMap: DiscriminatorMap = {};
 	// DISCRIMINATOR PROCESSING
 
 	// Find parents
@@ -38,10 +38,14 @@ export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminator
 			// console.log(path, "is", value);
 			removePaths.push(path);
 			const disPath = path.replace(".discriminator", "");
-			const oneOfPath = disPath + ".oneOf";
+			const anyOfPath = disPath + ".anyOf";
 			const pathRef = "#/" + disPath.replace(periodRegex, "/");
-			set(swagger, oneOfPath, []);
-			pathMap[pathRef] = {propName: value, oneOfPath};
+			discrimMap[value] = {
+				parent: disPath.replace("definitions.", ""),
+				children: [],
+			};
+			set(swagger, anyOfPath, []);
+			pathMap[pathRef] = {propName: value, anyOfPath};
 		}
 	});
 
@@ -56,19 +60,20 @@ export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminator
 			// removePaths.push(path.replace(".$ref", ""));
 			const schemaExtention: any = {properties: {}};
 			schemaExtention.properties[pathMap[value].propName] = {const: modelName};
+			discrimMap[pathMap[value].propName].children.push(modelName);
 			set(swagger, path.replace(".$ref", ""), schemaExtention);
-			get(swagger, `${pathMap[value].oneOfPath}`).push({$ref: defPath});
+			get(swagger, `${pathMap[value].anyOfPath}`).push({$ref: defPath});
 		}
 	});
 	removePaths.forEach((path) => {
 		unset(swagger, path);
 	});
-	return {swagger, discriminators: map(pathMap, "propName")};
+	return {swagger, discriminators: discrimMap};
 }
 
-function objectify(oneOf: any[]): {[x: string]: any} {
+function objectify(anyOf: any[]): {[x: string]: any} {
 	const convertedObj: {[x: string]: any} = {};
-	forEach(oneOf, (item, ind) => {
+	forEach(anyOf, (item, ind) => {
 		convertedObj["t" + ind] = item;
 	});
 	return convertedObj;
@@ -77,22 +82,22 @@ function objectify(oneOf: any[]): {[x: string]: any} {
 export function schemaPreprocess(schema: ExtendedSchema):
 {schema: ExtendedSchema, resQueue: PriorityQueue<OneOfMarker>} {
 	const schemaClone = cloneDeep(schema);
-	const oneOfQueue = new PriorityQueue<OneOfMarker>((a, b): boolean => (a.depth > b.depth));
+	const anyOfQueue = new PriorityQueue<OneOfMarker>((a, b): boolean => (a.depth > b.depth));
 
 	const deepScan = (scanSchema: ExtendedSchema, depth: number = 0) => {
 		if (scanSchema.properties) {
 			forEach(scanSchema.properties, (schemaChild) => {deepScan(schemaChild, depth + 1); });
 		}
 
-		if (scanSchema.oneOf) {
-			// if (scanSchema.oneOf.length === 1) {
-			// 	scanSchema.allOf = scanSchema.oneOf;
-			// 	delete scanSchema.oneOf;
+		if (scanSchema.anyOf) {
+			// if (scanSchema.anyOf.length === 1) {
+			// 	scanSchema.allOf = scanSchema.anyOf;
+			// 	delete scanSchema.anyOf;
 			// } else {
-			// 	oneOfQueue.push({depth, schema: scanSchema});
+			// 	anyOfQueue.push({depth, schema: scanSchema});
 			// }
-			oneOfQueue.push({depth, schema: scanSchema});
-			forEach(scanSchema.oneOf, (schemaChild) => {deepScan(schemaChild, depth + 1); });
+			anyOfQueue.push({depth, schema: scanSchema});
+			forEach(scanSchema.anyOf, (schemaChild) => {deepScan(schemaChild, depth + 1); });
 		}
 
 		if (scanSchema.allOf) {
@@ -129,13 +134,13 @@ export function schemaPreprocess(schema: ExtendedSchema):
 	const merged = mergeAllOf(schemaClone);
 
 	deepScan(merged);
-	return {schema: merged, resQueue: oneOfQueue};
+	return {schema: merged, resQueue: anyOfQueue};
 }
 
 export function resolve(resolveQueue: PriorityQueue<OneOfMarker>) {
 	while (!resolveQueue.empty()) {
 		const item = resolveQueue.top();
-		item.schema.oneOf = (objectify(item.schema.oneOf) as any[]);
+		item.schema.anyOf = (objectify(item.schema.anyOf) as any[]);
 		resolveQueue.pop();
 	}
 }

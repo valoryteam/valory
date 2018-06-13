@@ -263,6 +263,9 @@ export class Valory {
 	 */
 	public buildError(error: string | ErrorDef, message?: string | string[]): ApiResponse {
 		const errorDef: ErrorDef = (typeof error === "string") ? this.errors[error] : error;
+		if (errorDef == null) {
+			throw Error(`Error definition "${error}" does not exist`);
+		}
 		return this.errorFormatter(errorDef, message);
 	}
 
@@ -411,24 +414,30 @@ export class Valory {
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
 			childLogger.debug(req, "Received request");
-			const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, childLogger);
-			if (middlewareResp != null) {
-				return (middlewareResp as ApiResponse);
+			try {
+				const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, childLogger);
+				if (middlewareResp != null) {
+					return (middlewareResp as ApiResponse);
+				}
+				const result = validator(req);
+				let response: ApiResponse;
+				if (result !== true) {
+					response = this.buildError("ValidationError", result as string[]);
+				} else {
+					response = await handler(req, childLogger, {requestId});
+				}
+				req.putAttachment(Valory.ValidationResultKey, result);
+				req.putAttachment(Valory.ResponseKey, response);
+				const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
+				if (postMiddlewareResp != null) {
+					return (postMiddlewareResp as ApiResponse);
+				}
+				return response;
+			} catch (error) {
+				childLogger.error("Internal exception occurred while processing request");
+				childLogger.error(error);
+				return this.buildError("InternalError");
 			}
-			const result = validator(req);
-			let response: ApiResponse;
-			if (result !== true) {
-				response = this.buildError("ValidationError", result as string[]);
-			} else {
-				response = await handler(req, childLogger, {requestId});
-			}
-			req.putAttachment(Valory.ValidationResultKey, result);
-			req.putAttachment(Valory.ResponseKey, response);
-			const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
-			if (postMiddlewareResp != null) {
-				return (postMiddlewareResp as ApiResponse);
-			}
-			return response;
 		};
 		this.server.register(path, method, wrapper);
 	}

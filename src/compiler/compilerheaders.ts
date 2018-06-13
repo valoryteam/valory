@@ -5,6 +5,7 @@ export const HASH_SEED = 3141997;
 export interface ExtendedSchema extends Schema {
 	const?: any;
 	oneOf?: ExtendedSchema[];
+	anyOf?: ExtendedSchema[];
 }
 
 export interface RequestFieldMap {
@@ -31,11 +32,18 @@ export interface MangledKey {
 	mangled: string;
 }
 
+export interface DiscriminatorMap {
+	[propName: string]: {
+		parent: string;
+		children: string[];
+	};
+}
+
 export interface CompilerOutput {
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
 		hashes: string[];
-		preSwagger: {swagger: Spec, discriminators: string[]};
+		preSwagger: { swagger: Spec, discriminators: DiscriminatorMap };
 		derefSwagger: Spec;
 		initialSchema: ExtendedSchema[];
 		processedSchema: ExtendedSchema[];
@@ -59,6 +67,7 @@ export interface ICompilerOptions {
 	requestFieldMapping?: RequestFieldMap;
 	compilationLevel?: CompilationLevel;
 	singleError?: boolean;
+	discrimFastFail?: boolean;
 }
 
 export const FUNCTION_PREFIX = "f";

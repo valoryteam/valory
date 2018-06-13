@@ -95,6 +95,57 @@ const definitions: {[name: string]: Schema} = {
 			},
 		],
 	},
+	OtherCard: {
+		description: "Other Card Payment",
+		allOf: [
+			{
+				$ref: "#/definitions/Payment",
+			},
+			{
+				type: "object",
+				properties: {
+					other_card: {
+						$ref: "#/definitions/credit_card",
+					},
+				},
+				required: ["other_card"],
+			},
+		],
+	},
+	SomethingCard: {
+		description: "SomethingCard Payment",
+		allOf: [
+			{
+				$ref: "#/definitions/Payment",
+			},
+			{
+				type: "object",
+				properties: {
+					other_card: {
+						$ref: "#/definitions/credit_card",
+					},
+				},
+				required: ["other_card"],
+			},
+		],
+	},
+	ThingCard: {
+		description: "ThingCard Payment",
+		allOf: [
+			{
+				$ref: "#/definitions/Payment",
+			},
+			{
+				type: "object",
+				properties: {
+					other_card: {
+						$ref: "#/definitions/credit_card",
+					},
+				},
+				required: ["other_card"],
+			},
+		],
+	},
 	Payment: {
 		discriminator: "method",
 		description: "Payload for purchase",
@@ -150,7 +201,8 @@ const TestMiddleware: ApiMiddleware = {
 	handler: (req, logger, done) => {
 		req.getAttachment(Valory.ResponseKey);
 		req.putAttachment(TestKey, "string");
-		done(api.buildError("AccessDenied"));
+		// done(api.buildError("AccessDenied"));
+		done();
 	},
 };
 api.setErrorFormatter((error, message): ApiResponse => {

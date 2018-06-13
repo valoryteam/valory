@@ -2,8 +2,17 @@ var {{= it.hash }} =
     {{
       const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
       const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;[\s]*?(if[\s\S]*?else[\s\S]*?;)/g;
-      const oneOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
+      const anyOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
+      const reverseLabelDisc = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
       const propGetter = /\.([^\.]*)'/g;
+
+      function generateUID() {
+          var firstPart = (Math.random() * 46656) | 0;
+          var secondPart = (Math.random() * 46656) | 0;
+          firstPart = ("000" + firstPart.toString(36)).slice(-3);
+          secondPart = ("000" + secondPart.toString(36)).slice(-3);
+          return Buffer.from(firstPart + secondPart).toString("base64");
+      }
 
       let code = it.validate.toString();
       /* Call our own schema var */
@@ -33,14 +42,20 @@ var {{= it.hash }} =
       code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message, errPush){
             let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
-            if(keyword==="oneOf" && it.singleError){
-                errPush = "";
+            if(keyword==="anyOf"){
+                keyword = "discriminator";
+                message = "should be an implementation of discriminator";
             }
             if(keyword==="const"){
                 propGetter.lastIndex = 0;
                 let prop = propGetter.exec(dataPath)[1];
-                if(it.discriminators.indexOf(prop)>-1){
-                    return "err = null;";
+                if(it.discriminators[prop] != null){
+                    const id = generateUID();
+                    if (it.discrimFastFail) {
+                        return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n errors++; \n break ${id}${it.discriminators[prop].parent};\n`;
+                    } else {
+                        return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n`;
+                    }
                 }
             }
             var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
@@ -70,19 +85,26 @@ var {{= it.hash }} =
       /* allOf is reformatted into object map to prevent indirection */
       /* code = code.replace(/allOf\[(\d*?)\]/g, 'allOf.t$1'); */
 
-      /* oneOf is reformatted into object map to prevent indirection */
-      code = code.replace(/oneOf\[(\d*?)\]/g, 'oneOf.t$1');
+      /* anyOf is reformatted into object map to prevent indirection */
+      code = code.replace(/anyOf\[(\d*?)\]/g, 'anyOf.t$1');
 
       /* Return error array if enabled */
       if (!it.singleError) {
         code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(vErrors == null || vErrors.length===0){return true;}else{return vErrors;}");
       }
 
-      /* Fix oneOf error return */
+      /* Fix anyOf error return */
       if (it.singleError) {
-        code = code.replace(oneOfErrorReturn, "return err;");
+        code = code.replace(anyOfErrorReturn, "return err;");
       } else {
-        /* code = code.replace(oneOfErrorReturn, "(vErrors!=null) ? pushArr(validationErrors, vErrors) : validationErrors.push(err);"); */
+        /* code = code.replace(anyOfErrorReturn, "(vErrors!=null) ? pushArr(validationErrors, vErrors) : validationErrors.push(err);"); */
+      }
+
+      /* Block label discriminators */
+      if(it.discrimFastFail) {
+          code = code.split("").reverse().join("").replace(reverseLabelDisc, (match, prop, parent, id) => {
+            return `${match} :${parent}${id}`;
+          }).split("").reverse().join("");
       }
 
       let functionHeader = code.substring(0, code.indexOf("{"));
