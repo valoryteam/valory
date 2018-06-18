@@ -178,7 +178,7 @@ function finalProcess(content: ValidatorModuleContent): ValidatorModuleContent {
 	ret = ret.replace(falseReg, " false");
 	ret = ret.replace(nullReg, "undefined");
 	ret = ret.replace(arrayify, (match, varName, value) => {
-		return `var ${varName}=${JSON.stringify(value.split(" "))};`;
+		return `var ${varName}=${JSON.stringify(value.split(" "))}`;
 	});
 	// ret = ret.replace(arrayCheckReg,"($1 instanceof Array)");
 
