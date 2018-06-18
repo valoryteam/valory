@@ -171,14 +171,14 @@ function finalProcess(content: ValidatorModuleContent): ValidatorModuleContent {
 	const trueReg = /!0/g;
 	const falseReg = /!1/g;
 	const nullReg = /void 0/g;
-	const arrayify = /var ([a-zA-Z]*?)=\"([a-zA-Z ]+?)\".split\(\" \"\)/g;
+	const arrayify = /([a-zA-Z]*?)=[\S\n\r]*?\"([a-zA-Z ]+?)\".split\(\" \"\)/gm;
 	// const arrayCheckReg = /Array.isArray\(([a-zA-Z]*?)\)/g;
 
 	let ret = content.replace(trueReg, " true");
 	ret = ret.replace(falseReg, " false");
 	ret = ret.replace(nullReg, "undefined");
 	ret = ret.replace(arrayify, (match, varName, value) => {
-		return `var ${varName}=${JSON.stringify(value.split(" "))}`;
+		return `${varName}=${JSON.stringify(value.split(" "))}`;
 	});
 	// ret = ret.replace(arrayCheckReg,"($1 instanceof Array)");
 
