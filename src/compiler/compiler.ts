@@ -171,7 +171,7 @@ function finalProcess(content: ValidatorModuleContent): ValidatorModuleContent {
 	const trueReg = /!0/g;
 	const falseReg = /!1/g;
 	const nullReg = /void 0/g;
-	const arrayify = /var ([a-zA-Z]*?)=\"([a-zA-Z ]+?)\".split\(\" \"\);/g;
+	const arrayify = /var ([a-zA-Z]*?)=\"([a-zA-Z ]+?)\".split\(\" \"\)/g;
 	// const arrayCheckReg = /Array.isArray\(([a-zA-Z]*?)\)/g;
 
 	let ret = content.replace(trueReg, " true");
