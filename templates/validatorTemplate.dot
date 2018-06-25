@@ -6,6 +6,8 @@ var {{= it.hash }} =
       const reverseLabelDisc = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
       const propGetter = /\.([^\.]*)'/g;
 
+      const discrimArr = [];
+
       function generateUID() {
           var firstPart = (Math.random() * 46656) | 0;
           var secondPart = (Math.random() * 46656) | 0;
@@ -39,18 +41,25 @@ var {{= it.hash }} =
             }
       });
 
+      /* Transform returned errors inside of discriminators */
       code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message, errPush){
             let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
+            /* anyOf's are always the end of a discriminator */
             if(keyword==="anyOf"){
+                /* since processing is top to bottom, the last item in the queue is the correct one */
+                const currentDiscrim = it.discriminators[discrimArr.pop()];
                 keyword = "discriminator";
-                message = "should be an implementation of discriminator";
+                message = `should be an implementation of ${currentDiscrim.parent} [${currentDiscrim.children}]`;
             }
+            /* check const's to see if they are part of a discriminator */
             if(keyword==="const"){
                 propGetter.lastIndex = 0;
                 let prop = propGetter.exec(dataPath)[1];
+                /* if so, tag them and add name to the queue */
                 if(it.discriminators[prop] != null){
                     const id = generateUID();
+                    discrimArr.push(prop);
                     if (it.discrimFastFail) {
                         return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n errors++; \n break ${id}${it.discriminators[prop].parent};\n`;
                     } else {
