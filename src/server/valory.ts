@@ -444,7 +444,7 @@ export class Valory {
 
 	private registerDocSite() {
 		const prefix = this.apiDef.basePath || "";
-		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"}).replace("%prefix%", prefix);
+		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
 		const swaggerBlob = this.validatorModule.swaggerBlob;
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			return {
