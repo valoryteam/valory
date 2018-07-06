@@ -1,8 +1,8 @@
-import {Schema, Spec} from "../server/swagger";
+import {Swagger} from "../server/swagger";
 
 export const HASH_SEED = 3141997;
 
-export interface ExtendedSchema extends Schema {
+export interface ExtendedSchema extends Swagger.Schema {
 	const?: any;
 	oneOf?: ExtendedSchema[];
 	anyOf?: ExtendedSchema[];
@@ -43,8 +43,8 @@ export interface CompilerOutput {
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
 		hashes: string[];
-		preSwagger: { swagger: Spec, discriminators: DiscriminatorMap };
-		derefSwagger: Spec;
+		preSwagger: { swagger: Swagger.Spec, discriminators: DiscriminatorMap };
+		derefSwagger: Swagger.Spec;
 		initialSchema: ExtendedSchema[];
 		processedSchema: ExtendedSchema[];
 		initialCompiles: any[];

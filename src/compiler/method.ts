@@ -1,22 +1,22 @@
 import {each} from "lodash";
-import {BodyParameter, Operation, Parameter, Schema} from "swagger-schema-official";
 import {ExtendedSchema, RequestFieldMap} from "./compilerheaders";
+import {Swagger} from "../server/swagger";
 
 const stringify = require("fast-json-stable-stringify");
 
 export interface MethodOutput {
-	schema: Schema;
+	schema: Swagger.Schema;
 	hash: string;
 }
 
-export function compileMethodSchema(operation: Operation, method: string, pathName: string,
-									requestObjectMap: RequestFieldMap): Schema {
+export function compileMethodSchema(operation: Swagger.Operation, method: string, pathName: string,
+									requestObjectMap: RequestFieldMap): Swagger.Schema {
 	const schema: ExtendedSchema = {
 		properties: {},
 		required: [],
 		type: "object",
 	};
-	const addProperty = (param: Parameter) => {
+	const addProperty = (param: Swagger.Parameter) => {
 		const requestField = requestObjectMap[param.in];
 		let requestFieldObj = schema.properties[requestField];
 		const prop: any = {};
@@ -58,7 +58,7 @@ export function compileMethodSchema(operation: Operation, method: string, pathNa
 	each(operation.parameters, (parameter) => {
 		switch (parameter.in) {
 			case "body":
-				schema.properties.body = (parameter as BodyParameter).schema;
+				schema.properties.body = (parameter as Swagger.BodyParameter).schema;
 				if (!schema.required) {
 					schema.required = [];
 				}

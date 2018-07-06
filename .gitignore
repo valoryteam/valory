@@ -10,3 +10,4 @@ docs
 yarn-error.log
 .compswag.js
 DEBUG_OUTPUT/
+.generatedRoutes.ts

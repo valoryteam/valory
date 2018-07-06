@@ -1,13 +1,13 @@
 import {
-	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Schema, Info,
+	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get,
 } from "../main";
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 // Define basic info for the api
-const info: Info = {
+const info: Swagger.Info = {
 	title: "CNP POC API",
 	version: "1",
 };
-const definitions: {[name: string]: Schema} = {
+const definitions: {[name: string]: Swagger.Schema} = {
 	status_code: {
 		description: "Status code for the call. Successful call will return 1",
 		type: "integer",
@@ -79,6 +79,7 @@ const definitions: {[name: string]: Schema} = {
 	},
 	CreditCard: {
 		description: "Credit Card Payment",
+		type: "object",
 		allOf: [
 			{
 				$ref: "#/definitions/Payment",
@@ -249,45 +250,53 @@ api.setErrorFormatter((error, message): ApiResponse => {
 });
 // api.addGlobalPostMiddleware(TestMiddleware);
 // Register an enpoint with the full expressive power of swagger 2.0
-api.post("/v1/transactions", {
-	summary: "/v1/transactions ",
-	description: "Use this method to submit payments credit and debit cards. Supported transaction type is purchase",
-	tags: ["Credit Card Payments"],
-	parameters: [
-		{
-			$ref: "#/parameters/fancy_header",
-		},
-		{
-			name: "body",
-			in: "body",
-			schema: {
-				$ref: "#/definitions/Payment",
-			},
-			required: true,
-		},
-	],
-	responses: {
-		200: {
-			description: "The response",
-			schema: {
-				type: "object",
-				properties: {
-					status_code: {
-						$ref: "#/definitions/status_code",
-					},
-					response_data: {
-						type: "object",
-						description: "test",
-					},
-				},
-			},
-		},
-	},
-}, (req) => {
-	// The handler can be sync or async
-	// Build a successful response with the helper
-	return api.buildSuccess({});
-}, [TestMiddleware]);
+// api.post("/v1/transactions", {
+// 	summary: "/v1/transactions ",
+// 	description: "Use this method to submit payments credit and debit cards. Supported transaction type is purchase",
+// 	tags: ["Credit Card Payments"],
+// 	parameters: [
+// 		{
+// 			$ref: "#/parameters/fancy_header",
+// 		},
+// 		{
+// 			name: "body",
+// 			in: "body",
+// 			schema: {
+// 				$ref: "#/definitions/Payment",
+// 			},
+// 			required: true,
+// 		},
+// 	],
+// 	responses: {
+// 		200: {
+// 			description: "The response",
+// 			schema: {
+// 				type: "object",
+// 				properties: {
+// 					status_code: {
+// 						$ref: "#/definitions/status_code",
+// 					},
+// 					response_data: {
+// 						type: "object",
+// 						description: "test",
+// 					},
+// 				},
+// 			},
+// 		},
+// 	},
+// }, (req) => {
+// 	// The handler can be sync or async
+// 	// Build a successful response with the helper
+// 	return api.buildSuccess({});
+// }, [TestMiddleware]);
+
+@Route("test")
+class TestRoutes {
+	@Get("thing")
+	public thing(): string {
+		return "thing";
+	}
+}
 
 // Build and export the app, passing any adaptor specific config data
 module.exports = api.start({port: process.env.PORT || 8080});

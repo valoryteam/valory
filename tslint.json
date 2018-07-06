@@ -14,7 +14,10 @@
 		"interface-name": ["never-prefix"],
 		"object-literal-sort-keys": false,
 		"ordered-imports": [false],
-		"no-trailing-whitespace": false
+		"no-trailing-whitespace": false,
+		"max-classes-per-file": false,
+		"no-namespace": false,
+		"no-bitwise": false
 	},
 	"rulesDirectory": []
 }

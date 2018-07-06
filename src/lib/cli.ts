@@ -2,14 +2,16 @@
 
 import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
-import {Spec} from "swagger-schema-official";
-import {compileAndSave} from "../compiler/loader";
+import {Swagger} from "../server/swagger";
+import {compileAndSave, COMPILED_SWAGGER_PATH, setCompSwagPath} from "../compiler/loader";
 import {isNil, omitBy} from "lodash";
-import {join, resolve} from "path";
+import {extname, join, resolve} from "path";
+import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import P = require("pino");
 
-function compilerRunner(args: any) {
+async function compilerRunner(args: any) {
+	require("ts-node").register();
 	process.env.VALORYCOMPILER = "TRUE";
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
@@ -18,16 +20,19 @@ function compilerRunner(args: any) {
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
-	args.entrypoint = (args.entrypoint.startsWith("/") || args.entrypoint.startsWith("."))
-		? args.entrypoint : "./" + args.entrypoint;
-	const valExport: { valory: ValoryMetadata } = require(resolve(args.entrypoint));
+	args.entrypoint = resolve(args.entrypoint);
+	if (extname(args.entrypoint) === ".ts") {
+		await routeBuild(args.entrypoint);
+	}
+	setCompSwagPath(args.entrypoint);
+	const valExport: { valory: ValoryMetadata } = require(args.entrypoint);
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
 	api.info.version = args.apiVersion;
-	const output = omitBy(api, isNil) as Spec;
+	const output = omitBy(api, isNil) as Swagger.Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
-	compileAndSave(output, valExport.valory.compiledSwaggerPath, process.cwd(),
+	compileAndSave(output, COMPILED_SWAGGER_PATH, process.cwd(),
 		valExport.valory.undocumentedEndpoints, {
 			debug: args.debugMode, compilationLevel: compLevel,
 			singleError: args.singleError,
@@ -40,13 +45,16 @@ function compilerRunner(args: any) {
 }
 
 function cliRunner(args: any) {
+	require("ts-node").register();
 	process.env.TEST_MODE = "TRUE";
 	process.env.PORT = args.port;
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
 	}
 	process.env[VALORYLOGGERVAR] = args.loglevel;
-	require(resolve(args.entrypoint));
+	args.entrypoint = resolve(args.entrypoint);
+	setCompSwagPath(args.entrypoint);
+	require(args.entrypoint);
 }
 
 yargs

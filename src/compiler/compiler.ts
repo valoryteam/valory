@@ -16,7 +16,7 @@ import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
 import {convertTime} from "../lib/helpers";
-import {Spec} from "../server/swagger";
+import {Swagger} from "../server/swagger";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -31,7 +31,7 @@ const XXH = require("xxhashjs");
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
 // TODO: Fix discriminator errors
-export async function compile(spec: Spec, options?: ICompilerOptions) {
+export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	
 	const output: CompilerOutput = {
 		module: null,

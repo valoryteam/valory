@@ -1,0 +1,33 @@
+/*tslint:disable*/
+{{
+function paramPath(type, name) {
+    switch (type) {
+        case "header":
+            return `req.headers.${name}`;
+        case "request":
+            return "(req as any)";
+        case "body":
+            return "req.body";
+        default:
+            return `req.${type}.${name}`;
+    }
+}
+}}
+
+import {Valory} from "{{= process.env.NODE_ENV == "test" ? "../main" : "valory"}}";
+{{~ it.metadata.controllers : item}}
+  import {{{= item.name}}} from "{{=item.location}}";{{~}}
+{{~ it.metadata.controllers : item}}
+  const {{=item.name}}Controller = new {{=item.name}}();{{~}}
+const app = Valory.getInstance();
+{{~ Object.keys(it.swagger.definitions) : name}}
+app.addDefinition("{{=name}}",{{=JSON.stringify(it.swagger.definitions[name],null,2)}});
+{{~}}
+{{~ it.metadata.controllers: route}}{{~ route.methods: method}}
+{{const path = `/${route.path}${method.path}`;}}
+app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method], null, 2)}},(req, logger)=>{
+    return app.buildSuccess({{=route.name}}Controller.{{=method.name}}(
+        {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
+    ));
+},undefined,{{=method.isHidden}})
+{{~}}{{~}}

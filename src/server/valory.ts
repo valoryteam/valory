@@ -1,9 +1,10 @@
 import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ValidatorModule} from "../compiler/compilerheaders";
-import * as Swagger from "./swagger";
+import {Swagger} from "./swagger";
 import {assign, forIn, isNil, omitBy, set, uniq} from "lodash";
-import {COMPILED_SWAGGER_PATH, loadModule, ROOT_PATH} from "../compiler/loader";
-import {readFileSync} from "fs";
+import {COMPILED_SWAGGER_PATH, GENERATED_ROUTES_FILE, loadModule, ROOT_PATH} from "../compiler/loader";
+import {readFileSync, existsSync} from "fs";
+import {basename, join, dirname} from "path";
 import {Steed} from "steed";
 import {Logger} from "pino";
 import {ApiRequest, AttachmentKey} from "./request";
@@ -72,7 +73,7 @@ export interface ValoryOptions {
 	errors?: { [x: string]: ErrorDef };
 	consumes?: string[];
 	produces?: string[];
-	parameters?: {[name: string]: Swagger.QueryParameter | Swagger.BodyParameter};
+	parameters?: {[name: string]: Swagger.Parameter};
 	responses?: {[name: string]: Swagger.Response };
 	definitions?: { [x: string]: Swagger.Schema };
 	tags?: Swagger.Tag[];
@@ -183,7 +184,7 @@ export class Valory {
 	 */
 	constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], server: ApiServer, basePath?: string,
-				parameters: {[name: string]: Swagger.QueryParameter | Swagger.BodyParameter} = {},
+				parameters: {[name: string]: Swagger.Parameter} = {},
 				responses: {[name: string]: Swagger.Response} = {}) {
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
@@ -235,6 +236,22 @@ export class Valory {
 			this.Logger.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
 		}
+		const parent = module.parent.filename;
+		console.log(parent);
+		if (!basename(parent).startsWith("cli")) {
+			const generatedPath = join(dirname(parent), GENERATED_ROUTES_FILE);
+			if (existsSync(generatedPath)) {
+				this.Logger.debug("Loading generated routes");
+			}
+		}
+	}
+
+	/**
+	 * Add a swagger definition
+	 */
+	public addDefinition(name: string, def: Swagger.Schema) {
+		this.Logger.debug("Adding definition:", name);
+		this.apiDef.definitions[name] = def;
 	}
 
 	/**

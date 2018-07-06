@@ -1,8 +1,8 @@
 import {cloneDeep, forEach, get, map, set, unset, isArray} from "lodash";
-import {Spec} from "swagger-schema-official";
 import {CompileLog, DisallowedFormats} from "./compiler";
 import {DiscriminatorMap, ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
 import {PriorityQueue} from "tstl";
+import {Swagger} from "../server/swagger";
 
 const mergeAllOf = require("json-schema-merge-allof");
 const mapKeysDeep: <T>(obj: T, callback: (value: any, key: string) => string) => T = require("map-keys-deep-lodash");
@@ -26,7 +26,7 @@ export interface OneOfMarker {
 	schema: ExtendedSchema;
 }
 
-export function swaggerPreproccess(swagger: Spec): {swagger: Spec, discriminators: DiscriminatorMap} {
+export function swaggerPreproccess(swagger: Swagger.Spec): {swagger: Swagger.Spec, discriminators: DiscriminatorMap} {
 	const pathMap: {[key: string]: {propName: string, anyOfPath: string}} = {};
 	const removePaths: string[] = [];
 	const discrimMap: DiscriminatorMap = {};
@@ -113,7 +113,7 @@ export function schemaPreprocess(schema: ExtendedSchema):
 		}
 
 		if (scanSchema.additionalProperties) {
-			deepScan(scanSchema.additionalProperties, depth + 1);
+			deepScan(scanSchema.additionalProperties as any, depth + 1);
 		}
 
 		if (scanSchema.enum && scanSchema.enum.length === 1) {
@@ -121,7 +121,7 @@ export function schemaPreprocess(schema: ExtendedSchema):
 			delete scanSchema.enum;
 		}
 
-		if (scanSchema.type === "file") {
+		if (scanSchema.type as any === "file") {
 			CompileLog.info(`"file" type is implementation specific and therefore cannot be validated`);
 			delete scanSchema.type;
 		}
