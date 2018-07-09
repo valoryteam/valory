@@ -1,8 +1,8 @@
 import * as path from "path";
 import {readFileSync} from "fs";
-import {processFiles} from "typescript-formatter";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
+export const VALORY_ROOT = "VALORY_ROOT";
 
 export interface ValoryConfig {
 	entrypoint: string;
@@ -31,13 +31,19 @@ export namespace Config {
 			return;
 		}
 		Loaded = true;
-		root = root || resolveRootPath();
+		const rootVar = process.env[VALORY_ROOT];
+		root = (rootVar != null) ? rootVar : root || resolveRootPath();
 		RootPath = root;
+		process.env[VALORY_ROOT] = RootPath;
 		ConfigPath = `${RootPath}/${CONFIG_FILE}`;
 		SwaggerPath = `${RootPath}/${SWAGGER_FILE}`;
 		CompSwagPath = `${RootPath}/${COMPILED_SWAGGER_FILE}`;
 		if (loadConfig) {
-			ConfigData = JSON.parse(readFileSync(ConfigPath, {encoding: "utf8"}));
+			try {
+				ConfigData = JSON.parse(readFileSync(ConfigPath, {encoding: "utf8"}));
+			} catch (err) {
+				throw Error("Valory config is missing from: " + ConfigPath);
+			}
 			ConfigData.entrypoint = path.resolve(path.join(RootPath), ConfigData.entrypoint);
 			GeneratedRoutePath = `${path.resolve(path.dirname(ConfigData.entrypoint))}/${COMPILED_ROUTES_FILE}`;
 			if (ConfigData.sourceEntrypoint) {

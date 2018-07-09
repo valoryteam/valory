@@ -9,6 +9,7 @@ export namespace Tsoa {
 		methods: Method[];
 		name: string;
 		path: string;
+		extendsController: boolean;
 	}
 
 	export interface Method {

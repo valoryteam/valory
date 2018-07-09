@@ -1,5 +1,7 @@
+import {Controller} from "../controller";
+
 export function Route(name?: string): any {
-	return () => {
+	return (target: Controller) => {
 		return;
 	};
 }

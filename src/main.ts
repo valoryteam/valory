@@ -1,4 +1,7 @@
 export {
+	Controller,
+} from "./server/controller";
+export {
 	DefaultAdaptor,
 } from "./lib/defaultAdaptor";
 export {
