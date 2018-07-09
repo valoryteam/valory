@@ -27,7 +27,7 @@ export class ControllerGenerator {
 			throw new GenerateMetadataError("Controller node doesn't have a valid name.");
 		}
 		if (!this.isNodeExported()) {
-			throw new GenerateMetadataError("Controller must be exported");
+			throw new GenerateMetadataError("Controller node must be exported");
 		}
 
 		const sourceFile = this.node.parent.getSourceFile();

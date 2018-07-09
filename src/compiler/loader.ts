@@ -5,14 +5,9 @@ import {cloneDeep, omit} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
 import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import P = require("pino");
+import {Config} from "../lib/config";
 const hyperid = require("hyperid");
 
-export const SWAGGER_FILE = "swagger.json";
-export const COMPILED_SWAGGER_FILE = ".compswag.js";
-export const GENERATED_ROUTES_FILE = ".generatedRoutes.ts";
-export const ROOT_PATH = path.join(module.paths[2], "..");
-export let COMPILED_SWAGGER_PATH = "";
-setCompSwagPath();
 const XXH = require("xxhashjs");
 
 export async function compileAndSave(swagger: Swagger.Spec, compilePath: string, additionalPath: string
@@ -38,33 +33,14 @@ export async function compileAndSave(swagger: Swagger.Spec, compilePath: string,
 			}
 		}
 	}
-	writeFileSync(compilePath.replace(COMPILED_SWAGGER_FILE, SWAGGER_FILE), JSON.stringify(trimmedSpec));
-	writeFileSync(path.join(additionalPath, SWAGGER_FILE), JSON.stringify(trimmedSpec));
+	writeFileSync(Config.SwaggerPath, JSON.stringify(trimmedSpec));
+	writeFileSync(path.join(additionalPath, Config.SWAGGER_FILE), JSON.stringify(trimmedSpec));
 }
 
 export function loadModule(definitions: {[x: string]: Swagger.Schema}): ValidatorModule {
-	const module: ValidatorModule = require(COMPILED_SWAGGER_PATH);
+	const module: ValidatorModule = require(Config.CompSwagPath);
 	if (XXH.h32(JSON.stringify(definitions), HASH_SEED).toString() !== module.defHash) {
 		throw Error("Compiled swagger is out of date. Please run valory CLI.");
 	}
 	return module;
-}
-
-export function setCompSwagPath(entryPoint?: string) {
-	COMPILED_SWAGGER_PATH = resolveCompSwagPath(entryPoint);
-	// console.log("CompSwag path set to:", COMPILED_SWAGGER_PATH);
-}
-
-function resolveCompSwagPath(entryPoint?: string): string {
-	"use strict";
-	if (entryPoint) {
-		return path.join(path.dirname(require("find-up").sync("package.json", {cwd: entryPoint})), COMPILED_SWAGGER_FILE);
-	} else {
-		const newPath = __dirname.split("node_modules");
-		if (newPath.length > 1) {
-			return path.join(newPath.slice(0, newPath.length - 1)[0], COMPILED_SWAGGER_FILE);
-		} else {
-			return path.join(__dirname, COMPILED_SWAGGER_FILE);
-		}
-	}
 }

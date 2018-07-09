@@ -1,4 +1,7 @@
 export {
+	DefaultAdaptor,
+} from "./lib/defaultAdaptor";
+export {
 	Valory,
 	ApiMiddleware,
 	ApiResponse,
@@ -53,4 +56,3 @@ export {
 	Response,
 	SuccessResponse,
 } from "./server/decorators/response";
-console.log(module.parent);

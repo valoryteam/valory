@@ -1,7 +1,6 @@
 import {
-	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get,
+	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, DefaultAdaptor,
 } from "../main";
-import {FastifyAdaptor} from "valory-adaptor-fastify";
 // Define basic info for the api
 const info: Swagger.Info = {
 	title: "CNP POC API",
@@ -214,7 +213,7 @@ const api = Valory.createInstance({
 	info,
 	errors,
 	definitions,
-	server: new FastifyAdaptor() as any,
+	server: new DefaultAdaptor() as any,
 	parameters: {
 		fancy_header: {
 			name: "fancy_header",

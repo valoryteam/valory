@@ -1,8 +1,7 @@
 import "./decRoute";
 import {
-	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, Post, Body, Header,
+	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, Post, Body, Header, DefaultAdaptor,
 } from "../main";
-import {FastifyAdaptor} from "valory-adaptor-fastify";
 // Define basic info for the api
 const info: Swagger.Info = {
 	title: "CNP POC API",
@@ -22,7 +21,7 @@ const api = Valory.createInstance({
 	info,
 	errors,
 	definitions,
-	server: new FastifyAdaptor() as any,
+	server: new DefaultAdaptor() as any,
 	parameters: {
 		fancy_header: {
 			name: "fancy_header",
@@ -32,6 +31,5 @@ const api = Valory.createInstance({
 		},
 	},
 });
-
 // Build and export the app, passing any adaptor specific config data
 module.exports = api.start({port: process.env.PORT || 8080});

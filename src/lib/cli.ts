@@ -1,19 +1,27 @@
 #!/usr/bin/env node
+import {CLI_MODE_FLAG, Config} from "./config";
+
 process.env[CLI_MODE_FLAG] = "true";
 
 import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Swagger} from "../server/swagger";
-import {compileAndSave, COMPILED_SWAGGER_PATH, setCompSwagPath} from "../compiler/loader";
+import {compileAndSave} from "../compiler/loader";
 import {isNil, omitBy} from "lodash";
 import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import P = require("pino");
-import {CLI_MODE_FLAG, Config} from "./config";
+import * as inquirer from "inquirer";
+import {existsSync, writeFileSync} from "fs";
 
 async function compilerRunner(args: any) {
-	require("ts-node").register();
+	require("ts-node").register({
+		project: join(__dirname, "../../tsconfig.json"),
+		compilerOptions: {
+			types: ["node"],
+		},
+	});
 	process.env.VALORYCOMPILER = "TRUE";
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
@@ -22,19 +30,18 @@ async function compilerRunner(args: any) {
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
-	args.entrypoint = resolve(args.entrypoint);
-	if (extname(args.entrypoint) === ".ts") {
-		await routeBuild(args.entrypoint);
+	if (Config.SourceRoutePath !== "") {
+		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
-	setCompSwagPath(args.entrypoint);
-	const valExport: { valory: ValoryMetadata } = require(args.entrypoint);
+	const valExport: { valory: ValoryMetadata } = require((Config.ConfigData.sourceEntrypoint !== ""
+		? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
 	api.info.version = args.apiVersion;
 	const output = omitBy(api, isNil) as Swagger.Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
-	compileAndSave(output, COMPILED_SWAGGER_PATH, process.cwd(),
+	compileAndSave(output, Config.CompSwagPath, process.cwd(),
 		valExport.valory.undocumentedEndpoints, {
 			debug: args.debugMode, compilationLevel: compLevel,
 			singleError: args.singleError,
@@ -47,25 +54,94 @@ async function compilerRunner(args: any) {
 }
 
 function cliRunner(args: any) {
-	require("ts-node").register();
+	// require("ts-node").register();
 	process.env.TEST_MODE = "TRUE";
 	process.env.PORT = args.port;
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
 	}
 	process.env[VALORYLOGGERVAR] = args.loglevel;
-	args.entrypoint = resolve(args.entrypoint);
-	setCompSwagPath(args.entrypoint);
-	require(args.entrypoint);
+	require(Config.ConfigData.entrypoint);
+}
+
+async function configBuilder(args: object) {
+	const config = await inquirer.prompt([
+		{
+			name: "entrypoint",
+			message: `Path to entrypoint file. Relative to ${Config.RootPath}`,
+			type: "input",
+			validate: (path: string) => {
+				const resolved = resolve(join(Config.RootPath, path));
+				if (!existsSync(resolved)) {
+					return "Entrypoint file does not exist";
+				}
+				const ext = extname(resolved);
+				if (ext !== ".js") {
+					return "Entrypoint must be a plain javascript file";
+				}
+
+				return true;
+			},
+		},
+		{
+			name: "isTS",
+			message: "Is this a typescript project?",
+			type: "confirm",
+		},
+		{
+			name: "sourceEntrypoint",
+			message: `Path to ts source file for the entrypoint. Relative to ${Config.RootPath}`,
+			type: "input",
+			when: (currentArgs: any) => {
+				return currentArgs.isTS;
+			},
+			validate: (path: string) => {
+				const resolved = resolve(join(Config.RootPath, path));
+				if (!existsSync(resolved)) {
+					return "Entrypoint file does not exist";
+				}
+				const ext = extname(resolved);
+				if (ext !== ".ts") {
+					return "Entrypoint must be a typescript file";
+				}
+
+				return true;
+			},
+		},
+		{
+			name: "singleError",
+			message: "Enable single error mode",
+			type: "confirm",
+			default: false,
+		},
+	]);
+
+	if (!config.compiledEntrypoint) {
+		config.compiledEntrypoint = config.entrypoint;
+	}
+	writeFileSync(Config.ConfigPath, JSON.stringify(config, null, 2));
 }
 
 yargs
-	.command("compile <entrypoint>", "Compile valory project", (inst) => {
+	.option("project", {
+		desc: "Top level of your project containing valory.json",
+		type: "string",
+		default: process.cwd(),
+		alias: "p",
+	})
+	.command("init", "Initialize valory config", (inst) => {
+		inst.config("project", (rootPath) => {
+			Config.load(false, rootPath);
+			return Config.ConfigData;
+		});
+		return inst;
+	}, configBuilder)
+	.command("compile", "Compile valory project", (inst) => {
 		inst
-			.positional("entrypoint", {
-				description: "Main entrypoint for the api",
-			})
 			.options({
+				entrypoint: {
+					description: "Main entrypoint for the api",
+				},
 				host: {
 					description: "The host for your api e.g. somewebsite.com",
 					type: "string",
@@ -133,17 +209,21 @@ yargs
 					boolean: true,
 					default: false,
 				},
-			});
+			}).config("project", (rootPath: string) => {
+			Config.load(true, rootPath);
+			return Config.ConfigData;
+		});
 
 		return inst;
-	}, compilerRunner)
-	.command("test <entrypoint>", "Start a test server", (inst) => {
-		inst.positional("entrypoint", {
-			description: "Main entrypoint for the api",
-		})
-			.options({
+	}, (args) => { compilerRunner(args).then().catch((err) => {
+		console.error(err);
+	}); })
+	.command("test", "Start a test server", (inst) => {
+		inst.options({
+				entrypoint: {
+					description: "Main entrypoint for the api",
+				},
 				port: {
-					alias: "p",
 					desc: "Port to run the appserver on",
 					default: 8080,
 					type: "number",
@@ -159,7 +239,10 @@ yargs
 					type: "string",
 					default: "info",
 				},
-			});
+			}).config("project", (rootPath: string) => {
+			Config.load(true, rootPath);
+			return Config.ConfigData;
+		});
 
 		return inst;
 	}, cliRunner)

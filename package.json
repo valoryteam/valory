@@ -46,16 +46,19 @@
 		"request": "^2.83.0",
 		"request-promise": "^4.2.2",
 		"semantic-release": "^15.1.7",
-		"typedoc": "^0.11.1",
-		"valory": "latest"
+		"typedoc": "^0.11.1"
 	},
 	"dependencies": {
 		"ajv": "^6.4.0",
 		"bluebird": "^3.5.1",
 		"dot": "^1.1.2",
+		"fast.js": "^0.1.1",
+		"fastify": "^1.8.0",
+		"fastify-formbody": "^2.0.0",
 		"find-up": "^3.0.0",
 		"google-closure-compiler": "^20180506.0.0",
 		"hyperid": "^1.2.0",
+		"inquirer": "^6.0.0",
 		"js-beautify": "^1.7.5",
 		"json-schema-merge-allof": "^0.6.0",
 		"lodash": "^4.17.4",
@@ -71,7 +74,6 @@
 		"tstl": "^1.6.11",
 		"typescript": "^2.9.2",
 		"typescript-formatter": "^7.2.2",
-		"valory-adaptor-fastify": "^2.2.0",
 		"xxhashjs": "^0.2.2",
 		"yargs": "^11.0.0"
 	},

@@ -3,9 +3,9 @@ import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
 import {SpecGenerator} from "./specGenerator";
 import {dirname, extname, join, relative} from "path";
 import {writeFileSync} from "fs";
-import {GENERATED_ROUTES_FILE} from "../compiler/loader";
 import * as tsfmt from "typescript-formatter";
 import P = require("pino");
+import {Config} from "../lib/config";
 
 const dotJs = require("dot");
 dotJs.log = false;
@@ -13,6 +13,7 @@ dotJs.templateSettings.strip = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 
 export async function routeBuild(entryPoint: string) {
+	// console.log(routeBuild.caller);
 	const Logger = P({
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
@@ -25,15 +26,17 @@ export async function routeBuild(entryPoint: string) {
 		const relativePath = relative(dirname(entryPoint), con.location);
 		con.location = "./" + relativePath.replace(extname(relativePath), "");
 	});
-	// Logger.debug(metadata);
-	// Logger.debug(swaggerContent);
 	Logger.info("Generating routes");
+	// Logger.info({
+	// 	swagger: swaggerContent,
+	// 	metadata,
+	// });
 	const generatedRoutes = templates.apiTemplate({
 		swagger: swaggerContent,
 		metadata,
 	});
 
-	const generatedPath = join(dirname(entryPoint), GENERATED_ROUTES_FILE);
+	const generatedPath = Config.SourceRoutePath;
 	const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
 		editorconfig: true,
 		replace: true,
@@ -42,8 +45,6 @@ export async function routeBuild(entryPoint: string) {
 		},
 		tsfmt: true,
 		tslint: false,
-		verify: true,
-		vscode: true,
 	} as any);
 
 	if (formatted.error) {

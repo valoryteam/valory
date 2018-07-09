@@ -1,10 +1,8 @@
-import {FastifyAdaptor} from "valory-adaptor-fastify";
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
-import {assign, forIn, isNil, omitBy, set, uniq} from "lodash";
-import {COMPILED_SWAGGER_PATH, GENERATED_ROUTES_FILE, loadModule, ROOT_PATH} from "../compiler/loader";
-import {readFileSync, existsSync} from "fs";
-import {basename, join, dirname} from "path";
+import {forIn, isNil, omitBy, set, uniq} from "lodash";
+import {loadModule} from "../compiler/loader";
+import {readFileSync} from "fs";
 import {Steed} from "steed";
 import {Logger} from "pino";
 import {ApiRequest, AttachmentKey} from "./request";
@@ -14,7 +12,10 @@ global.Promise = require("bluebird");
 import P = require("pino");
 import pathMod = require("path");
 import {fastConcat} from "../lib/helpers";
+import {Config} from "../lib/config";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 
+// Config.load();
 const steed: Steed = require("steed")();
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
@@ -175,7 +176,7 @@ export class Valory {
 	private metadata: ValoryMetadata = {
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
-		compiledSwaggerPath: COMPILED_SWAGGER_PATH,
+		compiledSwaggerPath: Config.CompSwagPath,
 		swagger: null,
 	};
 
@@ -186,6 +187,7 @@ export class Valory {
 				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], server: ApiServer, basePath?: string,
 				parameters: {[name: string]: Swagger.Parameter} = {},
 				responses: {[name: string]: Swagger.Response} = {}) {
+		Config.load();
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
 		}
@@ -195,13 +197,6 @@ export class Valory {
 		}
 		Valory.instance = this;
 		this.Logger.info("Starting valory");
-		// const configPath = valoryConfigPath();
-		// try {
-		// 	this.config = loadConfig(pathMod.resolve(configPath));
-		// } catch {
-		// 	throw Error("Failed to load valory config");
-		// }
-		// this.Logger.info(this.config);
 		this.apiDef = {
 			swagger: "2.0",
 			info,
@@ -220,38 +215,33 @@ export class Valory {
 		}
 
 		this.server = server;
-		// this.server = new (require(this.config.adaptorModule))() as ApiServer;
 		Object.assign(this.errors, errors);
-		// assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
 			if (this.TESTMODE) {
-				this.server = new FastifyAdaptor() as any;
+				this.server = new DefaultAdaptor() as any;
+			}
+			let genRoutes;
+			if (Config.SourceRoutePath !== "") {
+				genRoutes = require(Config.GeneratedRoutePath);
+				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 			}
 			this.validatorModule = loadModule(definitions);
+			if (genRoutes) {
+				genRoutes.register(this);
+			}
 			if (this.server.allowDocSite) {
 				this.registerDocSite();
-
 			}
 		} else {
 			this.Logger.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
-		}
-		const parent = module.parent.filename;
-		console.log(parent);
-		if (!basename(parent).startsWith("cli")) {
-			const generatedPath = join(dirname(parent), GENERATED_ROUTES_FILE);
-			if (existsSync(generatedPath)) {
-				this.Logger.debug("Loading generated routes");
+			if (Config.SourceRoutePath !== "") {
+				console.log(Config);
+				const genRoutes = require(Config.SourceRoutePath);
+				Object.assign(this.apiDef.definitions, genRoutes.definitions);
+				genRoutes.register(this);
 			}
 		}
-	}
-
-	/**
-	 * Add a swagger definition
-	 */
-	public addDefinition(name: string, def: Swagger.Schema) {
-		this.Logger.debug("Adding definition:", name);
-		this.apiDef.definitions[name] = def;
 	}
 
 	/**
@@ -500,9 +490,6 @@ function processMiddleware(middlewares: ApiMiddleware[],
 					return;
 				}
 
-				// if (data != null) {
-				// 	req.attachments[handler.name] = data;
-				// }
 				done();
 			});
 		}, (error) => {
@@ -520,12 +507,4 @@ function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
 	});
 	tagDef.description = table;
 	return omitBy(tagDef, isNil) as Swagger.Tag;
-}
-
-function valoryConfigPath(): string {
-	if (process.env.VALORYCONFIG) {
-		return process.env.VALORYCONFIG;
-	} else {
-		return pathMod.join(ROOT_PATH, "valory.json");
-	}
 }
