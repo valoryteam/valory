@@ -1,5 +1,6 @@
 import * as path from "path";
 import {readFileSync} from "fs";
+import {processFiles} from "typescript-formatter";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
 
@@ -14,10 +15,10 @@ export namespace Config {
 	export const CONFIG_FILE = "valory.json";
 	export const SWAGGER_FILE = "swagger.json";
 	export const COMPILED_SWAGGER_FILE = ".compswag.js";
-	export const GENERATED_ROUTES_FILE = ".generatedRoutes.ts";
-	export const COMPILED_ROUTES_FILE = ".generatedRoutes.js";
-	export let Loaded = false;
+	export const GENERATED_ROUTES_FILE = "generatedRoutes.ts";
+	export const COMPILED_ROUTES_FILE = "generatedRoutes.js";
 	export let RootPath = "";
+	export let Loaded = false;
 	export let ConfigPath = "";
 	export let SwaggerPath = "";
 	export let CompSwagPath = "";
@@ -29,8 +30,8 @@ export namespace Config {
 		if (Loaded) {
 			return;
 		}
-		root = root || resolveRootPath();
 		Loaded = true;
+		root = root || resolveRootPath();
 		RootPath = root;
 		ConfigPath = `${RootPath}/${CONFIG_FILE}`;
 		SwaggerPath = `${RootPath}/${SWAGGER_FILE}`;
@@ -47,6 +48,6 @@ export namespace Config {
 	}
 
 	function resolveRootPath(): string {
-		return path.join(module.paths[2], "..");
+		return __dirname.split("node_modules")[0];
 	}
 }

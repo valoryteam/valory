@@ -235,8 +235,8 @@ export class Valory {
 		} else {
 			this.Logger.info("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
+			// console.log(Config);
 			if (Config.SourceRoutePath !== "") {
-				console.log(Config);
 				const genRoutes = require(Config.SourceRoutePath);
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				genRoutes.register(this);

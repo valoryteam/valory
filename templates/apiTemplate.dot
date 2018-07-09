@@ -14,7 +14,7 @@ function paramPath(type, name) {
     }
 }
 }}
-import {Valory, Swagger} from "{{= process.env.NODE_ENV == "test" ? "../main" : "valory"}}";
+import {Valory, Swagger, ApiRequest} from "{{= process.env.NODE_ENV == "test" ? "../main" : "valory"}}";
 {{~ it.metadata.controllers : item}}
   import {{{= item.name}}} from "{{=item.location}}";{{~}}
 {{~ it.metadata.controllers : item}}
@@ -23,7 +23,7 @@ export = {
     register: (app: Valory) => {
                   {{~ it.metadata.controllers: route}}{{~ route.methods: method}}
                   {{const path = `/${route.path}${method.path}`.replace("//","/");}}
-                  app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method], null, 2)}},(req, logger)=>{
+                  app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method], null, 2)}},(req: ApiRequest, logger: any)=>{
                       return app.buildSuccess({{=route.name}}Controller.{{=method.name}}(
                           {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
                       ));
