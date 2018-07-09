@@ -7,8 +7,8 @@ import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import P = require("pino");
 const hyperid = require("hyperid");
 
-const SWAGGER_FILE = "swagger.json";
-const COMPILED_SWAGGER_FILE = ".compswag.js";
+export const SWAGGER_FILE = "swagger.json";
+export const COMPILED_SWAGGER_FILE = ".compswag.js";
 export const GENERATED_ROUTES_FILE = ".generatedRoutes.ts";
 export const ROOT_PATH = path.join(module.paths[2], "..");
 export let COMPILED_SWAGGER_PATH = "";

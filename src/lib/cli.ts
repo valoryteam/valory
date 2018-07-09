@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+process.env[CLI_MODE_FLAG] = "true";
 
 import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
@@ -9,6 +10,7 @@ import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import P = require("pino");
+import {CLI_MODE_FLAG, Config} from "./config";
 
 async function compilerRunner(args: any) {
 	require("ts-node").register();
