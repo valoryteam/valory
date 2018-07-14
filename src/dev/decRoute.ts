@@ -1,4 +1,6 @@
-import {ApiRequest, Body, Header, Post, Route, Request, Controller} from "../main";
+import {ApiRequest, Body, Header, Post, Route, Request, Controller, Logger} from "../main";
+import * as P from "pino";
+type Logger = P.Logger;
 
 interface Burn {
 	name: string;
@@ -9,7 +11,7 @@ interface Burn {
 @Route("burn")
 export class BurnRoutes {
 	@Post()
-	public submit(@Body() burn: Burn, @Request() req: ApiRequest): string {
+	public submit(@Body() burn: Burn, @Request() req: ApiRequest, @Logger() logger: Logger): string {
 		return "thing";
 	}
 }

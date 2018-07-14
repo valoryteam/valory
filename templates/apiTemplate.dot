@@ -12,6 +12,8 @@
 {{
 function paramPath(type, name) {
     switch (type) {
+        case "logger":
+            return "logger";
         case "header":
             return `req.headers.${name}`;
         case "request":
@@ -47,7 +49,7 @@ export = {
                           return fullResponse;
                           {{?}}
                           {{? !route.extendsController}}
-                          return api.buildSuccess(response);
+                          return app.buildSuccess(response);
                           {{?}}
                       })
                   },undefined,{{=method.isHidden}});

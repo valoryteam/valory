@@ -44,6 +44,7 @@ export {
 	BodyProp,
 	Query,
 	Request,
+	Logger,
 } from "./server/decorators/parameter";
 export {
 	Hidden,

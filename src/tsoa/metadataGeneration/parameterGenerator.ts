@@ -19,6 +19,8 @@ export class ParameterGenerator {
 			(identifier) => this.supportParameterDecorator(identifier.text));
 
 		switch (decoratorName) {
+			case "Logger":
+				return this.getLoggerParameter(this.parameter);
 			case "Request":
 				return this.getRequestParameter(this.parameter);
 			case "Body":
@@ -46,6 +48,19 @@ export class ParameterGenerator {
 			required: !parameter.questionToken && !parameter.initializer,
 			type: {dataType: "object"},
 			validators: getParameterValidators(this.parameter, parameterName),
+		};
+	}
+
+	private getLoggerParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
+		const parameterName = (parameter.name as ts.Identifier).text;
+		return {
+			description: "",
+			in: "logger",
+			name: parameterName,
+			parameterName,
+			required: true,
+			type: {dataType: "object"},
+			validators: {},
 		};
 	}
 
@@ -182,7 +197,7 @@ export class ParameterGenerator {
 	}
 
 	private supportParameterDecorator(decoratorName: string) {
-		return ["header", "query", "parem", "body", "bodyprop", "request"]
+		return ["header", "query", "parem", "body", "bodyprop", "request", "logger"]
 			.some((d) => d === decoratorName.toLocaleLowerCase());
 	}
 

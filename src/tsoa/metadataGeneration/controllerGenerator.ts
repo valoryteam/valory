@@ -37,7 +37,7 @@ export class ControllerGenerator {
 		const checker = MetadataGenerator.current.typeChecker;
 		if (this.node.heritageClauses != null) {
 			this.node.heritageClauses.forEach((item) => {
-				console.log(item.getText());
+				// console.log(item.getText());
 				for (const node of item.types) {
 					const type = checker.getTypeFromTypeNode(node);
 					if (type.symbol.escapedName === "Controller") {
