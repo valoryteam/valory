@@ -30,12 +30,29 @@ import {Valory, ApiRequest} from "{{= process.env.NODE_ENV == "test" ? "../main"
   import {{{= item.name}}} from "{{=item.location}}";{{~}}
 {{~ it.metadata.controllers : item}}
   const {{=item.name}}Controller = new {{=item.name}}();{{~}}
+
+function pushArr(target: any[], other: any[]): any[] {
+    if (other == null) {
+        return target;
+    }
+    if (target == null) {
+        return other;
+    }
+    const len = other.length;
+    let i;
+    for(i=0;i<len;i++){
+        target.push(other[i]);
+    }
+    return target;
+}
+
 export = {
     register: (app: Valory) => {
-                  {{~ it.metadata.controllers: route}}{{~ route.methods: method}}
-                  {{const path = `/${route.path}${method.path}`.replace("//","/");}}
+                  {{~ it.metadata.controllers: route}}{{~ route.methods: method}}{{const path = `/${route.path}${method.path}`.replace("//","/");}}{{const conName = `${route.name}Controller`;}}{{const methodName = `${conName}.${method.name}`;}}
+                  const {{=conName}}{{=method.name}}Middleware = pushArr(({{=methodName}} as any).middleware, ({{=conName}} as any).middleware);
+                  const {{=conName}}{{=method.name}}PostMiddleware = pushArr(({{=methodName}} as any).postMiddleware, ({{=conName}} as any).postMiddleware);
                   app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method], null, 2)}},(req: ApiRequest, logger: any)=>{
-                      return Promise.resolve({{=route.name}}Controller.{{=method.name}}(
+                      return Promise.resolve({{=methodName}}(
                           {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
                       )).then((response) => {
                           {{? route.extendsController}}
@@ -52,7 +69,7 @@ export = {
                           return app.buildSuccess(response);
                           {{?}}
                       })
-                  },undefined,{{=method.isHidden}});
+                  },{{=conName}}{{=method.name}}Middleware,{{=method.isHidden}},{{=conName}}{{=method.name}}PostMiddleware);
                   {{~}}{{~}}
               },
     definitions: {{=JSON.stringify(it.swagger.definitions, null, 2)}},

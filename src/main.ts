@@ -51,12 +51,13 @@ export {
 	Route,
 } from "./server/decorators/route";
 export {
-	Security,
-} from "./server/decorators/security";
-export {
 	Tags,
 } from "./server/decorators/tags";
 export {
 	Response,
 	SuccessResponse,
 } from "./server/decorators/response";
+export {
+	Middleware,
+	PostMiddleware,
+} from "./server/decorators/middleware";
