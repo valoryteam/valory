@@ -271,6 +271,17 @@ function getEnumerateType(typeName: ts.EntityName, extractEnum = true): Tsoa.Typ
 	}
 }
 
+function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration |
+	ts.ParameterDeclaration | ts.EnumDeclaration) {
+	const example = getJSDocComment(node, "example");
+
+	if (example) {
+		return JSON.parse(example);
+	} else {
+		return undefined;
+	}
+}
+
 function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | undefined {
 	const literalName = (typeName as ts.Identifier).text;
 	const literalTypes = MetadataGenerator.current.nodes
@@ -323,6 +334,7 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 		const properties = getModelProperties(modelType, genericTypes);
 		const additionalProperties = getModelAdditionalProperties(modelType);
 		const inheritedProperties = getModelInheritedProperties(modelType) || [];
+		const example = getNodeExample(modelType);
 
 		const referenceType = {
 			additionalProperties,
@@ -335,6 +347,9 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 		referenceType.properties = (referenceType.properties as Tsoa.Property[]).concat(properties);
 		localReferenceTypeCache[refNameWithGenerics] = referenceType;
 
+		if (example) {
+			referenceType.example = example;
+		}
 		return referenceType;
 	} catch (err) {
 		// tslint:disable-next-line:no-console

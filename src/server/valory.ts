@@ -1,6 +1,6 @@
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
-import {forIn, isNil, omitBy, set, uniq} from "lodash";
+import {forIn, isNil, omitBy, set, uniq, merge} from "lodash";
 import {loadModule} from "../compiler/loader";
 import {readFileSync} from "fs";
 import {Steed} from "steed";
@@ -223,7 +223,7 @@ export class Valory {
 			let genRoutes;
 			if (Config.SourceRoutePath !== "") {
 				genRoutes = require(Config.GeneratedRoutePath);
-				Object.assign(this.apiDef.definitions, genRoutes.definitions);
+				merge(this.apiDef.definitions, genRoutes.definitions);
 			}
 			this.validatorModule = loadModule(definitions);
 			if (genRoutes) {
@@ -238,7 +238,7 @@ export class Valory {
 			// console.log(Config);
 			if (Config.SourceRoutePath !== "") {
 				const genRoutes = require(Config.SourceRoutePath);
-				Object.assign(this.apiDef.definitions, genRoutes.definitions);
+				merge(this.apiDef.definitions, genRoutes.definitions);
 				genRoutes.register(this);
 			}
 		}

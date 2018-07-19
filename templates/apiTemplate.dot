@@ -20,6 +20,8 @@ function paramPath(type, name) {
             return "(req as any)";
         case "body":
             return "req.body";
+        case "body-prop":
+            return `req.body.${name}`;
         default:
             return `req.${type}.${name}`;
     }
