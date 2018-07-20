@@ -108,7 +108,7 @@ export class SpecGenerator {
 		if (bodyPropParameter) {
 			pathMethod.parameters.push(bodyPropParameter);
 		}
-		if (pathMethod.parameters.filter((p: Swagger.BaseParameter) => p.in === "body").length > 1) {
+		if ((pathMethod.parameters.filter as any)((p: Swagger.BaseParameter) => p.in === "body").length > 1) {
 			throw new Error("Only one body parameter allowed per controller method.");
 		}
 	}
@@ -141,7 +141,7 @@ export class SpecGenerator {
 				title: `${this.getOperationId(method.name)}Body`,
 				type: "object",
 			},
-		} as Swagger.Parameter;
+		} as Swagger.BodyParameter;
 		if (required.length) {
 			parameter.schema.required = required;
 		}
@@ -165,7 +165,7 @@ export class SpecGenerator {
 		}
 
 		if (parameterType.$ref) {
-			parameter.schema = parameterType as Swagger.Schema;
+			(parameter as Swagger.BodyParameter).schema = parameterType as Swagger.Schema;
 			return parameter;
 		}
 
@@ -179,14 +179,14 @@ export class SpecGenerator {
 			});
 
 		if (source.in === "body" && source.type.dataType === "array") {
-			parameter.schema = {
+			(parameter as Swagger.BodyParameter).schema = {
 				items: parameterType.items,
 				type: "array",
 			};
 		} else {
 			if (source.type.dataType === "any") {
 				if (source.in === "body") {
-					parameter.schema = {type: "object"};
+					(parameter as Swagger.BodyParameter).schema = {type: "object"};
 				} else {
 					parameter.type = "string";
 				}
@@ -197,8 +197,9 @@ export class SpecGenerator {
 			}
 		}
 
-		if (parameter.schema) {
-			parameter.schema = Object.assign({}, parameter.schema, validatorObjs);
+		if ((parameter as Swagger.BodyParameter).schema != null) {
+			(parameter as Swagger.BodyParameter).schema =
+				Object.assign({}, (parameter as Swagger.BodyParameter).schema, validatorObjs);
 		} else {
 			parameter = Object.assign({}, parameter, validatorObjs);
 		}

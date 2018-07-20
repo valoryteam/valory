@@ -372,6 +372,7 @@ export class Valory {
 		if (this.COMPILERMODE) {
 			process.env[VALORYMETAVAR] = JSON.stringify(data);
 		}
+		return data;
 	}
 
 	/**

@@ -1,11 +1,11 @@
 export namespace Swagger {
+
 	export type DataType = "integer"
 		| "number"
 		| "boolean"
 		| "string"
 		| "array"
-		| "object"
-		;
+		| "object";
 
 	export type DataFormat = "int32"
 		| "int64"
@@ -79,13 +79,17 @@ export namespace Swagger {
 		in: "query" | "header" | "path" | "formData" | "body";
 		required?: boolean;
 		description?: string;
-		schema?: Schema;
 		type?: DataType;
 		format?: DataFormat;
 	}
 
+	export interface RefParameter {
+		$ref: string;
+	}
+
 	export interface BodyParameter extends BaseParameter {
 		in: "body";
+		schema?: Schema;
 	}
 
 	export interface QueryParameter extends BaseParameter {
@@ -96,6 +100,7 @@ export namespace Swagger {
 
 	export interface PathParameter extends BaseParameter {
 		in: "path";
+		required: true;
 	}
 
 	export interface HeaderParameter extends BaseParameter {
@@ -105,6 +110,7 @@ export namespace Swagger {
 	export interface FormDataParameter extends BaseParameter {
 		in: "formData";
 		collectionFormat?: "csv" | "ssv" | "tsv" | "pipes" | "multi";
+		schema?: Schema;
 	}
 
 	export type Parameter = BodyParameter
@@ -122,7 +128,7 @@ export namespace Swagger {
 		options?: Operation;
 		head?: Operation;
 		patch?: Operation;
-		parameters?: Parameter[];
+		parameters?: Array<Parameter | RefParameter>;
 	}
 
 	export interface Operation {
@@ -133,7 +139,7 @@ export namespace Swagger {
 		operationId?: string;
 		consumes?: string[];
 		produces?: string[];
-		parameters?: Parameter[];
+		parameters?: Array<Parameter | RefParameter>;
 		responses: { [name: string]: Response };
 		schemes?: Protocol[];
 		deprecated?: boolean;

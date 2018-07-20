@@ -35,6 +35,7 @@ async function compilerRunner(args: any) {
 	}
 	require((Config.ConfigData.sourceEntrypoint !== ""
 		? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
+	// Logger.info(process.env[VALORYMETAVAR]);
 	const valExport: { valory: ValoryMetadata } = JSON.parse(process.env[VALORYMETAVAR]);
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;

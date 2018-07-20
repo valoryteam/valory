@@ -1,25 +1,52 @@
 import {expect} from "chai";
 import * as path from "path";
+import * as fs from "fs";
 import {Options} from "request-promise";
-import {execSync} from "child_process";
+import {execSync, exec, ChildProcess} from "child_process";
 import {suite, test, timeout} from "mocha-typescript";
 import requestPromise = require("request-promise");
+import {ValoryConfig} from "../lib/config";
 
 const valoryPath = path.join(__dirname, "../lib/cli.js");
-const testApiPath = path.join(__dirname, "testApi.js");
+const valoryConfig = path.join(__dirname, "../../valory.json");
 
-let api: any = null;
+const configOverride: ValoryConfig = {
+	entrypoint: "dist/test/testApi.js",
+	sourceEntrypoint: "src/test/testApi.ts",
+	singleError: false,
+};
 
-@suite class ValoryTest {
+// let api: any = null;
+
+@suite
+class ValoryTest {
 	public static after() {
-		api.server.close();
+		fs.writeFileSync(valoryConfig, ValoryTest.currentConfig);
+		process.kill(ValoryTest.serverProc.pid + 1, "SIGTERM");
 	}
 
 	@timeout(200000)
 	public static before() {
-		execSync(`${process.execPath} ${valoryPath} compile ${testApiPath} -v 1`);
-		api = require("./testApi");
+		ValoryTest.currentConfig = fs.readFileSync(valoryConfig);
+		fs.writeFileSync(valoryConfig, JSON.stringify(configOverride));
+
+		process.env.NODE_ENV = "test";
+		const cmdOut = execSync(`${valoryPath} compile`, {
+			cwd: path.join(__dirname, "../.."),
+		});
+		return new Promise((resolve, reject) => {
+			ValoryTest.serverProc = exec(`${valoryPath} test`, {
+				cwd: path.join(__dirname, "../.."),
+
+			});
+			// ValoryTest.serverProc.stdout.pipe(process.stdout);
+			// ValoryTest.serverProc.stderr.pipe(process.stdout);
+			setTimeout(resolve, 500);
+		});
 	}
+
+	private static currentConfig: Buffer = null;
+	private static serverProc: ChildProcess;
 
 	@test
 	public async TestSimpleGET() {
@@ -132,5 +159,46 @@ let api: any = null;
 		const response = await requestPromise(getRequest);
 		const resObj = JSON.parse(response);
 		expect(resObj).to.have.property("TestMiddleware").to.have.property("test").eq("teststring");
+	}
+
+	@test
+	public async TestGeneratedGET() {
+		const getRequest: Options = {
+			method: "GET",
+			uri: "http://localhost:8080/test",
+			headers: {
+				Authorization: "Token aoisretn",
+			},
+		};
+
+		const response = await requestPromise(getRequest);
+		const resObj = JSON.parse(response);
+		try {
+			expect(resObj).to.not.have.property("code");
+		} catch (err) {
+			throw new Error("Failed response validation: " + response);
+		}
+	}
+
+	@test
+	public async TestGeneratedPOST() {
+		const getRequest: Options = {
+			method: "POST",
+			uri: "http://localhost:8080/test/submit",
+			headers: {
+				Authorization: "application/json",
+			},
+			json: {
+				name: "john",
+				isCool: true,
+			},
+		};
+
+		const response = await requestPromise(getRequest);
+		try {
+			expect(response).to.equal("john is cool");
+		} catch (err) {
+			throw new Error("Failed response validation: " + response);
+		}
 	}
 }

@@ -56,7 +56,7 @@ export function compileMethodSchema(operation: Swagger.Operation, method: string
 	};
 
 	each(operation.parameters, (parameter) => {
-		switch (parameter.in) {
+		switch ((parameter as Swagger.BaseParameter).in) {
 			case "body":
 				schema.properties.body = (parameter as Swagger.BodyParameter).schema;
 				if (!schema.required) {
@@ -65,11 +65,11 @@ export function compileMethodSchema(operation: Swagger.Operation, method: string
 				schema.required.push("body");
 				break;
 			case "header":
-				parameter.name = parameter.name.toLowerCase();
+				(parameter as Swagger.BaseParameter).name = (parameter as Swagger.BaseParameter).name.toLowerCase();
 			case "formData":
 			case "query":
 			case "path":
-				addProperty(parameter);
+				addProperty((parameter as any));
 		}
 	});
 
