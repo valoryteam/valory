@@ -32,4 +32,4 @@ const api = Valory.createInstance({
 	},
 });
 // Build and export the app, passing any adaptor specific config data
-module.exports = api.start({port: process.env.PORT || 8080});
+api.start({port: process.env.PORT || 8080});

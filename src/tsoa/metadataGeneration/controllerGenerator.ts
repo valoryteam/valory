@@ -4,6 +4,8 @@ import {GenerateMetadataError} from "./exceptions";
 import {MethodGenerator} from "./methodGenerator";
 import {Tsoa} from "./tsoa";
 import {MetadataGenerator} from "./metadataGenerator";
+import {Config} from "../../lib/config";
+import {resolve} from "path";
 
 export class ControllerGenerator {
 	private readonly path?: string;
@@ -28,10 +30,15 @@ export class ControllerGenerator {
 			throw new GenerateMetadataError("Controller node doesn't have a valid name.");
 		}
 		if (!this.isNodeExported()) {
-			throw new GenerateMetadataError("Controller node must be exported");
+			throw new GenerateMetadataError("Controller node must be exported.");
 		}
 
 		const sourceFile = this.node.parent.getSourceFile();
+
+		if (sourceFile.fileName === Config.ConfigData.sourceEntrypoint) {
+			throw new GenerateMetadataError("Controller node not allowed in app entrypoint.");
+		}
+
 		let extendsController = false;
 
 		const checker = MetadataGenerator.current.typeChecker;

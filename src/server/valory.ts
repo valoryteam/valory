@@ -20,8 +20,8 @@ const steed: Steed = require("steed")();
 const uuid = require("hyperid")();
 const COMMONROUTEKEY = "ALL";
 /** @hidden */ export const VALORYLOGGERVAR = "LOGLEVEL";
-/** @hidden */ export const VALORYCONFIGFILE = "valory.json";
 /** @hidden */ export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
+/** @hidden */ export const VALORYMETAVAR = "VALORY_METATDATA";
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
@@ -74,8 +74,8 @@ export interface ValoryOptions {
 	errors?: { [x: string]: ErrorDef };
 	consumes?: string[];
 	produces?: string[];
-	parameters?: {[name: string]: Swagger.Parameter};
-	responses?: {[name: string]: Swagger.Response };
+	parameters?: { [name: string]: Swagger.Parameter };
+	responses?: { [name: string]: Swagger.Response };
 	definitions?: { [x: string]: Swagger.Schema };
 	tags?: Swagger.Tag[];
 	basePath?: string;
@@ -151,6 +151,7 @@ export class Valory {
 		return new Valory(options.info, options.errors || {}, options.consumes, options.produces, options.definitions || {},
 			options.tags || [], options.server, options.basePath, options.parameters, options.responses);
 	}
+
 	/**
 	 * Get the valory instance
 	 */
@@ -160,10 +161,13 @@ export class Valory {
 		}
 		return Valory.instance;
 	}
+
 	private static instance: Valory;
 	private static directInstantiation = true;
-	public Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
-		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
+	public Logger = P({
+		level: process.env[VALORYLOGGERVAR] || "info",
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"
+	});
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
@@ -185,8 +189,8 @@ export class Valory {
 	 */
 	constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
 				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], server: ApiServer, basePath?: string,
-				parameters: {[name: string]: Swagger.Parameter} = {},
-				responses: {[name: string]: Swagger.Response} = {}) {
+				parameters: { [name: string]: Swagger.Parameter } = {},
+				responses: { [name: string]: Swagger.Response } = {}) {
 		Config.load();
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
@@ -279,7 +283,7 @@ export class Valory {
 	/**
 	 * Convenience method to build a return exchange when only body and/or header customization is required
 	 */
-	public buildSuccess(body: any, headers: {[key: string]: any} = {}): ApiResponse {
+	public buildSuccess(body: any, headers: { [key: string]: any } = {}): ApiResponse {
 		if (headers["Content-Type"] == null) {
 			if (typeof body === "object") {
 				headers["Content-Type"] = "application/json";
@@ -359,12 +363,15 @@ export class Valory {
 	}
 
 	/**
-	 * Start server and build appserver export object
+	 * Start server. Call once all endpoints are registered.
 	 */
 	public start(options: any): any {
 		this.Logger.info("Valory startup complete");
 		this.metadata.swagger = this.apiDef;
-		return this.server.getExport(this.metadata, options);
+		const data = this.server.getExport(this.metadata, options);
+		if (this.COMPILERMODE) {
+			process.env[VALORYMETAVAR] = JSON.stringify(data);
+		}
 	}
 
 	/**
@@ -456,7 +463,7 @@ export class Valory {
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			return {
 				body: swaggerBlob,
-				headers: {"Content-Type": "text/plain" },
+				headers: {"Content-Type": "text/plain"},
 				query: null,
 				path: null,
 				statusCode: 200,

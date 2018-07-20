@@ -20,6 +20,7 @@ export {
 	ValoryOptions,
 	VALORYLOGGERVAR,
 	VALORYPRETTYLOGGERVAR,
+	VALORYMETAVAR,
 } from "./server/valory";
 export {
 	ApiRequest,

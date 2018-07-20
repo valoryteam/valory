@@ -3,7 +3,7 @@ import {CLI_MODE_FLAG, Config} from "./config";
 
 process.env[CLI_MODE_FLAG] = "true";
 
-import {VALORYLOGGERVAR, ValoryMetadata, VALORYPRETTYLOGGERVAR} from "../main";
+import {VALORYLOGGERVAR, ValoryMetadata, VALORYMETAVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Swagger} from "../server/swagger";
 import {compileAndSave} from "../compiler/loader";
@@ -33,8 +33,9 @@ async function compilerRunner(args: any) {
 	if (Config.SourceRoutePath !== "") {
 		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
-	const valExport: { valory: ValoryMetadata } = require((Config.ConfigData.sourceEntrypoint !== ""
+	require((Config.ConfigData.sourceEntrypoint !== ""
 		? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
+	const valExport: { valory: ValoryMetadata } = JSON.parse(process.env[VALORYMETAVAR]);
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
@@ -116,9 +117,6 @@ async function configBuilder(args: object) {
 		},
 	]);
 
-	if (!config.compiledEntrypoint) {
-		config.compiledEntrypoint = config.entrypoint;
-	}
 	writeFileSync(Config.ConfigPath, JSON.stringify(config, null, 2));
 }
 
