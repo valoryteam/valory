@@ -21,13 +21,17 @@ const configOverride: ValoryConfig = {
 @suite
 class ValoryTest {
 	public static after() {
-		fs.writeFileSync(valoryConfig, ValoryTest.currentConfig);
+		if (fs.existsSync(valoryConfig)) {
+			fs.writeFileSync(valoryConfig, ValoryTest.currentConfig);
+		}
 		process.kill(ValoryTest.serverProc.pid + 1, "SIGTERM");
 	}
 
 	@timeout(200000)
 	public static before() {
-		ValoryTest.currentConfig = fs.readFileSync(valoryConfig);
+		if (fs.existsSync(valoryConfig)) {
+			ValoryTest.currentConfig = fs.readFileSync(valoryConfig);
+		}
 		fs.writeFileSync(valoryConfig, JSON.stringify(configOverride));
 
 		process.env.NODE_ENV = "test";
