@@ -44,9 +44,9 @@ class ValoryTest {
 				cwd: path.join(__dirname, "../.."),
 
 			});
-			// ValoryTest.serverProc.stdout.pipe(process.stdout);
+			ValoryTest.serverProc.stdout.pipe(process.stdout);
 			ValoryTest.serverProc.stderr.pipe(process.stdout);
-			setTimeout(resolve, 500);
+			setTimeout(resolve, 1000);
 		});
 	}
 
