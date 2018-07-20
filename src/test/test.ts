@@ -38,13 +38,14 @@ class ValoryTest {
 		const cmdOut = execSync(`${process.execPath} ${valoryPath} compile`, {
 			cwd: path.join(__dirname, "../.."),
 		});
+		console.log(cmdOut.toString());
 		return new Promise((resolve, reject) => {
 			ValoryTest.serverProc = exec(`${process.execPath} ${valoryPath} test`, {
 				cwd: path.join(__dirname, "../.."),
 
 			});
 			// ValoryTest.serverProc.stdout.pipe(process.stdout);
-			// ValoryTest.serverProc.stderr.pipe(process.stdout);
+			ValoryTest.serverProc.stderr.pipe(process.stdout);
 			setTimeout(resolve, 500);
 		});
 	}
