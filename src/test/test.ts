@@ -35,11 +35,11 @@ class ValoryTest {
 		fs.writeFileSync(valoryConfig, JSON.stringify(configOverride));
 
 		process.env.NODE_ENV = "test";
-		const cmdOut = execSync(`${valoryPath} compile`, {
+		const cmdOut = execSync(`${process.execPath} ${valoryPath} compile`, {
 			cwd: path.join(__dirname, "../.."),
 		});
 		return new Promise((resolve, reject) => {
-			ValoryTest.serverProc = exec(`${valoryPath} test`, {
+			ValoryTest.serverProc = exec(`${process.execPath} ${valoryPath} test`, {
 				cwd: path.join(__dirname, "../.."),
 
 			});
