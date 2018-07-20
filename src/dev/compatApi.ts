@@ -3,9 +3,6 @@
 // import {Tag} from "swagger-schema-official";
 //
 // const info = {
-// 	description: "This is a sample server Petstore server.  You can find out more" +
-// 	" about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger]" +
-// 	"(http://swagger.io/irc/).  For this sample, you can use the api key `special-key` to test the authorization filters.",
 // 	version: "1.0.0",
 // 	title: "Swagger Petstore",
 // 	termsOfService: "http://swagger.io/terms/",
@@ -692,7 +689,8 @@
 // 			"store",
 // 		],
 // 		summary: "Find purchase order by ID",
-// 		description: "For valid response try integer IDs with value >= 1 and <= 10. Other values will generated exceptions",
+// 		description: "For valid response try integer IDs with value >=
+// 1 and <= 10. Other values will generated exceptions",
 // 		operationId: "getOrderById",
 // 		produces: [
 // 			"application/xml",

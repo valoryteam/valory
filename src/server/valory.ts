@@ -166,7 +166,7 @@ export class Valory {
 	private static directInstantiation = true;
 	public Logger = P({
 		level: process.env[VALORYLOGGERVAR] || "info",
-		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"
+		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
 	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
