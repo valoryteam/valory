@@ -9,6 +9,8 @@ import {ValoryConfig} from "../lib/config";
 
 const valoryPath = path.join(__dirname, "../lib/cli.js");
 const valoryConfig = path.join(__dirname, "../../valory.json");
+const tsCompiler = path.join(__dirname, "../../node_modules/.bin/tsc");
+const root = path.join(__dirname, "../..");
 
 const configOverride: ValoryConfig = {
 	entrypoint: "dist/test/testApi.js",
@@ -36,17 +38,23 @@ class ValoryTest {
 
 		process.env.NODE_ENV = "test";
 		const cmdOut = execSync(`${process.execPath} ${valoryPath} compile`, {
-			cwd: path.join(__dirname, "../.."),
+			cwd: root,
 		});
-		console.log(cmdOut.toString());
+		const tsOut = execSync(`${process.execPath} ${tsCompiler}`, {
+			cwd: root,
+		});
 		return new Promise((resolve, reject) => {
 			ValoryTest.serverProc = exec(`${process.execPath} ${valoryPath} test`, {
-				cwd: path.join(__dirname, "../.."),
-
+				cwd: root,
 			});
-			ValoryTest.serverProc.stdout.pipe(process.stdout);
-			ValoryTest.serverProc.stderr.pipe(process.stdout);
-			setTimeout(resolve, 1000);
+			ValoryTest.serverProc.stdout.on("data", (data: string) => {
+				if (data.includes("Valory startup complete")) {
+					resolve();
+				}
+			});
+			ValoryTest.serverProc.stderr.on("data", (data: string) => {
+				reject(data);
+			});
 		});
 	}
 
