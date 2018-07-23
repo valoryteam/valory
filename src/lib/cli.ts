@@ -16,9 +16,10 @@ import * as inquirer from "inquirer";
 import {existsSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
 import {convertTime} from "./helpers";
+import chalk from "chalk";
 
 async function compilerRunner(args: any) {
-	console.log(`valory compile v${Config.ValoryVersion}\n`);
+	console.log(chalk.bold(`valory compile v${Config.ValoryVersion}\n`));
 	console.log(`Project:       ${Config.PackageJSON.name}`);
 	console.log(`Version:       ${Config.PackageJSON.version}`);
 	console.log(`Config:        ${Config.ConfigPath}\n`);
@@ -40,13 +41,21 @@ async function compilerRunner(args: any) {
 	if (Config.SourceRoutePath !== "") {
 		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
-	console.log("Appserver Warmup");
+	console.log(chalk.bold("Appserver Warmup"));
 	const spinner = Config.Spinner;
 	await spinner.start("Registering routes");
-	require((Config.ConfigData.sourceEntrypoint !== ""
-		? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
-	// Logger.info(process.env[VALORYMETAVAR]);
-	const valExport: { valory: ValoryMetadata } = JSON.parse(process.env[VALORYMETAVAR]);
+	let valExport: { valory: ValoryMetadata };
+	try {
+		require((Config.ConfigData.sourceEntrypoint !== ""
+			? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
+		// Logger.info(process.env[VALORYMETAVAR]);
+		valExport = JSON.parse(process.env[VALORYMETAVAR]);
+	} catch (e) {
+		await spinner.fail();
+		ThreadSpinner.shutdown();
+		console.error(e);
+		process.exit();
+	}
 	spinner.succeed();
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;

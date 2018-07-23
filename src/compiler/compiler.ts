@@ -18,6 +18,7 @@ import Pino = require("pino");
 import {convertTime} from "../lib/helpers";
 import {Swagger} from "../server/swagger";
 import {Config} from "../lib/config";
+import chalk from "chalk";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -84,7 +85,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	}
 	const spinner = Config.Spinner;
 	// const start = process.hrtime();
-	console.log("Prepare Swagger");
+	console.log(chalk.bold("Prepare Swagger"));
 	// CompileLog.info("Validating swagger");
 	await spinner.start("Validating Swagger");
 	await validate(cloneDeep(spec as any));
@@ -96,7 +97,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	spinner.start("Dereferencing Swagger");
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
 	await spinner.succeed();
-	console.log("Build Endpoints");
+	console.log(chalk.bold("Build Endpoints"));
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
 			await spinner.start("Building method schema");
@@ -135,7 +136,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 			await spinner.succeed(`${path}:${method}`);
 		}
 	}
-	console.log("Compile");
+	console.log(chalk.bold("Compile"));
 	await spinner.start("Building intermediate module");
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,

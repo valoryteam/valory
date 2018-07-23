@@ -7,6 +7,7 @@ import * as tsfmt from "typescript-formatter";
 import P = require("pino");
 import {Config} from "../lib/config";
 import {ThreadSpinner} from "thread-spin";
+import chalk from "chalk";
 
 const dotJs = require("dot");
 dotJs.log = false;
@@ -19,7 +20,7 @@ export async function routeBuild(entryPoint: string) {
 	// 	level: process.env[VALORYLOGGERVAR] || "info",
 	// 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	// });
-	console.log("Controller Generation");
+	console.log(chalk.bold("Controller Generation"));
 	const spinner = Config.Spinner;
 	await spinner.start("Generating route controller metadata");
 	const metadata = new MetadataGenerator(entryPoint).Generate();
