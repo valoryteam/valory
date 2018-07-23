@@ -18,7 +18,7 @@ export async function compileAndSave(swagger: Swagger.Spec, compilePath: string,
 	Logger.info("Saving compiled swagger to: " + compilePath);
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
-	omit(trimmedSpec, undocumentedPaths);
+	trimmedSpec.paths = omit(trimmedSpec.paths, undocumentedPaths);
 	if (debugPath != null) {
 		if (!existsSync(debugPath)) {
 			mkdirSync(debugPath);

@@ -65,8 +65,7 @@ export class SpecGenerator {
 
 		this.metadata.controllers.forEach((controller) => {
 			const normalisedControllerPath = normalisePath(controller.path, "/");
-			// construct documentation using all methods except @Hidden
-			controller.methods.filter((method) => !method.isHidden).forEach((method) => {
+			controller.methods.forEach((method) => {
 				const normalisedMethodPath = normalisePath(method.path, "/");
 				const path = normalisePath(`${normalisedControllerPath}${normalisedMethodPath}`, "/", "", false);
 				paths[path] = paths[path] || {};

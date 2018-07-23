@@ -385,6 +385,9 @@ export class Valory {
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
 							postMiddleware: ApiMiddleware[] = []) {
+		if (!documented) {
+			this.metadata.undocumentedEndpoints.push(path);
+		}
 		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware,
 			this.globalPostMiddleware, postMiddleware);
 		for (const item of middlewares) {
