@@ -17,6 +17,7 @@ import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
 import {convertTime} from "../lib/helpers";
 import {Swagger} from "../server/swagger";
+import {Config} from "../lib/config";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const beautifier = require("js-beautify").js_beautify;
@@ -81,29 +82,38 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	if (options.discrimFastFail) {
 		CompileLog.warn("discriminator fast fail is enabled EXPERIMENTAL");
 	}
-	const start = process.hrtime();
-	CompileLog.info("Validating swagger");
+	const spinner = Config.Spinner;
+	// const start = process.hrtime();
+	console.log("Prepare Swagger");
+	// CompileLog.info("Validating swagger");
+	await spinner.start("Validating Swagger");
 	await validate(cloneDeep(spec as any));
-	CompileLog.info("Preprocessing swagger");
+	await spinner.succeed();
+	// CompileLog.info("Preprocessing swagger");
+	spinner.start("Preprocessing Swagger");
 	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec as any));
-	CompileLog.info("Dereferencing swagger");
+	await spinner.succeed();
+	spinner.start("Dereferencing Swagger");
 	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
+	await spinner.succeed();
+	console.log("Build Endpoints");
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
 		for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
+			await spinner.start("Building method schema");
 			const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
 			const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
-			endpointLogger.info("Building method schema");
+			// endpointLogger.info("Building method schema");
 			const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)[method], method, path,
 				options.requestFieldMapping);
-			endpointLogger.info("Preprocessing schema");
+			spinner.text = "Preprocessing schema";
 			const schemaProcessed = schemaPreprocess(schema);
-			endpointLogger.info("Compiling schema validator");
+			spinner.text = "Compiling schema validator";
 			const initialCompile = ajv.compile(schemaProcessed.schema);
-			endpointLogger.info("Objectifying anyOf's");
+			spinner.text = "Objectifying anyOf's";
 			resolve(schemaProcessed.resQueue);
-			endpointLogger.info("Mangling keys");
+			spinner.text = "Mangling keys";
 			const mangled = mangleKeys(schemaProcessed.schema);
-			endpointLogger.info("Compiling intermediate validator function");
+			spinner.text = "Compiling intermediate validator function";
 			const templated = templates.validatorTemplate({
 				validate: initialCompile,
 				funcName: path,
@@ -122,9 +132,11 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 			output.debugArtifacts.processedSchema.push(schemaProcessed.schema);
 			output.debugArtifacts.initialCompiles.push(initialCompile);
 			output.debugArtifacts.mangledSchema.push(mangled);
+			await spinner.succeed(`${path}:${method}`);
 		}
 	}
-	CompileLog.info("Building intermediate module");
+	console.log("Compile");
+	await spinner.start("Building intermediate module");
 	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
 		defHash: XXH.h32(JSON.stringify(spec.definitions), HASH_SEED).toString(),
@@ -147,8 +159,8 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 		debug: options.debug,
 		jscomp_off: errorSup,
 	};
-
-	CompileLog.info("Running Closure Compiler:", CompilationLevel[options.compilationLevel]);
+	await spinner.succeed();
+	await spinner.start("Running Closure Compiler: " + CompilationLevel[options.compilationLevel]);
 	await new Promise((resol, reject) => {
 		new ClosureCompiler(compilerFlags).run((exitCode: number, stdout: string, stderr: string) => {
 			output.debugArtifacts.closureOutput.stderr = stderr;
@@ -164,10 +176,11 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 			}
 		});
 	});
-
-	CompileLog.info("Final post process");
+	await spinner.succeed();
+	await spinner.start("Final post process");
 	output.module = finalProcess(output.debugArtifacts.postCompileModule);
-	CompileLog.info("Compilation finished in:", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");
+	await spinner.succeed();
+	// console.log("\nDone", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");
 	return output;
 }
 

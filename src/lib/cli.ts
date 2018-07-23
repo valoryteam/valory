@@ -14,8 +14,15 @@ import yargs = require("yargs");
 import P = require("pino");
 import * as inquirer from "inquirer";
 import {existsSync, writeFileSync} from "fs";
+import {ThreadSpinner} from "thread-spin";
+import {convertTime} from "./helpers";
 
 async function compilerRunner(args: any) {
+	console.log(`valory compile v${Config.ValoryVersion}\n`);
+	console.log(`Project:       ${Config.PackageJSON.name}`);
+	console.log(`Version:       ${Config.PackageJSON.version}`);
+	console.log(`Config:        ${Config.ConfigPath}\n`);
+	const start = process.hrtime();
 	require("ts-node").register({
 		project: join(__dirname, "../../tsconfig.json"),
 		compilerOptions: {
@@ -26,17 +33,21 @@ async function compilerRunner(args: any) {
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
 	}
-	const Logger = P({
-		level: process.env[VALORYLOGGERVAR] || "info",
-		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
-	});
+	// const Logger = P({
+	// 	level: process.env[VALORYLOGGERVAR] || "info",
+	// 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
+	// });
 	if (Config.SourceRoutePath !== "") {
 		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
+	console.log("Appserver Warmup");
+	const spinner = Config.Spinner;
+	await spinner.start("Registering routes");
 	require((Config.ConfigData.sourceEntrypoint !== ""
 		? Config.ConfigData.sourceEntrypoint : Config.ConfigData.entrypoint));
 	// Logger.info(process.env[VALORYMETAVAR]);
 	const valExport: { valory: ValoryMetadata } = JSON.parse(process.env[VALORYMETAVAR]);
+	spinner.succeed();
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
@@ -50,7 +61,8 @@ async function compilerRunner(args: any) {
 			discrimFastFail: args.discrimFastFail,
 		}, args.debugArtifactPath)
 		.then(() => {
-			Logger.info("Compilation Complete");
+			console.log("\nDone", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");
+			ThreadSpinner.shutdown();
 			process.exit(0);
 		});
 }

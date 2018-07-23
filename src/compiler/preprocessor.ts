@@ -122,12 +122,12 @@ export function schemaPreprocess(schema: ExtendedSchema):
 		}
 
 		if (scanSchema.type as any === "file") {
-			CompileLog.info(`"file" type is implementation specific and therefore cannot be validated`);
+			CompileLog.debug(`"file" type is implementation specific and therefore cannot be validated`);
 			delete scanSchema.type;
 		}
 
 		if (DisallowedFormats.indexOf(scanSchema.format) > -1) {
-			CompileLog.warn("removing invalid format:", scanSchema.format);
+			CompileLog.debug("removing invalid format:", scanSchema.format);
 			delete scanSchema.format;
 		}
 	};

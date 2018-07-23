@@ -168,7 +168,7 @@ export class Valory {
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
-	private COMPILERMODE = (process.env.VALORYCOMPILER === "TRUE");
+	private COMPILERMODE = Config.CompilerMode;
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
@@ -199,9 +199,7 @@ export class Valory {
 			this.Logger.warn("Direct instantiation of Valory is deprecated and will " +
 				"break in the next major version. Use Valory.createInstance instead.");
 		}
-		Valory.instance = this;
-		this.Logger.info("Starting valory");
-		this.apiDef = {
+		Valory.instance = this;this.apiDef = {
 			swagger: "2.0",
 			info,
 			paths: {},
@@ -221,6 +219,8 @@ export class Valory {
 		this.server = server;
 		Object.assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
+			this.Logger.info("Starting valory");
+
 			if (this.TESTMODE) {
 				this.server = new DefaultAdaptor() as any;
 			}
@@ -237,7 +237,7 @@ export class Valory {
 				this.registerDocSite();
 			}
 		} else {
-			this.Logger.info("Starting in compiler mode");
+			this.Logger.debug("Starting in compiler mode");
 			this.apiDef.tags.push(generateErrorTable(this.errors));
 			// console.log(Config);
 			if (Config.SourceRoutePath !== "") {
@@ -366,7 +366,9 @@ export class Valory {
 	 * Start server. Call once all endpoints are registered.
 	 */
 	public start(options: any): any {
-		this.Logger.info("Valory startup complete");
+		if (!this.COMPILERMODE){
+			this.Logger.info("Valory startup complete");
+		}
 		this.metadata.swagger = this.apiDef;
 		const data = this.server.getExport(this.metadata, options);
 		if (this.COMPILERMODE) {

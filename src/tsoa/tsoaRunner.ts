@@ -6,6 +6,7 @@ import {writeFileSync} from "fs";
 import * as tsfmt from "typescript-formatter";
 import P = require("pino");
 import {Config} from "../lib/config";
+import {ThreadSpinner} from "thread-spin";
 
 const dotJs = require("dot");
 dotJs.log = false;
@@ -14,19 +15,23 @@ const templates = dotJs.process({path: join(__dirname, "../../templates")});
 
 export async function routeBuild(entryPoint: string) {
 	// console.log(routeBuild.caller);
-	const Logger = P({
-		level: process.env[VALORYLOGGERVAR] || "info",
-		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
-	});
-	Logger.info("Generating route controller metadata");
+	// const Logger = P({
+	// 	level: process.env[VALORYLOGGERVAR] || "info",
+	// 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
+	// });
+	console.log("Controller Generation");
+	const spinner = Config.Spinner;
+	await spinner.start("Generating route controller metadata");
 	const metadata = new MetadataGenerator(entryPoint).Generate();
-	Logger.info("Building swagger content from metadata");
+	await spinner.succeed();
+	await spinner.start("Building swagger content from metadata");
 	const swaggerContent = new SpecGenerator(metadata).GetSpec();
 	metadata.controllers.forEach((con) => {
 		const relativePath = relative(dirname(entryPoint), con.location);
 		con.location = "./" + relativePath.replace(extname(relativePath), "");
 	});
-	Logger.info("Generating routes");
+	await spinner.succeed();
+	await spinner.start("Generating routes");
 	// Logger.info({
 	// 	swagger: swaggerContent,
 	// 	metadata,
@@ -47,8 +52,6 @@ export async function routeBuild(entryPoint: string) {
 		tslint: false,
 	} as any);
 
-	if (formatted.error) {
-		Logger.error("TS-formatter failed:", formatted.message);
-	}
 	writeFileSync(generatedPath, formatted.dest.replace(/\"([^(\")"]+)\":/g, "$1:"));
+	await spinner.succeed();
 }

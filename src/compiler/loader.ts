@@ -15,7 +15,7 @@ export async function compileAndSave(swagger: Swagger.Spec, compilePath: string,
 	const compiled = await require("./compiler").compile(swagger, compilerOptions);
 	const Logger = P({level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
-	Logger.info("Saving compiled swagger to: " + compilePath);
+	Logger.debug("Saving compiled swagger to: " + compilePath);
 	writeFileSync(compilePath, compiled.module);
 	const trimmedSpec = cloneDeep(swagger);
 	trimmedSpec.paths = omit(trimmedSpec.paths, undocumentedPaths);
