@@ -449,6 +449,9 @@ export class Valory {
 				}
 				return response;
 			} catch (error) {
+				if (error.name === "ValoryEndpointError") {
+					return this.buildError(error.valoryErrorCode, error.message || undefined);
+				}
 				childLogger.error("Internal exception occurred while processing request");
 				childLogger.error(error);
 				return this.buildError("InternalError");

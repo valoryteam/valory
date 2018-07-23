@@ -214,4 +214,21 @@ class ValoryTest {
 			throw new Error("Failed response validation: " + response);
 		}
 	}
+
+	@test
+	public async TestApiError() {
+		const getRequest: Options = {
+			method: "GET",
+			uri: "http://localhost:8080/test/error",
+		};
+
+		const response = await requestPromise(getRequest);
+		const resObj = JSON.parse(response);
+		try {
+			expect(resObj).to.have.property("code").eq(1331);
+			expect(resObj).to.have.property("message").eq("Test ApiError");
+		} catch (err) {
+			throw new Error("Failed response validation: " + response);
+		}
+	}
 }

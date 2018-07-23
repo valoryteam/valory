@@ -124,6 +124,13 @@ const api = Valory.createInstance({
 	info,
 	server: new DefaultAdaptor(),
 	definitions,
+	errors: {
+		TestError: {
+			statusCode: 200,
+			errorCode: 1331,
+			defaultMessage: "Test ApiError",
+		},
+	},
 });
 
 const TestMiddlewareKey = ApiRequest.createKey<string>();

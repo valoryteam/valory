@@ -9,7 +9,7 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory,
+	Valory, ApiError,
 } from "../main";
 import * as P from "pino";
 type Logger = P.Logger;
@@ -38,6 +38,7 @@ export class BurnRoutes {
 	@Middleware(TestMiddleware)
 	@Post()
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest, @Logger() logger: Logger): string {
-		return "thing";
+		throw ApiError("AccessDenied", "GTFO");
+		// return "thing";
 	}
 }

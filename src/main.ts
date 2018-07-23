@@ -30,35 +30,28 @@ export {
 export {
 	Swagger,
 } from "./server/swagger";
-export {Example} from "./server/decorators/example";
 export {
-	Delete,
-	Get,
-	Patch,
-	Post,
-	Put,
-} from "./server/decorators/methods";
+	ApiError,
+} from "./server/apiError";
 export {
-	Path,
-	Header,
+	Logger,
+	PostMiddleware,
+	Middleware,
 	Body,
 	BodyProp,
+	Delete,
+	Example,
+	Get,
+	Header,
+	Hidden,
+	Patch,
+	Path,
+	Post,
+	Put,
 	Query,
 	Request,
-	Logger,
-} from "./server/decorators/parameter";
-export {
-	Hidden,
-	Route,
-} from "./server/decorators/route";
-export {
-	Tags,
-} from "./server/decorators/tags";
-export {
 	Response,
+	Route,
 	SuccessResponse,
-} from "./server/decorators/response";
-export {
-	Middleware,
-	PostMiddleware,
-} from "./server/decorators/middleware";
+	Tags,
+} from "./server/decorators";
