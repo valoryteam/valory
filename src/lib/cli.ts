@@ -30,7 +30,6 @@ async function compilerRunner(args: any) {
 			types: ["node"],
 		},
 	});
-	process.env.VALORYCOMPILER = "TRUE";
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
 	}
@@ -227,6 +226,7 @@ yargs
 					default: false,
 				},
 			}).config("project", (rootPath: string) => {
+			process.env.VALORYCOMPILER = "TRUE";
 			Config.load(true, rootPath);
 			return Config.ConfigData;
 		});

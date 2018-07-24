@@ -20,7 +20,7 @@ export namespace Config {
 	export const GENERATED_ROUTES_FILE = "generatedRoutes.ts";
 	export const COMPILED_ROUTES_FILE = "generatedRoutes.js";
 	export let RootPath = "";
-	export let CompilerMode = process.env.VALORYCOMPILER === "TRUE";
+	export let CompilerMode = false;
 	export let Spinner: ThreadSpinner;
 	export let Loaded = false;
 	export let ConfigPath = "";
@@ -37,9 +37,7 @@ export namespace Config {
 		if (Loaded) {
 			return;
 		}
-		if (root != null) {
-			CompilerMode = true;
-		}
+		CompilerMode = process.env.VALORYCOMPILER === "TRUE";
 		Loaded = true;
 		const rootVar = process.env[VALORY_ROOT];
 		root = (rootVar != null) ? rootVar : root || resolveRootPath();
@@ -67,6 +65,7 @@ export namespace Config {
 				SourceRoutePath = `${path.resolve(path.dirname(ConfigData.sourceEntrypoint))}/${GENERATED_ROUTES_FILE}`;
 			}
 		}
+		// console.log(Config);
 	}
 
 	function resolveRootPath(): string {

@@ -168,7 +168,7 @@ export class Valory {
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
-	private COMPILERMODE = Config.CompilerMode;
+	private COMPILERMODE = process.env.VALORYCOMPILER === "TRUE";
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
