@@ -174,21 +174,25 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	};
 	await spinner.succeed();
 	await spinner.start("Running Closure Compiler: " + CompilationLevel[options.compilationLevel]);
-	await new Promise((resol, reject) => {
-		new ClosureCompiler(compilerFlags).run((exitCode: number, stdout: string, stderr: string) => {
-			output.debugArtifacts.closureOutput.stderr = stderr;
-			output.debugArtifacts.closureOutput.stdout = stdout;
-			output.debugArtifacts.closureOutput.exitCode = exitCode;
+	try {
+		await new Promise((resol, reject) => {
+			new ClosureCompiler(compilerFlags).run((exitCode: number, stdout: string, stderr: string) => {
+				output.debugArtifacts.closureOutput.stderr = stderr;
+				output.debugArtifacts.closureOutput.stdout = stdout;
+				output.debugArtifacts.closureOutput.exitCode = exitCode;
 
-			if (!exitCode) {
-				output.debugArtifacts.postCompileModule =
-					fs.readFileSync(outputTemp.name, {encoding: "utf8"}) as ValidatorModuleContent;
-				resol();
-			} else {
-				reject(stderr);
-			}
+				if (!exitCode) {
+					output.debugArtifacts.postCompileModule =
+						fs.readFileSync(outputTemp.name, {encoding: "utf8"}) as ValidatorModuleContent;
+					resol();
+				} else {
+					reject(stderr);
+				}
+			});
 		});
-	});
+	} catch (e) {
+		await spinnerFail("Closure Compiler Failure", e);
+    }
 	await spinner.succeed();
 	await spinner.start("Final post process");
 	output.module = finalProcess(output.debugArtifacts.postCompileModule);
