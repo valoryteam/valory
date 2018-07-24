@@ -199,7 +199,8 @@ export class Valory {
 			this.Logger.warn("Direct instantiation of Valory is deprecated and will " +
 				"break in the next major version. Use Valory.createInstance instead.");
 		}
-		Valory.instance = this;this.apiDef = {
+		Valory.instance = this;
+		this.apiDef = {
 			swagger: "2.0",
 			info,
 			paths: {},
@@ -366,7 +367,7 @@ export class Valory {
 	 * Start server. Call once all endpoints are registered.
 	 */
 	public start(options: any): any {
-		if (!this.COMPILERMODE){
+		if (!this.COMPILERMODE) {
 			this.Logger.info("Valory startup complete");
 		}
 		this.metadata.swagger = this.apiDef;
