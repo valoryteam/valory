@@ -5,6 +5,7 @@ import {getPropertyValidators} from "../utils/validatorUtils";
 import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
+import {Swagger} from "../../server/swagger";
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -282,6 +283,17 @@ function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration |
 	}
 }
 
+function getNodeSwagger(node: UsableDeclaration | ts.PropertyDeclaration |
+	ts.ParameterDeclaration | ts.EnumDeclaration): Swagger.Schema {
+	const swagger = getJSDocComment(node, "swagger");
+
+	if (swagger) {
+		return JSON.parse(swagger) as Swagger.Schema;
+	} else {
+		return undefined;
+	}
+}
+
 function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | undefined {
 	const literalName = (typeName as ts.Identifier).text;
 	const literalTypes = MetadataGenerator.current.nodes
@@ -335,6 +347,7 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 		const additionalProperties = getModelAdditionalProperties(modelType);
 		const inheritedProperties = getModelInheritedProperties(modelType) || [];
 		const example = getNodeExample(modelType);
+		const additionalSwagger = getNodeSwagger(modelType);
 
 		const referenceType = {
 			additionalProperties,
@@ -350,6 +363,11 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 		if (example) {
 			referenceType.example = example;
 		}
+
+		if (additionalSwagger) {
+			referenceType.additionalSwagger = additionalSwagger;
+		}
+
 		return referenceType;
 	} catch (err) {
 		// tslint:disable-next-line:no-console

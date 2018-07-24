@@ -1,12 +1,9 @@
 import {MetadataGenerator} from "./metadataGeneration/metadataGenerator";
-import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valory";
 import {SpecGenerator} from "./specGenerator";
 import {dirname, extname, join, relative} from "path";
 import {writeFileSync} from "fs";
 import * as tsfmt from "typescript-formatter";
-import P = require("pino");
 import {Config} from "../lib/config";
-import {ThreadSpinner} from "thread-spin";
 import chalk from "chalk";
 import {spinnerFail} from "../lib/helpers";
 

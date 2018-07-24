@@ -1,3 +1,5 @@
+import {Swagger} from "../../server/swagger";
+
 export namespace Tsoa {
 	export interface Metadata {
 		controllers: Controller[];
@@ -88,6 +90,7 @@ export namespace Tsoa {
 		additionalProperties?: Type;
 		enums?: string[];
 		example?: any;
+		additionalSwagger?: Swagger.Schema;
 	}
 
 	export interface ReferenceTypeMap {

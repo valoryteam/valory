@@ -150,12 +150,12 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	}
 	console.log(chalk.bold("Compile"));
 	await spinner.start("Building intermediate module");
-	output.debugArtifacts.intermediateModule = beautifier(templates.moduleTemplate({
+	output.debugArtifacts.intermediateModule = templates.moduleTemplate({
 		validatorLib: output.debugArtifacts.intermediateFunctions,
 		defHash: XXH.h32(JSON.stringify(spec.definitions), HASH_SEED).toString(),
 		exportHashes: output.debugArtifacts.hashes,
 		swagger: spec,
-	}));
+	});
 
 	const intermediateTemp = tmp.fileSync({prefix: "valCI"});
 	fs.writeSync(intermediateTemp.fd, output.debugArtifacts.intermediateModule);

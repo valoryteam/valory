@@ -11,7 +11,6 @@ import {isNil, omitBy} from "lodash";
 import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
-import P = require("pino");
 import * as inquirer from "inquirer";
 import {existsSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
@@ -23,6 +22,8 @@ async function compilerRunner(args: any) {
 	console.log(`Project:       ${Config.PackageJSON.name}`);
 	console.log(`Version:       ${Config.PackageJSON.version}`);
 	console.log(`Config:        ${Config.ConfigPath}\n`);
+
+	await Config.checkRequirements();
 	const start = process.hrtime();
 	require("ts-node").register({
 		project: join(__dirname, "../../tsconfig.json"),

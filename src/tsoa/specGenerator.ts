@@ -1,6 +1,7 @@
 import {Tsoa} from "./metadataGeneration/tsoa";
 import {normalisePath} from "./utils/pathUtils";
 import {Swagger} from "../server/swagger";
+import {merge} from "lodash";
 
 export class SpecGenerator {
 	constructor(private readonly metadata: Tsoa.Metadata) {
@@ -54,6 +55,11 @@ export class SpecGenerator {
 					enum: referenceType.enums,
 					type: "string",
 				};
+			}
+
+			// Actual type info overrides swagger tag
+			if (referenceType.additionalSwagger) {
+				definitions[referenceType.refName] = merge(definitions[referenceType.refName], referenceType.additionalSwagger);
 			}
 		});
 

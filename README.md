@@ -1,5 +1,5 @@
 # Valory
-*A fast, swagger based, server agnostic web framework*
+*A server agnostic web framework for creating bulletproof apis*
 
 ## Contents
 * [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)

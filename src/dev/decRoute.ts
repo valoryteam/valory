@@ -14,6 +14,10 @@ import {
 import * as P from "pino";
 type Logger = P.Logger;
 
+/**
+ * @example {"name": "test", "content": "yay"}
+ * @swagger {"properties": {"name": {"maxLength": 8}}}
+ */
 interface Burn {
 	name: string;
 	content: string;
@@ -35,6 +39,13 @@ const TestMiddleware: ApiMiddleware = {
 
 @Route("burn")
 export class BurnRoutes {
+	/**
+	 *
+	 * @param {Burn} burn
+	 * @param {ApiRequest} req
+	 * @param {Logger} logger
+	 * @returns {string}
+	 */
 	@Middleware(TestMiddleware)
 	@Hidden()
 	@Post()

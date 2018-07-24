@@ -40,7 +40,7 @@ export {
 	Body,
 	BodyProp,
 	Delete,
-	Example,
+	// Example,
 	Get,
 	Header,
 	Hidden,

@@ -37,7 +37,12 @@ export function Delete(value?: string): any {
 	};
 }
 
-export function Middleware(middleware: ApiMiddleware): any {
+/**
+ * Add a middleware to a controller or route
+ * @param {ApiMiddleware} middleware
+ * @constructor
+ */
+export function Middleware(middleware: ApiMiddleware) {
 	return (target: any, propertyKey?: string) => {
 		if (propertyKey != null) {
 			target = target[propertyKey];

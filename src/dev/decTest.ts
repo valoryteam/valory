@@ -21,7 +21,7 @@ const api = Valory.createInstance({
 	info,
 	errors,
 	definitions,
-	server: new DefaultAdaptor() as any,
+	server: new DefaultAdaptor(),
 	parameters: {
 		fancy_header: {
 			name: "fancy_header",
@@ -30,6 +30,6 @@ const api = Valory.createInstance({
 			type: "string",
 		},
 	},
-} as any);
+});
 // Build and export the app, passing any adaptor specific config data
 api.start({port: process.env.PORT || 8080});
