@@ -1,37 +1,58 @@
 import {ApiMiddleware} from "./valory";
 import {Controller} from "./controller";
 
-export function Example<T>(exampleModel: T): any {
+// export function Example<T>(exampleModel: T): any {
+// 	return () => {
+// 		return;
+// 	};
+// }
+
+/**
+ * Register GET endpoint
+ * @param {string} name local route for endpoint
+ */
+export function Get(name?: string): any {
 	return () => {
 		return;
 	};
 }
 
-export function Get(value?: string): any {
+/**
+ * Register POST endpoint
+ * @param {string} name local route for endpoint
+ */
+export function Post(name?: string): any {
 	return () => {
 		return;
 	};
 }
 
-export function Post(value?: string): any {
+/**
+ * Register PUT endpoint
+ * @param {string} name local route for endpoint
+ * @constructor
+ */
+export function Put(name?: string): any {
 	return () => {
 		return;
 	};
 }
 
-export function Put(value?: string): any {
+/**
+ * Register PATCH endpoint
+ * @param {string} name local route for endpoint
+ */
+export function Patch(name?: string): any {
 	return () => {
 		return;
 	};
 }
 
-export function Patch(value?: string): any {
-	return () => {
-		return;
-	};
-}
-
-export function Delete(value?: string): any {
+/**
+ * Register DELETE endpoint
+ * @param {string} name local route for endpoint
+ */
+export function Delete(name?: string): any {
 	return () => {
 		return;
 	};
@@ -40,9 +61,8 @@ export function Delete(value?: string): any {
 /**
  * Add a middleware to a controller or route
  * @param {ApiMiddleware} middleware
- * @constructor
  */
-export function Middleware(middleware: ApiMiddleware) {
+export function Middleware(middleware: ApiMiddleware): any {
 	return (target: any, propertyKey?: string) => {
 		if (propertyKey != null) {
 			target = target[propertyKey];
@@ -56,6 +76,10 @@ export function Middleware(middleware: ApiMiddleware) {
 	};
 }
 
+/**
+ * Add a post middleware to a controller or route
+ * @param {ApiMiddleware} middleware
+ */
 export function PostMiddleware(middleware: ApiMiddleware): any {
 	return (target: any, propertyKey?: string) => {
 		if (propertyKey != null) {

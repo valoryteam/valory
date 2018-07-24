@@ -1,5 +1,5 @@
 export class Controller {
-	private statusCode?: number = 200;
+	private statusCode: number = 200;
 	private headers = {} as { [name: string]: string | undefined };
 
 	public setStatus(statusCode: number) {
