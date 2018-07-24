@@ -16,11 +16,17 @@ type Logger = P.Logger;
 
 /**
  * @example {"name": "test", "content": "yay"}
- * @swagger {"properties": {"name": {"maxLength": 8}}}
  */
+type ArrTest = string;
+
+interface TestResponse<T> {
+	status_code: number;
+	response_data: T;
+}
+
 interface Burn {
 	name: string;
-	content: string;
+	content: ArrTest[];
 	powerlevel?: number;
 }
 
@@ -39,17 +45,10 @@ const TestMiddleware: ApiMiddleware = {
 
 @Route("burn")
 export class BurnRoutes {
-	/**
-	 *
-	 * @param {Burn} burn
-	 * @param {ApiRequest} req
-	 * @param {Logger} logger
-	 * @returns {string}
-	 */
 	@Middleware(TestMiddleware)
 	@Hidden()
 	@Post()
-	public submit(@Body() burn: Burn, @Request() req: ApiRequest, @Logger() logger: Logger): string {
+	public submit(@Body() burn: Burn, @Request() req: ApiRequest, @Logger() logger: Logger): TestResponse<Burn[]> {
 		throw ApiError("AccessDenied", "GTFO");
 		// return "thing";
 	}

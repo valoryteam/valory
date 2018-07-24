@@ -57,7 +57,7 @@ export async function routeBuild(entryPoint: string) {
 			tslint: false,
 		} as any);
 
-		writeFileSync(generatedPath, formatted.dest.replace(/\"([^(\")"]+)\":/g, "$1:"));
+		writeFileSync(generatedPath, formatted.dest.replace(/\"([a-zA-Z_$][0-9a-zA-Z_$]+)\":/g, "$1:"));
 		await spinner.succeed();
 	} catch (e) {
 		await spinnerFail("Route Generation Failure", e);
