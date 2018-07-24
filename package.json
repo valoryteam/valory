@@ -21,7 +21,9 @@
 		"package.json",
 		"README.md",
 		"html",
-		"templates"
+		"templates",
+		"tsconfig.json",
+		"tslint.json"
 	],
 	"devDependencies": {
 		"@commitlint/cli": "^7.0.0",
