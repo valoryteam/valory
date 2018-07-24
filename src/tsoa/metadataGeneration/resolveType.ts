@@ -370,8 +370,8 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 
 		return referenceType;
 	} catch (err) {
-		// tslint:disable-next-line:no-console
-		console.error(`There was a problem resolving type of '${getTypeName(typeName, genericTypes)}'.`);
+		// tslint:disable-next-line:no-console;
+		err.message = `There was a problem resolving type of '${getTypeName(typeName, genericTypes)}'.\n` + err.message;
 		throw err;
 	}
 }
@@ -607,6 +607,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 					}
 				}
 
+				// console.log(resolveType(aType, aType.parent));
 				return {
 					description: getNodeDescription(propertyDeclaration),
 					format: getNodeFormat(propertyDeclaration),
@@ -648,7 +649,13 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 
 	// Class model
 	const classDeclaration = node as ts.ClassDeclaration;
+
 	const properties = classDeclaration.members
+		.filter((member) => {
+			if (member.kind === ts.SyntaxKind.MethodDeclaration) {
+				throw new GenerateMetadataError(`Illegal method declaration on model class`);
+			}
+		})
 		.filter((member) => {
 			const ignore = isIgnored(member);
 			return !ignore;
@@ -683,6 +690,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 
 			const type = resolveType(typeNode, property);
 
+			// console.log(type);
 			return {
 				default: getInitializerValue(property.initializer, type),
 				description: getNodeDescription(property),

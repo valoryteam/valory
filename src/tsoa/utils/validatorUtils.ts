@@ -124,6 +124,9 @@ export function getPropertyValidators(property: ts.PropertyDeclaration): Tsoa.Va
         const value = getValue(comment);
 
         switch (name) {
+			case "default": {
+				break;
+			}
             case "uniqueItems":
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment, false),
@@ -187,5 +190,6 @@ function getParameterTagSupport() {
         "minLength", "maxLength", "pattern",
         "minimum", "maximum",
         "minDate", "maxDate",
+        // "default"
     ];
 }

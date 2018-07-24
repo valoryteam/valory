@@ -12,22 +12,26 @@ import {
 	Valory, ApiError, Hidden,
 } from "../main";
 import * as P from "pino";
+
 type Logger = P.Logger;
 
-/**
- * @example {"name": "test", "content": "yay"}
- */
 type ArrTest = string;
 
 interface TestResponse<T> {
 	status_code: number;
+	/** @default test */
 	response_data: T;
 }
 
-interface Burn {
-	name: string;
-	content: ArrTest[];
-	powerlevel?: number;
+export class Burn {
+	/** @minLength 3 */
+	public name: string = "steven";
+	public content: string;
+	public powerlevel?: number;
+
+	private test() {
+		return;
+	}
 }
 
 const TestMiddleware: ApiMiddleware = {
