@@ -15,7 +15,7 @@ import P = require("pino");
 import * as inquirer from "inquirer";
 import {existsSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
-import {convertTime} from "./helpers";
+import {convertTime, spinnerFail} from "./helpers";
 import chalk from "chalk";
 
 async function compilerRunner(args: any) {
@@ -51,10 +51,7 @@ async function compilerRunner(args: any) {
 		// Logger.info(process.env[VALORYMETAVAR]);
 		valExport = JSON.parse(process.env[VALORYMETAVAR]);
 	} catch (e) {
-		await spinner.fail();
-		ThreadSpinner.shutdown();
-		console.error(e);
-		process.exit();
+		await spinnerFail("failed to load apperver", e);
 	}
 	spinner.succeed();
 	const api = valExport.valory.swagger;

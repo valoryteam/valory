@@ -1,3 +1,7 @@
+import {ThreadSpinner} from "thread-spin";
+import chalk from "chalk";
+import {Config} from "./config";
+
 const MS_PER_SEC = 1000;
 const NS_PER_MS = 1e6;
 
@@ -40,4 +44,11 @@ export function bindInternal3<A, B, C>(func: (a: A, b: B, c: C) => any, thisCont
 
 export function convertTime(time: [number, number]): number {
 	return time[0] * MS_PER_SEC + time[1] / NS_PER_MS;
+}
+
+export async function spinnerFail(message: string, e: any) {
+	await Config.Spinner.fail(chalk.red.bold(message + "\n"));
+	ThreadSpinner.shutdown();
+	console.error(e);
+	process.exit();
 }

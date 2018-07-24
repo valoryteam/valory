@@ -15,7 +15,7 @@ import {
 import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valory";
 import Pino = require("pino");
-import {convertTime} from "../lib/helpers";
+import {convertTime, spinnerFail} from "../lib/helpers";
 import {Swagger} from "../server/swagger";
 import {Config} from "../lib/config";
 import chalk from "chalk";
@@ -88,14 +88,26 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 	console.log(chalk.bold("Prepare Swagger"));
 	// CompileLog.info("Validating swagger");
 	await spinner.start("Validating Swagger");
-	await validate(cloneDeep(spec as any));
+	try {
+		await validate(cloneDeep(spec as any));
+	} catch (e) {
+		await spinnerFail("Swagger Validation Failure", e);
+	}
 	await spinner.succeed();
 	// CompileLog.info("Preprocessing swagger");
 	spinner.start("Preprocessing Swagger");
-	output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec as any));
+	try {
+		output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec as any));
+	} catch (e) {
+		await spinnerFail("Swagger Preprocessor Failure", e);
+	}
 	await spinner.succeed();
 	spinner.start("Dereferencing Swagger");
-	output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
+	try {
+		output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
+	} catch (e) {
+		await spinnerFail("Swagger Dereference Failure", e);
+	}
 	await spinner.succeed();
 	console.log(chalk.bold("Build Endpoints"));
 	for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {

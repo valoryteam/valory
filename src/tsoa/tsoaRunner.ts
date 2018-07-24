@@ -8,6 +8,7 @@ import P = require("pino");
 import {Config} from "../lib/config";
 import {ThreadSpinner} from "thread-spin";
 import chalk from "chalk";
+import {spinnerFail} from "../lib/helpers";
 
 const dotJs = require("dot");
 dotJs.log = false;
@@ -23,7 +24,12 @@ export async function routeBuild(entryPoint: string) {
 	console.log(chalk.bold("Controller Generation"));
 	const spinner = Config.Spinner;
 	await spinner.start("Generating route controller metadata");
-	const metadata = new MetadataGenerator(entryPoint).Generate();
+	let metadata;
+	try {
+		metadata = new MetadataGenerator(entryPoint).Generate();
+	} catch (e) {
+		await spinnerFail("Metadata Failure", e);
+	}
 	await spinner.succeed();
 	await spinner.start("Building swagger content from metadata");
 	const swaggerContent = new SpecGenerator(metadata).GetSpec();
@@ -32,27 +38,31 @@ export async function routeBuild(entryPoint: string) {
 		con.location = "./" + relativePath.replace(extname(relativePath), "");
 	});
 	await spinner.succeed();
-	await spinner.start("Generating routes");
-	// Logger.info({
-	// 	swagger: swaggerContent,
-	// 	metadata,
-	// });
-	const generatedRoutes = templates.apiTemplate({
-		swagger: swaggerContent,
-		metadata,
-	});
+	try {
+		await spinner.start("Generating routes");
+		// Logger.info({
+		// 	swagger: swaggerContent,
+		// 	metadata,
+		// });
+		const generatedRoutes = templates.apiTemplate({
+			swagger: swaggerContent,
+			metadata,
+		});
 
-	const generatedPath = Config.SourceRoutePath;
-	const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
-		editorconfig: true,
-		replace: true,
-		tsconfig: {
-			newLine: "LF",
-		},
-		tsfmt: true,
-		tslint: false,
-	} as any);
+		const generatedPath = Config.SourceRoutePath;
+		const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
+			editorconfig: true,
+			replace: true,
+			tsconfig: {
+				newLine: "LF",
+			},
+			tsfmt: true,
+			tslint: false,
+		} as any);
 
-	writeFileSync(generatedPath, formatted.dest.replace(/\"([^(\")"]+)\":/g, "$1:"));
-	await spinner.succeed();
+		writeFileSync(generatedPath, formatted.dest.replace(/\"([^(\")"]+)\":/g, "$1:"));
+		await spinner.succeed();
+	} catch (e) {
+		await spinnerFail("Route Generation Failure", e);
+	}
 }
