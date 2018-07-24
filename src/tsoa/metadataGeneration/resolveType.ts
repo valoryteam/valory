@@ -654,6 +654,8 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 		.filter((member) => {
 			if (member.kind === ts.SyntaxKind.MethodDeclaration) {
 				throw new GenerateMetadataError(`Illegal method declaration on model class`);
+			} else {
+				return true;
 			}
 		})
 		.filter((member) => {

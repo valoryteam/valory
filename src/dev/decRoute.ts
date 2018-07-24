@@ -28,10 +28,6 @@ export class Burn {
 	public name: string = "steven";
 	public content: string;
 	public powerlevel?: number;
-
-	private test() {
-		return;
-	}
 }
 
 const TestMiddleware: ApiMiddleware = {
