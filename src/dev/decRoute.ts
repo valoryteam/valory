@@ -15,8 +15,6 @@ import * as P from "pino";
 
 type Logger = P.Logger;
 
-type ArrTest = string;
-
 interface TestResponse<T> {
 	status_code: number;
 	/** @default test */
@@ -28,7 +26,29 @@ export class Burn {
 	public name: string = "steven";
 	public content: string;
 	public powerlevel?: number;
+	// public tuple: TupleAlias;
+	public array: ArrayAlias;
+	public string: StringAlias;
+	public alias: AliasAlias;
+	public object: ObjectAlias;
 }
+
+export type ArrayAlias = number[];
+// export type TupleAlias = [number, number];
+/**
+ * alias to a string
+ * @example "a string"
+ * @minLength 3
+ */
+export type StringAlias = string;
+export type AliasAlias = StringAlias;
+
+export interface TestObj {
+	thing: string;
+	otherThing: number;
+}
+
+export type ObjectAlias = TestObj;
 
 const TestMiddleware: ApiMiddleware = {
 	tag: {
@@ -53,3 +73,5 @@ export class BurnRoutes {
 		// return "thing";
 	}
 }
+
+type func = (test: string) => number;

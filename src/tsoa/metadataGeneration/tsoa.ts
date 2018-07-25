@@ -69,7 +69,7 @@ export namespace Tsoa {
 
 	export interface Type {
 		dataType: "string" | "double" | "float" | "integer" | "long" | "enum" | "array" |
-			"datetime" | "date" | "buffer" | "void" | "object" | "any" | "refEnum" | "refObject";
+			"datetime" | "date" | "buffer" | "void" | "object" | "any" | "refEnum" | "refObject" | "refAlias";
 	}
 
 	export interface EnumerateType extends Type {
@@ -80,6 +80,19 @@ export namespace Tsoa {
 	export interface ArrayType extends Type {
 		dataType: "array";
 		elementType: Type;
+	}
+
+	export interface ReferenceAlias extends Type {
+		description?: string;
+		dataType: "refAlias";
+		refName: string;
+		example?: any;
+		additionalSwagger?: Swagger.Schema;
+		validators: Validators;
+		type: Type;
+		format?: string;
+		properties?: Property[];
+		additionalProperties?: Type;
 	}
 
 	export interface ReferenceType extends Type {
@@ -94,6 +107,6 @@ export namespace Tsoa {
 	}
 
 	export interface ReferenceTypeMap {
-		[refName: string]: Tsoa.ReferenceType;
+		[refName: string]: Tsoa.ReferenceType | Tsoa.ReferenceAlias;
 	}
 }

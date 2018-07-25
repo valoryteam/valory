@@ -2,6 +2,7 @@ import {Tsoa} from "./metadataGeneration/tsoa";
 import {normalisePath} from "./utils/pathUtils";
 import {Swagger} from "../server/swagger";
 import {merge} from "lodash";
+import ReferenceAlias = Tsoa.ReferenceAlias;
 
 export class SpecGenerator {
 	constructor(private readonly metadata: Tsoa.Metadata) {
@@ -28,39 +29,61 @@ export class SpecGenerator {
 		Object.keys(this.metadata.referenceTypeMap).map((typeName) => {
 			const referenceType = this.metadata.referenceTypeMap[typeName];
 
-			// Object definition
-			if (referenceType.properties) {
-				const required = referenceType.properties.filter((p) => p.required).map((p) => p.name);
-				definitions[referenceType.refName] = {
-					description: referenceType.description,
-					properties: this.buildProperties(referenceType.properties),
-					required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
-					type: "object",
-				};
+			if (referenceType.dataType === "refObject" || referenceType.dataType === "refEnum") {
+				// Object definition
+				if (referenceType.properties) {
+					const required = referenceType.properties.filter((p) => p.required).map((p) => p.name);
+					definitions[referenceType.refName] = {
+						description: referenceType.description,
+						properties: this.buildProperties(referenceType.properties),
+						required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
+						type: "object",
+					};
 
-				if (referenceType.additionalProperties) {
-					definitions[referenceType.refName].additionalProperties =
-						this.buildAdditionalProperties(referenceType.additionalProperties);
+					if (referenceType.additionalProperties) {
+						definitions[referenceType.refName].additionalProperties =
+							this.buildAdditionalProperties(referenceType.additionalProperties);
+					}
+				}
+
+				if (referenceType.example) {
+					definitions[referenceType.refName].example = referenceType.example;
+				}
+
+				// Enum definition
+				if (referenceType.enums) {
+					definitions[referenceType.refName] = {
+						description: referenceType.description,
+						enum: referenceType.enums,
+						type: "string",
+					};
+				}
+
+				// Actual type info overrides swagger tag
+				if (referenceType.additionalSwagger) {
+					definitions[referenceType.refName] = merge(definitions[referenceType.refName], referenceType.additionalSwagger);
 				}
 			}
 
-			if (referenceType.example) {
-				definitions[referenceType.refName].example = referenceType.example;
+			if (referenceType.dataType === "refAlias") {
+				const swaggerType = this.getSwaggerType(referenceType.type);
+				const format = referenceType.format as Swagger.DataFormat;
+				swaggerType.description = referenceType.description;
+				swaggerType.format = format || swaggerType.format;
+				swaggerType.example = referenceType.example;
+				if (!swaggerType.$ref) {
+					Object.keys(referenceType.validators)
+						.filter((key) => {
+							return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
+						})
+						.forEach((key) => {
+							(swaggerType as any)[key] = referenceType.validators[key].value;
+						});
+				}
+
+				definitions[referenceType.refName] = swaggerType;
 			}
 
-			// Enum definition
-			if (referenceType.enums) {
-				definitions[referenceType.refName] = {
-					description: referenceType.description,
-					enum: referenceType.enums,
-					type: "string",
-				};
-			}
-
-			// Actual type info overrides swagger tag
-			if (referenceType.additionalSwagger) {
-				definitions[referenceType.refName] = merge(definitions[referenceType.refName], referenceType.additionalSwagger);
-			}
 		});
 
 		return definitions;

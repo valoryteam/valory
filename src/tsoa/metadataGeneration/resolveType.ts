@@ -13,13 +13,14 @@ syntaxKindMap[ts.SyntaxKind.StringKeyword] = "string";
 syntaxKindMap[ts.SyntaxKind.BooleanKeyword] = "boolean";
 syntaxKindMap[ts.SyntaxKind.VoidKeyword] = "void";
 
-const localReferenceTypeCache: { [typeName: string]: Tsoa.ReferenceType } = {};
+const localReferenceTypeCache: { [typeName: string]: Tsoa.ReferenceType | Tsoa.ReferenceAlias } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
 type UsableDeclaration = ts.InterfaceDeclaration
 	| ts.ClassDeclaration
 	| ts.TypeAliasDeclaration;
 
+// TODO: type aliases are not properly resolved
 export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extractEnum = true): Tsoa.Type {
 	const primitiveType = getPrimitiveType(typeNode, parentNode);
 	if (primitiveType) {
@@ -109,7 +110,7 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
 		return literalType;
 	}
 
-	let referenceType: Tsoa.ReferenceType;
+	let referenceType: Tsoa.ReferenceType | Tsoa.ReferenceAlias;
 	if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
 		const typeT: ts.NodeArray<ts.TypeNode> = typeReference.typeArguments as ts.NodeArray<ts.TypeNode>;
 		referenceType = getReferenceType(typeReference.typeName as ts.EntityName, extractEnum, typeT);
@@ -226,6 +227,33 @@ function getDateType(typeNode: ts.TypeNode, parentNode?: ts.Node): Tsoa.Type {
 	}
 }
 
+function getAliasType(node: UsableDeclaration): Tsoa.ReferenceAlias | undefined {
+	if (node.kind !== ts.SyntaxKind.TypeAliasDeclaration) {
+		return;
+	}
+
+	const aliasDeclaration = node as ts.TypeAliasDeclaration;
+
+	if (aliasDeclaration.type.kind === ts.SyntaxKind.IntersectionType) {
+		return;
+	}
+
+	if (aliasDeclaration.type.kind === ts.SyntaxKind.TypeReference) {
+		// console.log()
+	}
+
+	return {
+		type: resolveType(node.type, node.type.parent),
+		description: getNodeDescription(node),
+		format: getNodeFormat(node),
+		refName: node.name.text,
+		validators: getPropertyValidators(node as any as ts.PropertyDeclaration),
+		dataType: "refAlias",
+		example: getNodeExample(node),
+	};
+	// const resolvedType = resolveType(node.type, node.type.parent);
+}
+
 function getEnumerateType(typeName: ts.EntityName, extractEnum = true): Tsoa.Type | undefined {
 	const enumName = (typeName as ts.Identifier).text;
 	const enumNodes = MetadataGenerator.current.nodes
@@ -320,7 +348,7 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | undefined
 }
 
 function getReferenceType(type: ts.EntityName, extractEnum = true,
-						  genericTypes?: ts.NodeArray<ts.TypeNode>): Tsoa.ReferenceType {
+						  genericTypes?: ts.NodeArray<ts.TypeNode>): Tsoa.ReferenceType | Tsoa.ReferenceAlias {
 	const typeName = resolveFqTypeName(type);
 	const refNameWithGenerics = getTypeName(typeName, genericTypes);
 
@@ -343,6 +371,13 @@ function getReferenceType(type: ts.EntityName, extractEnum = true,
 		inProgressTypes[refNameWithGenerics] = true;
 
 		const modelType = getModelTypeDeclaration(type);
+
+		const referenceAliasType = getAliasType(modelType);
+		if (referenceAliasType) {
+			localReferenceTypeCache[refNameWithGenerics] = referenceAliasType;
+			return referenceAliasType;
+		}
+
 		const properties = getModelProperties(modelType, genericTypes);
 		const additionalProperties = getModelAdditionalProperties(modelType);
 		const inheritedProperties = getModelInheritedProperties(modelType) || [];
@@ -427,7 +462,7 @@ function createCircularDependencyResolver(refName: string) {
 	const referenceType = {
 		dataType: "refObject",
 		refName,
-	} as Tsoa.ReferenceType;
+	} as Tsoa.ReferenceType | Tsoa.ReferenceAlias;
 
 	MetadataGenerator.current.OnFinish((referenceTypes) => {
 		const realReferenceType = referenceTypes[refName];
@@ -435,9 +470,17 @@ function createCircularDependencyResolver(refName: string) {
 			return;
 		}
 		referenceType.description = realReferenceType.description;
-		referenceType.properties = realReferenceType.properties;
-		referenceType.dataType = realReferenceType.dataType;
+		referenceType.dataType = realReferenceType.dataType as any;
 		referenceType.refName = referenceType.refName;
+
+		if (referenceType.dataType === "refAlias" && realReferenceType.dataType === "refAlias") {
+			referenceType.validators = realReferenceType.validators;
+			referenceType.example = realReferenceType.example;
+			referenceType.format = realReferenceType.format;
+			referenceType.type = realReferenceType.type;
+		} else {
+			referenceType.properties = realReferenceType.properties;
+		}
 	});
 
 	return referenceType;

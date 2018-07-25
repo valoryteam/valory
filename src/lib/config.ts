@@ -52,7 +52,7 @@ export namespace Config {
 		CompSwagPath = `${RootPath}/${COMPILED_SWAGGER_FILE}`;
 		PackageJSONPath = `${RootPath}/package.json`;
 		if (CompilerMode) {
-			Spinner = new ThreadSpinner();
+			Spinner = new ThreadSpinner(undefined, process.env.NODE_ENV === "test");
 			ValoryVersion = require(path.join(__dirname, "../../package.json")).version;
 			PackageJSON = require(PackageJSONPath);
 		}

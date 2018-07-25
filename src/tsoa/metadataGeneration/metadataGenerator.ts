@@ -50,7 +50,7 @@ export class MetadataGenerator {
 		return this.typeChecker;
 	}
 
-	public AddReferenceType(referenceType: Tsoa.ReferenceType) {
+	public AddReferenceType(referenceType: Tsoa.ReferenceType | Tsoa.ReferenceAlias) {
 		if (!referenceType.refName) {
 			return;
 		}
