@@ -122,7 +122,7 @@ export class ParameterGenerator {
 
 		return {
 			default: getInitializerValue(parameter.initializer, type),
-			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : null,
+			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : undefined,
 			in: "header",
 			name: getDecoratorTextValue(this.parameter, (ident) => ident.text === "Header") || parameterName,
 			parameterName,
@@ -158,7 +158,7 @@ export class ParameterGenerator {
 
 		return {
 			default: getInitializerValue(parameter.initializer, type),
-			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : null,
+			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : undefined,
 			in: "query",
 			name: getDecoratorTextValue(this.parameter, (ident) => ident.text === "Query") || parameterName,
 			parameterName,
