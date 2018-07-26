@@ -5,6 +5,7 @@ import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {getInitializerValue, resolveType} from "./resolveType";
 import {Tsoa} from "./tsoa";
+import {merge} from "lodash";
 
 export class ParameterGenerator {
 	constructor(
@@ -107,7 +108,13 @@ export class ParameterGenerator {
 
 	private getHeaderParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
 		const parameterName = (parameter.name as ts.Identifier).text;
-		const type = this.getValidatedType(parameter, false);
+		let type = this.getValidatedType(parameter, false);
+		let alias: Tsoa.ReferenceAlias = null;
+
+		if (type.dataType === "refAlias") {
+			alias = type as Tsoa.ReferenceAlias;
+			type = alias.type;
+		}
 
 		if (!this.supportPathDataType(type)) {
 			throw new GenerateMetadataError(`@Header('${parameterName}') Can't support '${type.dataType}' type.`);
@@ -115,19 +122,26 @@ export class ParameterGenerator {
 
 		return {
 			default: getInitializerValue(parameter.initializer, type),
-			description: this.getParameterDescription(parameter),
+			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : null,
 			in: "header",
 			name: getDecoratorTextValue(this.parameter, (ident) => ident.text === "Header") || parameterName,
 			parameterName,
 			required: !parameter.questionToken && !parameter.initializer,
 			type,
-			validators: getParameterValidators(this.parameter, parameterName),
+			validators: (alias != null) ? merge({}, alias.validators, getParameterValidators(this.parameter, parameterName))
+				: getParameterValidators(this.parameter, parameterName),
 		};
 	}
 
 	private getQueryParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
 		const parameterName = (parameter.name as ts.Identifier).text;
-		const type = this.getValidatedType(parameter, false);
+		let type = this.getValidatedType(parameter, false);
+		let alias: Tsoa.ReferenceAlias = null;
+
+		if (type.dataType === "refAlias") {
+			alias = type as Tsoa.ReferenceAlias;
+			type = alias.type;
+		}
 
 		if (type.dataType === "array") {
 			const arrayType = type as Tsoa.ArrayType;
@@ -144,13 +158,14 @@ export class ParameterGenerator {
 
 		return {
 			default: getInitializerValue(parameter.initializer, type),
-			description: this.getParameterDescription(parameter),
+			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : null,
 			in: "query",
 			name: getDecoratorTextValue(this.parameter, (ident) => ident.text === "Query") || parameterName,
 			parameterName,
 			required: !parameter.questionToken && !parameter.initializer,
 			type,
-			validators: getParameterValidators(this.parameter, parameterName),
+			validators: (alias != null) ? merge({}, alias.validators, getParameterValidators(this.parameter, parameterName))
+				: getParameterValidators(this.parameter, parameterName),
 		};
 	}
 

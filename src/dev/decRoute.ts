@@ -9,7 +9,7 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory, ApiError, Hidden,
+	Valory, ApiError, Hidden, Query,
 } from "../main";
 import * as P from "pino";
 
@@ -65,10 +65,18 @@ const TestMiddleware: ApiMiddleware = {
 
 @Route("burn")
 export class BurnRoutes {
+	/**
+	 *
+	 * @param {Burn} burn
+	 * @param {ApiRequest} req
+	 * @param {StringAlias} testHeader override description
+	 * @maxLength testHeader 5
+	 */
 	@Middleware(TestMiddleware)
 	@Hidden()
 	@Post()
-	public submit(@Body() burn: Burn, @Request() req: ApiRequest, @Logger() logger: Logger): TestResponse<Burn[]> {
+	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
+				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
 		throw ApiError("AccessDenied", "GTFO");
 		// return "thing";
 	}

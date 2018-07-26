@@ -1,5 +1,6 @@
 import {ApiMiddleware} from "./valory";
 import {Controller} from "./controller";
+import {Swagger} from "./swagger";
 
 // export function Example<T>(exampleModel: T): any {
 // 	return () => {
@@ -156,6 +157,10 @@ export function Header(name?: string): any {
 		return;
 	};
 }
+
+// export function ReferenceParameters(parameters: Swagger.RefParameter[]): any {
+// 	return () => { return; };
+// }
 
 /**
  * Inject request logger instance
