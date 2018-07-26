@@ -64,7 +64,7 @@ const TestMiddleware: ApiMiddleware = {
 };
 
 @Route("burn")
-export class BurnRoutes {
+export class BurnRoutes extends Controller {
 	/**
 	 *
 	 * @param {Burn} burn
@@ -77,6 +77,7 @@ export class BurnRoutes {
 	@Post()
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
 				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
+		this.logger.info("yay");
 		throw ApiError("AccessDenied", "GTFO");
 		// return "thing";
 	}

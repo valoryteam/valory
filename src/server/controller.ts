@@ -1,4 +1,7 @@
+import {Logger} from "pino";
+
 export class Controller {
+	public logger: Logger;
 	private statusCode: number = 200;
 	private headers = {} as { [name: string]: string | undefined };
 

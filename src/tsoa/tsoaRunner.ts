@@ -13,11 +13,6 @@ dotJs.templateSettings.strip = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 
 export async function routeBuild(entryPoint: string) {
-	// console.log(routeBuild.caller);
-	// const Logger = P({
-	// 	level: process.env[VALORYLOGGERVAR] || "info",
-	// 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
-	// });
 	console.log(chalk.bold("Controller Generation"));
 	const spinner = Config.Spinner;
 	await spinner.start("Generating route controller metadata");
@@ -37,27 +32,23 @@ export async function routeBuild(entryPoint: string) {
 	await spinner.succeed();
 	try {
 		await spinner.start("Generating routes");
-		// Logger.info({
-		// 	swagger: swaggerContent,
-		// 	metadata,
-		// });
 		const generatedRoutes = templates.apiTemplate({
 			swagger: swaggerContent,
 			metadata,
 		});
 
 		const generatedPath = Config.SourceRoutePath;
-		const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
-			editorconfig: true,
-			replace: true,
-			tsconfig: {
-				newLine: "LF",
-			},
-			tsfmt: true,
-			tslint: false,
-		} as any);
+		// const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
+		// 	editorconfig: true,
+		// 	replace: true,
+		// 	tsconfig: {
+		// 		newLine: "LF",
+		// 	},
+		// 	tsfmt: true,
+		// 	tslint: false,
+		// } as any);
 
-		writeFileSync(generatedPath, formatted.dest.replace(/\"([a-zA-Z_$][0-9a-zA-Z_$]+)\":/g, "$1:"));
+		writeFileSync(generatedPath, generatedRoutes.replace(/\"([a-zA-Z_$][0-9a-zA-Z_$]+)\":/g, "$1:"));
 		await spinner.succeed();
 	} catch (e) {
 		await spinnerFail("Route Generation Failure", e);

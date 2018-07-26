@@ -196,8 +196,7 @@ export class Valory {
 			throw Error("Only a single valory instance is allowed");
 		}
 		if (Valory.directInstantiation) {
-			this.Logger.warn("Direct instantiation of Valory is deprecated and will " +
-				"break in the next major version. Use Valory.createInstance instead.");
+			throw Error("Direct instantiation of valory is not allowed");
 		}
 		Valory.instance = this;
 		this.apiDef = {

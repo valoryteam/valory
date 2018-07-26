@@ -27,7 +27,7 @@ function paramPath(type, name) {
     }
 }
 }}
-import {Valory, ApiRequest} from "{{= process.env.NODE_ENV == "test" ? "../main" : "valory"}}";
+import {Valory, ApiRequest} from "{{= process.env.NODE_ENV === "test" ? "../main" : "valory"}}";
 {{~ it.metadata.controllers : item}}
   import {{{= item.name}}} from "{{=item.location}}";{{~}}
 {{~ it.metadata.controllers : item}}
@@ -53,7 +53,10 @@ export = {
         {{~ it.metadata.controllers: route}}{{~ route.methods: method}}{{let path = `/${route.path}/${method.path}`.replace("//","/"); if (path.endsWith("/")) {path = path.slice(0, -1);} }}{{const conName = `${route.name}Controller`;}}{{const methodName = `${conName}.${method.name}`;}}
         const {{=conName}}{{=method.name}}Middleware = pushArr(({{=methodName}} as any).middleware, ({{=conName}} as any).middleware);
         const {{=conName}}{{=method.name}}PostMiddleware = pushArr(({{=methodName}} as any).postMiddleware, ({{=conName}} as any).postMiddleware);
-        app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method], null, 2)}},(req: ApiRequest, logger: any)=>{
+        app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method])}},(req: ApiRequest, logger: any)=>{
+            {{? route.extendsController}}
+            {{= conName}}.logger = logger;
+            {{?}}
             return Promise.resolve({{=methodName}}(
                 {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
             )).then((response) => {
@@ -74,5 +77,5 @@ export = {
         },{{=conName}}{{=method.name}}Middleware,{{=!method.isHidden}},{{=conName}}{{=method.name}}PostMiddleware);
         {{~}}{{~}}
     },
-    definitions: {{=JSON.stringify(it.swagger.definitions, null, 2)}},
+    definitions: {{=JSON.stringify(it.swagger.definitions)}},
 }
