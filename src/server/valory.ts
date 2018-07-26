@@ -228,7 +228,7 @@ export class Valory {
 			let genRoutes;
 			if (Config.SourceRoutePath !== "") {
 				genRoutes = require(Config.GeneratedRoutePath);
-				merge(this.apiDef.definitions, genRoutes.definitions);
+				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 			}
 			this.validatorModule = loadModule(definitions);
 			if (genRoutes) {
@@ -243,7 +243,7 @@ export class Valory {
 			// console.log(Config);
 			if (Config.SourceRoutePath !== "") {
 				const genRoutes = require(Config.SourceRoutePath);
-				merge(this.apiDef.definitions, genRoutes.definitions);
+				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				genRoutes.register(this);
 			}
 		}
