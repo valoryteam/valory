@@ -446,7 +446,17 @@ export class Valory {
 				if (result !== true) {
 					response = this.buildError("ValidationError", result as string[]);
 				} else {
-					response = await handler(req, childLogger, {requestId});
+					try {
+						response = await handler(req, childLogger, {requestId});
+					} catch (error) {
+						if (error.name === "ValoryEndpointError") {
+							response = this.buildError(error.valoryErrorCode, error.message || undefined);
+						} else {
+							childLogger.error("Internal exception occurred while processing request");
+							childLogger.error(error);
+							response = this.buildError("InternalError");
+						}
+					}
 				}
 				req.putAttachment(Valory.ValidationResultKey, result);
 				req.putAttachment(Valory.ResponseKey, response);

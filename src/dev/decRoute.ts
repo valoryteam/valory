@@ -9,9 +9,10 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory, ApiError, Hidden, Query,
+	Valory, ApiError, Hidden, Query, PostMiddleware,
 } from "../main";
 import * as P from "pino";
+import {register} from "ts-node";
 
 type Logger = P.Logger;
 
@@ -57,9 +58,7 @@ const TestMiddleware: ApiMiddleware = {
 	},
 	name: "TestMiddleware",
 	handler: (req, logger, done) => {
-		req.getAttachment(Valory.ResponseKey);
-		// done(api.buildError("AccessDenied"));
-		done();
+		done({statusCode: 333, headers: {}, body: req.getAttachment(Valory.ResponseKey)});
 	},
 };
 
@@ -72,7 +71,7 @@ export class BurnRoutes extends Controller {
 	 * @param {StringAlias} testHeader override description
 	 * @maxLength testHeader 5
 	 */
-	@Middleware(TestMiddleware)
+	@PostMiddleware(TestMiddleware)
 	@Hidden()
 	@Post()
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
