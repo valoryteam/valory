@@ -16,7 +16,7 @@ import {register} from "ts-node";
 
 type Logger = P.Logger;
 
-interface TestResponse<T> {
+export interface TestResponse<T> {
 	status_code: number;
 	/** @default test */
 	response_data: T;
@@ -32,6 +32,9 @@ export class Burn {
 	public string: StringAlias;
 	public alias: AliasAlias;
 	public object: ObjectAlias;
+	public literalEnum: LiteralEnum;
+	public literal: LiteralAlias;
+	public literalNum: LiteralNum;
 }
 
 export type ArrayAlias = number[];
@@ -43,11 +46,16 @@ export type ArrayAlias = number[];
  */
 export type StringAlias = string;
 export type AliasAlias = StringAlias;
+export type LiteralAlias = "test";
+export type LiteralEnum = "thing" | "otherthing";
+export type LiteralNum = 2;
 
 export interface TestObj {
 	thing: string;
 	otherThing: number;
 }
+
+export enum
 
 export type ObjectAlias = TestObj;
 
@@ -71,7 +79,7 @@ export class BurnRoutes extends Controller {
 	 * @param {StringAlias} testHeader override description
 	 * @maxLength testHeader 5
 	 */
-	@PostMiddleware(TestMiddleware)
+	// @PostMiddleware(TestMiddleware)
 	@Hidden()
 	@Post()
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest,

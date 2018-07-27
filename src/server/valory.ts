@@ -1,27 +1,35 @@
+global.Promise = require("bluebird");
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
-import {forIn, isNil, omitBy, set, uniq, merge} from "lodash";
+import {forIn, isNil, omitBy, set, uniq} from "lodash";
 import {loadModule} from "../compiler/loader";
 import {readFileSync} from "fs";
 import {Steed} from "steed";
 import {Logger} from "pino";
 import {ApiRequest, AttachmentKey} from "./request";
-
-global.Promise = require("bluebird");
+import {Config} from "../lib/config";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
+import {
+	ApiExchange,
+	ApiHandler,
+	ApiMiddleware,
+	ApiResponse,
+	ApiServer,
+	ErrorDef,
+	ErrorFormatter,
+	HttpMethod,
+	VALORYLOGGERVAR,
+	ValoryMetadata,
+	VALORYMETAVAR,
+	VALORYPRETTYLOGGERVAR,
+} from "./valoryheaders";
 
 import P = require("pino");
 import pathMod = require("path");
-import {fastConcat} from "../lib/helpers";
-import {Config} from "../lib/config";
-import {DefaultAdaptor} from "../lib/defaultAdaptor";
 
-// Config.load();
 const steed: Steed = require("steed")();
 const uuid = require("hyperid")();
-const COMMONROUTEKEY = "ALL";
-/** @hidden */ export const VALORYLOGGERVAR = "LOGLEVEL";
-/** @hidden */ export const VALORYPRETTYLOGGERVAR = "PRETTYLOG";
-/** @hidden */ export const VALORYMETAVAR = "VALORY_METATDATA";
+
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
@@ -36,38 +44,6 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 	};
 };
 
-// export interface ValoryConfig {
-// 	adaptorModule: string;
-// 	apiEntrypoint: string;
-// 	adaptorConfiguration: {[key: string]: string};
-// 	workerConfiguration: {};
-// }
-
-export type ErrorFormatter = (error: ErrorDef, message?: string | string[]) => ApiResponse;
-
-export interface ApiExchange {
-	headers: { [key: string]: any };
-	body: any;
-}
-
-export interface ApiResponse extends ApiExchange {
-	statusCode: number;
-}
-
-export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
-									done: (error?: ApiResponse) => void) => void;
-
-export interface ApiMiddleware {
-	tag?: Array<Swagger.Tag | string> | Swagger.Tag | string;
-	name: string;
-	handler: ApiMiddlewareHandler;
-}
-
-// declare class ApiMiddleware<T> {
-// 	public static middlewareName: AttachmentKey<T>;
-//
-// }
-
 export interface ValoryOptions {
 	info: Swagger.Info;
 	server: ApiServer;
@@ -79,44 +55,6 @@ export interface ValoryOptions {
 	definitions?: { [x: string]: Swagger.Schema };
 	tags?: Swagger.Tag[];
 	basePath?: string;
-}
-
-export interface ErrorDef {
-	statusCode: number;
-	errorCode: number;
-	defaultMessage: string;
-}
-
-export interface RequestContext {
-	requestId: string;
-}
-
-export type ApiHandler = (request: ApiRequest, logger: Logger, requestContext: RequestContext)
-	=> Promise<ApiResponse> | ApiResponse;
-
-export enum HttpMethod {
-	POST,
-	PUT,
-	GET,
-	DELETE,
-	HEAD,
-	PATCH,
-}
-
-export interface ApiServer {
-	locallyRunnable: boolean;
-	register: (path: string, method: HttpMethod, handler: (request: ApiRequest) =>
-		ApiResponse | Promise<ApiResponse>) => void;
-	allowDocSite: boolean;
-	getExport: (metadata: ValoryMetadata, options: any) => { valory: ValoryMetadata };
-	shutdown: () => void;
-}
-
-export interface ValoryMetadata {
-	undocumentedEndpoints: string[];
-	valoryPath: string;
-	compiledSwaggerPath: string;
-	swagger: Swagger.Spec;
 }
 
 const DefaultErrors: { [x: string]: ErrorDef } = {
@@ -174,7 +112,6 @@ export class Valory {
 	private globalMiddleware: ApiMiddleware[] = [];
 	private globalPostMiddleware: ApiMiddleware[] = [];
 	private apiDef: Swagger.Spec;
-	private server: ApiServer;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
 	private registerGeneratedRoutes: (app: Valory) => void;
@@ -189,7 +126,7 @@ export class Valory {
 	 * @deprecated use [[Valory.createInstance]] instead
 	 */
 	constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], server: ApiServer, basePath?: string,
+				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], public server: ApiServer, basePath?: string,
 				parameters: { [name: string]: Swagger.Parameter } = {},
 				responses: { [name: string]: Swagger.Response } = {}) {
 		Config.load();
@@ -217,17 +154,15 @@ export class Valory {
 			this.apiDef.basePath = basePath;
 		}
 
-		this.server = server;
 		Object.assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
 			this.Logger.info("Starting valory");
 
 			if (this.TESTMODE) {
-				this.server = new DefaultAdaptor() as any;
+				this.server = new DefaultAdaptor();
 			}
-			let genRoutes;
 			if (Config.SourceRoutePath !== "") {
-				genRoutes = require(Config.GeneratedRoutePath);
+				const genRoutes = require(Config.GeneratedRoutePath);
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				this.registerGeneratedRoutes = genRoutes.register;
 			}
@@ -392,7 +327,7 @@ export class Valory {
 		if (!documented) {
 			this.metadata.undocumentedEndpoints.push(path);
 		}
-		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware,
+		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware,
 			this.globalPostMiddleware, postMiddleware);
 		for (const item of middlewares) {
 			if (item.tag != null) {
@@ -428,8 +363,8 @@ export class Valory {
 		}
 		const route = `${path}:${stringMethod}`;
 		const childLogger = this.Logger.child({endpoint: route});
-		const middlewares: ApiMiddleware[] = fastConcat(this.globalMiddleware, middleware);
-		const postMiddlewares = fastConcat(this.globalPostMiddleware, postMiddleware);
+		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware);
+		const postMiddlewares = this.globalPostMiddleware.concat(postMiddleware);
 		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
 			const requestId = uuid();
@@ -479,9 +414,12 @@ export class Valory {
 
 	private registerDocSite() {
 		const prefix = this.apiDef.basePath || "";
-		const redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
+		let redoc: string;
 		const swaggerBlob = this.validatorModule.swaggerBlob;
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
+			if (!redoc) {
+				redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
+			}
 			return {
 				body: swaggerBlob,
 				headers: {"Content-Type": "text/plain"},

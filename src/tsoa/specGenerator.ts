@@ -1,7 +1,7 @@
 import {Tsoa} from "./metadataGeneration/tsoa";
 import {normalisePath} from "./utils/pathUtils";
 import {Swagger} from "../server/swagger";
-import {merge} from "lodash";
+import {merge, isString} from "lodash";
 import ReferenceAlias = Tsoa.ReferenceAlias;
 
 export class SpecGenerator {
@@ -337,7 +337,19 @@ export class SpecGenerator {
 	}
 
 	private getSwaggerTypeForEnumType(enumType: Tsoa.EnumerateType): Swagger.Schema {
-		return {type: "string", enum: enumType.enums.map((member) => String(member))};
+		let isStringEnum = false;
+		enumType.enums.forEach((member) => {
+			if (isString(member)) {
+				isStringEnum = true;
+			}
+		});
+		return {type: (isStringEnum) ? "string" : "number", enum: enumType.enums.map((member) => {
+			if (isStringEnum) {
+				return String(member);
+			} else {
+				return member;
+			}
+		})};
 	}
 
 	private getSwaggerTypeForReferenceType(referenceType: Tsoa.ReferenceType): Swagger.BaseSchema {

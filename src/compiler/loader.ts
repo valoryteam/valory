@@ -1,9 +1,9 @@
 import {Swagger} from "../server/swagger";
 import * as path from "path";
 import {writeFileSync, existsSync, mkdirSync} from "fs";
-import {cloneDeep, omit} from "lodash";
+import {omit, cloneDeep} from "lodash";
 import {HASH_SEED, ICompilerOptions, ValidatorModule} from "./compilerheaders";
-import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../main";
+import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
 import P = require("pino");
 import {Config} from "../lib/config";
 const hyperid = require("hyperid");

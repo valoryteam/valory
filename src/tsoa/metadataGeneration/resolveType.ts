@@ -66,6 +66,28 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
 		return {dataType: "any"} as Tsoa.Type;
 	}
 
+	if (typeNode.kind === ts.SyntaxKind.LiteralType) {
+		// Literal types generate a const enum
+		const literal = typeNode as ts.LiteralTypeNode;
+		let constValue: string | number;
+
+		switch (literal.literal.kind) {
+			case ts.SyntaxKind.StringLiteral:
+				constValue = literal.literal.text;
+				break;
+			case ts.SyntaxKind.NumericLiteral:
+				constValue = parseFloat(literal.literal.text);
+				break;
+			default:
+				constValue = String((literal.literal as any).text);
+		}
+
+		return {
+			dataType: "enum",
+			enums: [constValue],
+		} as Tsoa.EnumerateType;
+	}
+
 	if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
 		throw new GenerateMetadataError(`Unknown type: ${ts.SyntaxKind[typeNode.kind]}`);
 	}

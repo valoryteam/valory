@@ -1,5 +1,4 @@
-import {ApiExchange} from "./valory";
-// import {AttachmentDict} from "../lib/attachmentdict";
+import {ApiExchange} from "./valoryheaders";
 const uuid = require("hyperid")();
 
 export interface AttachmentKey<T> {

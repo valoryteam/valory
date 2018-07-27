@@ -15,7 +15,7 @@
 		"docgen": "typedoc --module commonjs --excludePrivate --out docs --excludeNotExported --ignoreCompilerErrors --mode file src/server"
 	},
 	"engines": {
-		"node": "8"
+		"node": ">=8"
 	},
 	"author": "John Conley",
 	"license": "ISC",
@@ -62,7 +62,6 @@
 		"dot": "^1.1.2",
 		"fast.js": "^0.1.1",
 		"fastify": "^1.8.0",
-		"fastify-formbody": "^2.0.1",
 		"google-closure-compiler": "^20180716.0.1",
 		"hyperid": "^1.2.0",
 		"inquirer": "^6.0.0",

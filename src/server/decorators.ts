@@ -1,4 +1,4 @@
-import {ApiMiddleware} from "./valory";
+import {ApiMiddleware} from "./valoryheaders";
 import {Controller} from "./controller";
 import {Swagger} from "./swagger";
 

@@ -50,5 +50,5 @@ export async function spinnerFail(message: string, e: any) {
 	await Config.Spinner.fail(chalk.red.bold(message + "\n"));
 	ThreadSpinner.shutdown();
 	console.error(e);
-	process.exit();
+	process.exit(1);
 }

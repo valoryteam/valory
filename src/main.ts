@@ -6,22 +6,8 @@ export {
 } from "./lib/defaultAdaptor";
 export {
 	Valory,
-	ApiMiddleware,
-	ApiResponse,
-	ErrorDef,
-	ApiExchange,
-	ApiHandler,
-	ApiMiddlewareHandler,
-	ApiServer,
-	HttpMethod,
-	ErrorFormatter,
-	RequestContext,
-	ValoryMetadata,
 	ValoryOptions,
-	VALORYLOGGERVAR,
-	VALORYPRETTYLOGGERVAR,
-	VALORYMETAVAR,
-} from "./server/valory";
+	} from "./server/valory";
 export {
 	ApiRequest,
 	AttachmentKey,
@@ -55,3 +41,19 @@ export {
 	SuccessResponse,
 	Tags,
 } from "./server/decorators";
+export {
+	HttpMethod,
+	ApiResponse,
+	ValoryMetadata,
+	RequestContext,
+	ErrorFormatter,
+	ApiServer,
+	ApiMiddlewareHandler,
+	ApiHandler,
+	ApiExchange,
+	ErrorDef,
+	ApiMiddleware,
+	VALORYLOGGERVAR,
+	VALORYMETAVAR,
+	VALORYPRETTYLOGGERVAR,
+} from "./server/valoryheaders";

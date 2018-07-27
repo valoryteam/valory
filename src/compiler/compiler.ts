@@ -13,7 +13,7 @@ import {
 	ValidatorModuleContent,
 } from "./compilerheaders";
 import {join} from "path";
-import {VALORYPRETTYLOGGERVAR} from "../server/valory";
+import {VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
 import Pino = require("pino");
 import {convertTime, spinnerFail} from "../lib/helpers";
 import {Swagger} from "../server/swagger";

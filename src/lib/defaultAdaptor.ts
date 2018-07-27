@@ -1,9 +1,8 @@
-import {ApiExchange, ApiResponse, ApiServer, HttpMethod, ValoryMetadata} from "../main";
+import {ApiExchange, ApiResponse, ApiServer, HttpMethod, ValoryMetadata, ApiRequest} from "../main";
 import {FastifyInstance, HTTPMethod } from "fastify";
 import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");
-import {ApiRequest} from "../main";
-const formBody = require("fastify-formbody");
+import {parse} from "querystring";
 const intern = require("fast.js/string/intern");
 const pathReplacer = /{([\S]*?)}/g;
 
@@ -12,8 +11,8 @@ export class DefaultAdaptor implements ApiServer {
 	public readonly allowDocSite: boolean = true;
 	private instance: FastifyInstance<Server, IncomingMessage, ServerResponse> = fastify({});
 	constructor() {
-		this.instance.register(formBody);
-		(this.instance as any).addContentTypeParser("application/json", {parseAs: "string"}, jsonParser);
+		this.instance.addContentTypeParser("application/x-www-form-urlencoded", {parseAs: "string"}, formParser as any);
+		this.instance.addContentTypeParser("application/json", {parseAs: "string"}, jsonParser as any);
 	}
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiRequest) => ApiResponse | Promise<ApiResponse>) {
@@ -57,7 +56,7 @@ export class DefaultAdaptor implements ApiServer {
 	}
 }
 
-function jsonParser(req: IncomingMessage, body: string, done: (err?: Error, value?: any) => void) {
+function jsonParser(req: IncomingMessage, body: string, done: (err?: Error, body?: any) => void) {
 	let json = null;
 	try {
 		json = JSON.parse(body);
@@ -66,4 +65,8 @@ function jsonParser(req: IncomingMessage, body: string, done: (err?: Error, valu
 		return done(err, undefined);
 	}
 	done(null, {parsed: json, raw: body});
+}
+
+function formParser(req: IncomingMessage, body: string, done: (err?: Error, body?: any) => void) {
+	done(null, parse(body));
 }
