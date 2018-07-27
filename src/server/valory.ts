@@ -177,6 +177,7 @@ export class Valory {
 	private server: ApiServer;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
+	private registerGeneratedRoutes: (app: Valory) => void;
 	private metadata: ValoryMetadata = {
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
@@ -228,11 +229,9 @@ export class Valory {
 			if (Config.SourceRoutePath !== "") {
 				genRoutes = require(Config.GeneratedRoutePath);
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
+				this.registerGeneratedRoutes = genRoutes.register;
 			}
 			this.validatorModule = loadModule(definitions);
-			if (genRoutes) {
-				genRoutes.register(this);
-			}
 			if (this.server.allowDocSite) {
 				this.registerDocSite();
 			}
@@ -243,7 +242,7 @@ export class Valory {
 			if (Config.SourceRoutePath !== "") {
 				const genRoutes = require(Config.SourceRoutePath);
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
-				genRoutes.register(this);
+				this.registerGeneratedRoutes = genRoutes.register;
 			}
 		}
 	}
@@ -366,6 +365,9 @@ export class Valory {
 	 * Start server. Call once all endpoints are registered.
 	 */
 	public start(options: any): any {
+		if (this.registerGeneratedRoutes != null) {
+			this.registerGeneratedRoutes(this);
+		}
 		if (!this.COMPILERMODE) {
 			this.Logger.info("Valory startup complete");
 		}
