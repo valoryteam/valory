@@ -2,7 +2,6 @@ import {Tsoa} from "./metadataGeneration/tsoa";
 import {normalisePath} from "./utils/pathUtils";
 import {Swagger} from "../server/swagger";
 import {merge, isString} from "lodash";
-import ReferenceAlias = Tsoa.ReferenceAlias;
 
 export class SpecGenerator {
 	constructor(private readonly metadata: Tsoa.Metadata) {

@@ -1,4 +1,5 @@
 import {Logger} from "pino";
+import {Valory} from "../main";
 
 export class Controller {
 	public logger: Logger;
@@ -31,5 +32,11 @@ export class Controller {
 
 	public clearHeaders() {
 		this.headers = {};
+	}
+
+	public buildError(error: string, message?: string) {
+		const obj = Valory.getInstance().buildError(error, message);
+		this.setStatus(obj.statusCode);
+		return obj.body;
 	}
 }

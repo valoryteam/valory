@@ -55,8 +55,6 @@ export interface TestObj {
 	otherThing: number;
 }
 
-export enum
-
 export type ObjectAlias = TestObj;
 
 const TestMiddleware: ApiMiddleware = {
@@ -85,7 +83,7 @@ export class BurnRoutes extends Controller {
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
 				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
 		this.logger.info("yay");
-		throw ApiError("AccessDenied", "GTFO");
+		return this.buildError("AccessDenied");
 		// return "thing";
 	}
 }
