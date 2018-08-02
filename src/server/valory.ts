@@ -417,9 +417,6 @@ export class Valory {
 		let redoc: string;
 		const swaggerBlob = this.validatorModule.swaggerBlob;
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
-			if (!redoc) {
-				redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
-			}
 			return {
 				body: swaggerBlob,
 				headers: {"Content-Type": "text/plain"},
@@ -430,6 +427,9 @@ export class Valory {
 			};
 		});
 		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
+			if (!redoc) {
+				redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
+			}
 			return {
 				body: redoc,
 				headers: {"Content-Type": "text/html"},

@@ -9,7 +9,7 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory, ApiError, Hidden, Query, PostMiddleware,
+	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path,
 } from "../main";
 import * as P from "pino";
 import {register} from "ts-node";
@@ -78,13 +78,18 @@ export class BurnRoutes extends Controller {
 	 * @maxLength testHeader 5
 	 */
 	// @PostMiddleware(TestMiddleware)
-	@Hidden()
+	// @Hidden()
 	@Post()
 	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
 				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
 		this.logger.info("yay");
 		return this.buildError("AccessDenied");
 		// return "thing";
+	}
+
+	@Get("{thing}")
+	public test(@Path() thing: StringAlias) {
+		return "yay";
 	}
 }
 

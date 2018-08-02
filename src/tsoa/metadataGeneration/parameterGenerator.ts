@@ -171,8 +171,14 @@ export class ParameterGenerator {
 
 	private getPathParameter(parameter: ts.ParameterDeclaration): Tsoa.Parameter {
 		const parameterName = (parameter.name as ts.Identifier).text;
-		const type = this.getValidatedType(parameter, false);
+		let type = this.getValidatedType(parameter, false);
 		const pathName = getDecoratorTextValue(this.parameter, (ident) => ident.text === "Path") || parameterName;
+		let alias: Tsoa.ReferenceAlias = null;
+
+		if (type.dataType === "refAlias") {
+			alias = type as Tsoa.ReferenceAlias;
+			type = alias.type;
+		}
 
 		if (!this.supportPathDataType(type)) {
 			throw new GenerateMetadataError(`@Path('${parameterName}') Can't support '${type.dataType}' type.`);
@@ -183,13 +189,14 @@ export class ParameterGenerator {
 
 		return {
 			default: getInitializerValue(parameter.initializer, type),
-			description: this.getParameterDescription(parameter),
+			description: this.getParameterDescription(parameter) || (alias != null) ? alias.description : undefined,
 			in: "path",
 			name: pathName,
 			parameterName,
 			required: true,
 			type,
-			validators: getParameterValidators(this.parameter, parameterName),
+			validators: (alias != null) ? merge({}, alias.validators, getParameterValidators(this.parameter, parameterName))
+				: getParameterValidators(this.parameter, parameterName),
 		};
 	}
 
