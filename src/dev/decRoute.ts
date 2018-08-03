@@ -9,7 +9,7 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path,
+	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp,
 } from "../main";
 import * as P from "pino";
 import {register} from "ts-node";
@@ -53,6 +53,14 @@ export type LiteralNum = 2;
 export interface TestObj {
 	thing: string;
 	otherThing: number;
+	/** nested description */
+	nested: {
+		/** nestedprop description */
+		nestedProp: string;
+		nestedObj: {
+			num: number;
+		};
+	};
 }
 
 export type ObjectAlias = TestObj;
@@ -71,7 +79,7 @@ const TestMiddleware: ApiMiddleware = {
 @Route("burn")
 export class BurnRoutes extends Controller {
 	/**
-	 *
+	 * a description
 	 * @param {Burn} burn
 	 * @param {ApiRequest} req
 	 * @param {StringAlias} testHeader override description
@@ -80,15 +88,15 @@ export class BurnRoutes extends Controller {
 	// @PostMiddleware(TestMiddleware)
 	// @Hidden()
 	@Post()
-	public submit(@Body() burn: Burn, @Request() req: ApiRequest,
+	public submit(@BodyProp() burn: { prop: "value"}, @Request() req: ApiRequest,
 				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
 		this.logger.info("yay");
 		return this.buildError("AccessDenied");
 		// return "thing";
 	}
 
-	@Get("{thing}")
-	public test(@Path() thing: StringAlias) {
+	@Post("other/{thing}")
+	public test(@Path() thing: StringAlias, @Body() input: TestObj) {
 		return "yay";
 	}
 }

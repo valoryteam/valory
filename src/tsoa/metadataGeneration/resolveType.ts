@@ -63,7 +63,9 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
 	}
 
 	if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
-		return {dataType: "any"} as Tsoa.Type;
+		const literal = getTypeLiteral(typeNode as any, parentNode);
+		// MetadataGenerator.current.AddReferenceType(literal);
+		return literal;
 	}
 
 	if (typeNode.kind === ts.SyntaxKind.LiteralType) {
@@ -342,6 +344,21 @@ function getNodeSwagger(node: UsableDeclaration | ts.PropertyDeclaration |
 	} else {
 		return undefined;
 	}
+}
+
+function getTypeLiteral(node: UsableDeclaration, parent: ts.Node): Tsoa.ObjectType {
+	// const name = (parent as any).name.escapedText;
+
+	const properties = getModelProperties(node);
+	const additionalProperties = getModelAdditionalProperties(node);
+	const description = getNodeDescription(node.parent != null ? node.parent : node as any);
+
+	return {
+		dataType: "object",
+		properties,
+		additionalProperties,
+		description,
+	};
 }
 
 function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | undefined {
@@ -628,7 +645,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 	};
 
 	// Interface model
-	if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
+	if (node.kind === ts.SyntaxKind.InterfaceDeclaration || ts.SyntaxKind.TypeLiteral) {
 		const interfaceDeclaration = node as ts.InterfaceDeclaration;
 		return interfaceDeclaration.members
 			.filter((member) => {
@@ -827,6 +844,9 @@ function hasPublicModifier(node: ts.Node) {
 
 function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration |
 	ts.ParameterDeclaration | ts.EnumDeclaration) {
+	if (node.name == null) {
+		return undefined;
+	}
 	const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name as ts.Node);
 	if (!symbol) {
 		return undefined;

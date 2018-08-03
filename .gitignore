@@ -7,9 +7,9 @@ src/**/*.js
 docs
 .idea/
 .nyc_output
-yarn-error.log
 .compswag.js
 DEBUG_OUTPUT/
 generatedRoutes.ts
 valory.json
 shrinkwrap.yaml
+*.log

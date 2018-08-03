@@ -77,6 +77,14 @@ export namespace Tsoa {
 		enums: string[];
 	}
 
+	export interface ObjectType extends Type {
+		dataType: "object";
+		example?: any;
+		description?: string;
+		properties?: Property[];
+		additionalProperties?: Type;
+	}
+
 	export interface ArrayType extends Type {
 		dataType: "array";
 		elementType: Type;

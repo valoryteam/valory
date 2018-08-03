@@ -49,7 +49,7 @@ class ValoryTest {
 			});
 			ValoryTest.serverProc.stdout.on("data", (data: string) => {
 				if (data.includes("Valory startup complete")) {
-					resolve();
+					setTimeout(resolve, 50);
 				}
 			});
 			ValoryTest.serverProc.stderr.on("data", (data: string) => {

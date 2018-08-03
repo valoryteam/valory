@@ -303,13 +303,13 @@ export class Valory {
 		if (this.registerGeneratedRoutes != null) {
 			this.registerGeneratedRoutes(this);
 		}
-		if (!this.COMPILERMODE) {
-			this.Logger.info("Valory startup complete");
-		}
 		this.metadata.swagger = this.apiDef;
 		const data = this.server.getExport(this.metadata, options);
 		if (this.COMPILERMODE) {
 			process.env[VALORYMETAVAR] = JSON.stringify(data);
+		}
+		if (!this.COMPILERMODE) {
+			this.Logger.info("Valory startup complete");
 		}
 		return data;
 	}
@@ -467,10 +467,25 @@ function processMiddleware(middlewares: ApiMiddleware[],
 function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
 	const tagDef: Swagger.Tag = {name: "Errors", description: "", externalDocs: null};
 	let table = ERRORTABLEHEADER;
-	forIn(errors, (error: ErrorDef, name: string) => {
-		"use strict";
-		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";
+	const keys = Object.keys(errors);
+	keys.sort((a, b) => {
+		const aCode = errors[a].errorCode;
+		const bCode = errors[b].errorCode;
+
+		if (aCode < bCode) {
+			return -1;
+		}
+		if (aCode === bCode) {
+			return 0;
+		}
+		if (aCode > bCode) {
+			return 1;
+		}
 	});
+	for (const name of keys) {
+		const error = errors[name];
+		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";
+	}
 	tagDef.description = table;
 	return omitBy(tagDef, isNil) as Swagger.Tag;
 }

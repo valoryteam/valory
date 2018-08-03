@@ -9,6 +9,11 @@ const info: Swagger.Info = {
 };
 const definitions: {[name: string]: Swagger.Schema} = {};
 const errors: { [name: string]: ErrorDef } = {
+	TestError: {
+		statusCode: 444,
+		errorCode: 1331,
+		defaultMessage: "test error",
+	},
 	AccessDenied: {
 		statusCode: 401,
 		errorCode: 1004,

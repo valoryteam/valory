@@ -150,6 +150,14 @@ export class SpecGenerator {
 				properties[p.name] = this.getSwaggerType(p.type);
 				properties[p.name].default = p.default;
 				properties[p.name].description = p.description;
+				if (p.type.dataType === "object") {
+					const resolved = this.buildLiteralObject(p.type as Tsoa.ObjectType);
+					properties[p.name].properties = resolved.properties;
+					properties[p.name].additionalProperties = resolved.additionalProperties;
+					properties[p.name].required = resolved.required;
+					properties[p.name].type = resolved.type;
+					properties[p.name].description = resolved.description;
+				}
 
 				if (p.required) {
 					required.push(p.name);
@@ -205,6 +213,10 @@ export class SpecGenerator {
 				(validatorObjs as any)[key] = source.validators[key].value;
 			});
 
+		if (source.type.dataType === "object" && source.in === "body") {
+			(parameter as Swagger.BodyParameter).schema = this.buildLiteralObject(source.type as Tsoa.ObjectType);
+		}
+
 		if (source.in === "body" && source.type.dataType === "array") {
 			(parameter as Swagger.BodyParameter).schema = {
 				items: parameterType.items,
@@ -217,7 +229,7 @@ export class SpecGenerator {
 				} else {
 					parameter.type = "string";
 				}
-			} else {
+			} else if (!(source.in === "body" && source.type.dataType === "object")) {
 				parameter.type = parameterType.type;
 				parameter.items = parameterType.items;
 				parameter.enum = parameterType.enum;
@@ -234,6 +246,22 @@ export class SpecGenerator {
 		return parameter;
 	}
 
+	private buildLiteralObject(type: Tsoa.ObjectType): Swagger.Schema {
+		const required = type.properties.filter((p) => p.required).map((p) => p.name);
+		const schema = {
+			type: "object",
+			properties: this.buildProperties(type.properties),
+			required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
+			description: type.description,
+		} as Swagger.Schema;
+
+		if (type.additionalProperties) {
+			schema.additionalProperties = this.buildAdditionalProperties(type.additionalProperties);
+		}
+
+		return schema;
+	}
+
 	private buildProperties(source: Tsoa.Property[]) {
 		const properties: { [propertyName: string]: Swagger.Schema } = {};
 
@@ -242,6 +270,16 @@ export class SpecGenerator {
 			const format = property.format as Swagger.DataFormat;
 			swaggerType.description = property.description;
 			swaggerType.format = format || swaggerType.format;
+
+			if (property.type.dataType === "object") {
+				const resolved = this.buildLiteralObject(property.type as Tsoa.ObjectType);
+				swaggerType.properties = resolved.properties;
+				swaggerType.additionalProperties = resolved.additionalProperties;
+				swaggerType.type = resolved.type;
+				swaggerType.required = resolved.required;
+				swaggerType.description = swaggerType.description ? swaggerType.description : resolved.description;
+			}
+
 			if (!swaggerType.$ref) {
 				swaggerType.default = property.default;
 

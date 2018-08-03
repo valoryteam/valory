@@ -2,7 +2,6 @@ import {MetadataGenerator} from "./metadataGeneration/metadataGenerator";
 import {SpecGenerator} from "./specGenerator";
 import {dirname, extname, join, relative} from "path";
 import {writeFileSync} from "fs";
-import * as tsfmt from "typescript-formatter";
 import {Config} from "../lib/config";
 import chalk from "chalk";
 import {spinnerFail} from "../lib/helpers";
@@ -38,15 +37,6 @@ export async function routeBuild(entryPoint: string) {
 		});
 
 		const generatedPath = Config.SourceRoutePath;
-		// const formatted = await tsfmt.processString(generatedPath, generatedRoutes, {
-		// 	editorconfig: true,
-		// 	replace: true,
-		// 	tsconfig: {
-		// 		newLine: "LF",
-		// 	},
-		// 	tsfmt: true,
-		// 	tslint: false,
-		// } as any);
 
 		writeFileSync(generatedPath, generatedRoutes.replace(/\"([a-zA-Z_$][0-9a-zA-Z_$]+)\":/g, "$1:"));
 		await spinner.succeed();

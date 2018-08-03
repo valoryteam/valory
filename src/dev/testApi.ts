@@ -290,7 +290,7 @@ api.post("/v1/transactions", {
 }, [TestMiddleware]);
 
 // Build and export the app, passing any adaptor specific config data
-api.start({port: process.env.PORT || 8080});
+api.start({port: 8080});
 
 process.on("SIGTERM", () => {
 	console.log("received exit");
