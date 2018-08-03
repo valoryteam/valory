@@ -96,8 +96,12 @@ export class BurnRoutes extends Controller {
 		// return "thing";
 	}
 
+	/**
+	 *
+	 * @param thing test
+	 */
 	@Post("other/{thing}")
-	public test(@Path() thing: StringAlias): TestObj<{literal: string}> {
+	public test(@Path() thing: string): TestObj<{literal: string}> {
 		return;
 	}
 }
