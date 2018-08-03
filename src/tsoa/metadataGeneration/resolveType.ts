@@ -481,6 +481,10 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
 		return "object";
 	}
 
+	if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
+		return "object";
+	}
+
 	if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
 		throw new GenerateMetadataError(`Unknown type: ${ts.SyntaxKind[typeNode.kind]}.`);
 	}

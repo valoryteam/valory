@@ -50,8 +50,9 @@ export type LiteralAlias = "test";
 export type LiteralEnum = "thing" | "otherthing";
 export type LiteralNum = 2;
 
-export interface TestObj {
+export interface TestObj<T> {
 	thing: string;
+	generic: T;
 	otherThing: number;
 	/** nested description */
 	nested: {
@@ -63,7 +64,7 @@ export interface TestObj {
 	};
 }
 
-export type ObjectAlias = TestObj;
+export type ObjectAlias = TestObj<string>;
 
 const TestMiddleware: ApiMiddleware = {
 	tag: {
@@ -96,8 +97,8 @@ export class BurnRoutes extends Controller {
 	}
 
 	@Post("other/{thing}")
-	public test(@Path() thing: StringAlias, @Body() input: TestObj) {
-		return "yay";
+	public test(@Path() thing: StringAlias): TestObj<{literal: string}> {
+		return;
 	}
 }
 
