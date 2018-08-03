@@ -31,7 +31,7 @@ export class Burn {
 	public array: ArrayAlias;
 	public string: StringAlias;
 	public alias: AliasAlias;
-	public object: ObjectAlias;
+	// public object: ObjectAlias;
 	public literalEnum: LiteralEnum;
 	public literal: LiteralAlias;
 	public literalNum: LiteralNum;
@@ -50,12 +50,12 @@ export type LiteralAlias = "test";
 export type LiteralEnum = "thing" | "otherthing";
 export type LiteralNum = 2;
 
-export interface TestObj<T> {
-	thing: string;
-	generic: T;
-	otherThing: number;
+export class TestObj<T> {
+	public thing: string;
+	public generic: T;
+	public otherThing: number;
 	/** nested description */
-	nested: {
+	public nested: {
 		/** nestedprop description */
 		nestedProp: string;
 		nestedObj: {
@@ -63,8 +63,6 @@ export interface TestObj<T> {
 		};
 	};
 }
-
-export type ObjectAlias = TestObj<string>;
 
 const TestMiddleware: ApiMiddleware = {
 	tag: {
@@ -89,7 +87,7 @@ export class BurnRoutes extends Controller {
 	// @PostMiddleware(TestMiddleware)
 	// @Hidden()
 	@Post()
-	public submit(@BodyProp() burn: { prop: "value"}, @Request() req: ApiRequest,
+	public submit(@BodyProp() burn: Burn, @Request() req: ApiRequest,
 				  @Header() testHeader: StringAlias, @Query() testQuery: StringAlias): TestResponse<Burn[]> {
 		this.logger.info("yay");
 		return this.buildError("AccessDenied");
@@ -101,7 +99,7 @@ export class BurnRoutes extends Controller {
 	 * @param thing test
 	 */
 	@Post("other/{thing}")
-	public test(@Path() thing: string): TestObj<{literal: string}> {
+	public test(@Path() thing: string, @Body() input: TestObj<string>) {
 		return;
 	}
 }

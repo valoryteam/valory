@@ -18,7 +18,8 @@ const inProgressTypes: { [typeName: string]: boolean } = {};
 
 type UsableDeclaration = ts.InterfaceDeclaration
 	| ts.ClassDeclaration
-	| ts.TypeAliasDeclaration;
+	| ts.TypeAliasDeclaration
+	| ts.ObjectTypeDeclaration;
 
 // TODO: type aliases are not properly resolved
 export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extractEnum = true): Tsoa.Type {
@@ -597,7 +598,7 @@ function getModelTypeDeclaration(type: ts.EntityName) {
 				return false;
 			}
 
-			const modelTypeDeclaration = node as UsableDeclaration;
+			const modelTypeDeclaration = node;
 			return (modelTypeDeclaration.name as ts.Identifier).text === typeName;
 		}) as UsableDeclaration[];
 
@@ -649,7 +650,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 	};
 
 	// Interface model
-	if (node.kind === ts.SyntaxKind.InterfaceDeclaration || ts.SyntaxKind.TypeLiteral) {
+	if (node.kind === ts.SyntaxKind.InterfaceDeclaration || node.kind === ts.SyntaxKind.TypeLiteral) {
 		const interfaceDeclaration = node as ts.InterfaceDeclaration;
 		return interfaceDeclaration.members
 			.filter((member) => {
@@ -668,10 +669,12 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 				let aType = propertyDeclaration.type;
 
 				// aType.kind will always be a TypeReference when the property of Interface<T> is of type T
-				if (aType.kind === ts.SyntaxKind.TypeReference && genericTypes && genericTypes.length && node.typeParameters) {
+				if (aType.kind === ts.SyntaxKind.TypeReference && genericTypes && genericTypes.length
+					&& (node as ts.InterfaceDeclaration).typeParameters) {
 
 					// The type definitions are conviently located on the object which allow us to map -> to the genericTypes
-					const typeParams = map(node.typeParameters, (typeParam: ts.TypeParameterDeclaration) => {
+					const typeParams = map((node as ts.InterfaceDeclaration).typeParameters,
+						(typeParam: ts.TypeParameterDeclaration) => {
 						return typeParam.name.text;
 					});
 
@@ -776,6 +779,33 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 				throw new GenerateMetadataError(`No valid type found for property declaration.`);
 			}
 
+			if (typeNode.kind === ts.SyntaxKind.TypeReference && genericTypes && genericTypes.length
+				&& (node as ts.ClassDeclaration).typeParameters) {
+
+				// The type definitions are conviently located on the object which allow us to map -> to the genericTypes
+				const typeParams = map((node as ts.ClassDeclaration).typeParameters,
+					(typeParam: ts.TypeParameterDeclaration) => {
+						return typeParam.name.text;
+					});
+
+				// I am not sure in what cases
+				const typeIdentifier = (typeNode as ts.TypeReferenceNode).typeName;
+				let typeIdentifierName: string;
+
+				// typeIdentifier can either be a Identifier or a QualifiedName
+				if ((typeIdentifier as ts.Identifier).text) {
+					typeIdentifierName = (typeIdentifier as ts.Identifier).text;
+				} else {
+					typeIdentifierName = (typeIdentifier as ts.QualifiedName).right.text;
+				}
+
+				// I could not produce a situation where this did not find it so its possible this check is irrelevant
+				const indexOfType = indexOf(typeParams, typeIdentifierName);
+				if (indexOfType >= 0) {
+					typeNode = genericTypes[indexOfType] as ts.TypeNode;
+				}
+			}
+
 			const type = resolveType(typeNode, property);
 
 			// console.log(type);
@@ -818,6 +848,9 @@ function getModelInheritedProperties(modelTypeDeclaration: UsableDeclaration): T
 	if (modelTypeDeclaration.kind === ts.SyntaxKind.TypeAliasDeclaration) {
 		return [];
 	}
+	if (modelTypeDeclaration.kind === ts.SyntaxKind.TypeLiteral) {
+		return [];
+	}
 	const heritageClauses = modelTypeDeclaration.heritageClauses;
 	if (!heritageClauses) {
 		return properties;
@@ -848,7 +881,7 @@ function hasPublicModifier(node: ts.Node) {
 
 function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration |
 	ts.ParameterDeclaration | ts.EnumDeclaration) {
-	if (node.name == null) {
+	if (node.kind === ts.SyntaxKind.TypeLiteral) {
 		return undefined;
 	}
 	const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name as ts.Node);
