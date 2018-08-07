@@ -6,7 +6,7 @@ process.env[CLI_MODE_FLAG] = "true";
 import {VALORYLOGGERVAR, ValoryMetadata, VALORYMETAVAR, VALORYPRETTYLOGGERVAR} from "../main";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Swagger} from "../server/swagger";
-import {compileAndSave} from "../compiler/loader";
+import {compileAndSave} from "../compiler/compileRunner";
 import {isNil, omitBy} from "lodash";
 import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";

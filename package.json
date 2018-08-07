@@ -2,13 +2,12 @@
 	"name": "valory",
 	"version": "2.6.0",
 	"description": "A server agnostic web framework for creating bulletproof apis",
-	"typings": "dist/main.d.ts",
-	"main": "dist/main.js",
+	"typings": "types/main.d.ts",
+	"main": "pkg/main.js",
 	"scripts": {
 		"pretest": "npm run build",
 		"test": "mocha dist/test/test.js",
 		"build": "tsc",
-		"prepare": "npm run build",
 		"release": "semantic-release",
 		"commitmsg": "commitlint -e $GIT_PARAMS",
 		"lint": "tslint --project .",
@@ -20,14 +19,15 @@
 	"author": "John Conley",
 	"license": "ISC",
 	"files": [
-		"dist",
 		"package.json",
 		"README.md",
 		"html",
 		"templates",
 		"tsconfig.json",
 		"tslint.json",
-		"tsfmt.json"
+		"tsfmt.json",
+		"pkg",
+		"types"
 	],
 	"devDependencies": {
 		"@commitlint/cli": "^7.0.0",
@@ -42,12 +42,16 @@
 		"@types/pino": "^4.7.0",
 		"@types/request": "^2.47.0",
 		"@types/request-promise": "^4.1.42",
+		"@types/semver": "^5.5.0",
 		"@types/steed": "^1.1.2",
 		"@types/swagger-parser": "^4.0.2",
 		"@types/yargs": "^11.1.0",
-		"@types/semver": "^5.5.0",
+		"babel-core": "^6.26.3",
+		"babel-plugin-loop-optimizer": "^1.4.1",
+		"babel-plugin-transform-async-to-bluebird": "^1.1.1",
 		"chai": "^4.1.2",
 		"cz-conventional-changelog": "^2.1.0",
+		"fast-async": "^6.3.7",
 		"husky": "^0.14.3",
 		"mocha": "5.0.5",
 		"mocha-typescript": "1.1.12",
@@ -86,7 +90,7 @@
 		"yargs": "^12.0.1"
 	},
 	"bin": {
-		"valory": "dist/lib/cli.js"
+		"valory": "pkg/lib/cli.js"
 	},
 	"release": {
 		"repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",

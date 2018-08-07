@@ -2,7 +2,7 @@ import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
-import * as Ajv from "ajv";
+const Ajv = require("ajv");
 import * as fs from "fs";
 import {
 	CompilationLevel,
@@ -21,7 +21,6 @@ import {Config} from "../lib/config";
 import chalk from "chalk";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
-const beautifier = require("js-beautify").js_beautify;
 const ClosureCompiler = require("google-closure-compiler").compiler;
 const tmp = require("tmp");
 const dotJs = require("dot");

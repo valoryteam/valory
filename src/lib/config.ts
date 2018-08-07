@@ -53,7 +53,7 @@ export namespace Config {
 		PackageJSONPath = `${RootPath}/package.json`;
 		if (CompilerMode) {
 			Spinner = new ThreadSpinner(undefined, process.env.NODE_ENV === "test");
-			ValoryVersion = require(path.join(__dirname, "../../package.json")).version;
+			ValoryVersion = require("../../package.json").version;
 			PackageJSON = require(PackageJSONPath);
 		}
 		if (loadConfig) {
