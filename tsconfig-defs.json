@@ -2,6 +2,12 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "emitDeclarationOnly": true,
-    "outDir": "types"
-  }
+    "outDir": "pkg/types",
+    "sourceMap": false,
+
+  },
+  "include": [],
+  "files": [
+    "src/main.ts"
+  ]
 }

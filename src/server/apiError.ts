@@ -3,7 +3,7 @@ interface ApiError extends Error {
 	name: "ValoryEndpointError";
 }
 
-const ApiErrorBuilder = (errorCode: string, message?: string): ApiError => {
+const ApiErrorBuilder = (errorCode: string, message?: string) => {
 	return {
 		valoryErrorCode: errorCode,
 		message,

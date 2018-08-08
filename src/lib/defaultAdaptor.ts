@@ -3,7 +3,6 @@ import {FastifyInstance, HTTPMethod } from "fastify";
 import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");
 import {parse} from "querystring";
-const intern = require("fast.js/string/intern");
 const pathReplacer = /{([\S]*?)}/g;
 
 export class DefaultAdaptor implements ApiServer {
@@ -17,7 +16,7 @@ export class DefaultAdaptor implements ApiServer {
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiRequest) => ApiResponse | Promise<ApiResponse>) {
 		const route = `${path}:${HttpMethod[method]}`;
-		path = intern(path.replace(pathReplacer, ":$1"));
+		path = path.replace(pathReplacer, ":$1");
 		this.instance.route({
 			method: HttpMethod[method] as HTTPMethod,
 			url: path,

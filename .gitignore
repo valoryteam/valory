@@ -13,3 +13,5 @@ generatedRoutes.ts
 valory.json
 shrinkwrap.yaml
 *.log
+.cache
+pkg

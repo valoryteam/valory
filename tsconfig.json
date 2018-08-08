@@ -1,6 +1,7 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
+		"esModuleInterop": false,
 		"experimentalDecorators": true,
 		"pretty": false,
 		"module": "commonjs",
