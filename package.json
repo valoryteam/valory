@@ -9,8 +9,7 @@
 		"test": "mocha dist/test/test.js",
 		"build": "tsc && npm run types && npm run runtime",
 		"types": "tsc -p tsconfig-defs.json",
-		"release": "semantic-release && npm run releaseRuntime",
-		"releaseRuntime": "cd pkg && semantic-release",
+		"release": "semantic-release",
 		"runtime": "cp package-min.json pkg/package.json",
 		"commitmsg": "commitlint -e $GIT_PARAMS",
 		"lint": "tslint --project .",
@@ -102,7 +101,13 @@
 			"@semantic-release/npm"
 		],
 		"publish": [
-			"@semantic-release/npm"
+			{
+				"path": "@semantic-release/npm"
+			},
+			{
+				"path": "@semantic-release/npm",
+				"pkgRoot": "pkg"
+			}
 		],
 		"success": [],
 		"fail": []

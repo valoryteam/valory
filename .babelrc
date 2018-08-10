@@ -1,6 +1,0 @@
-{
-  "plugins": [
-    "transform-async-to-bluebird",
-    "loop-optimizer"
-  ]
-}
