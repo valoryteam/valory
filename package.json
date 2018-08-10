@@ -1,6 +1,6 @@
 {
   "name": "valory",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "A server agnostic web framework for creating bulletproof apis",
   "typings": "dist/main.d.ts",
   "main": "dist/main.js",
@@ -95,7 +95,7 @@
     "valory": "dist/lib/cli.js"
   },
   "release": {
-    "repositoryUrl": "ssh://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
+    "repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
     "branch": "master",
     "verifyConditions": [
       {
