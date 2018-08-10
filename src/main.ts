@@ -1,9 +1,9 @@
 export {
 	Controller,
 } from "./server/controller";
-export {
-	DefaultAdaptor,
-} from "./lib/defaultAdaptor";
+// export {
+// 	DefaultAdaptor,
+// } from "./lib/defaultAdaptor";
 export {
 	Valory,
 	ValoryOptions,

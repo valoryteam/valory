@@ -20,7 +20,6 @@
 			]
 		},
 		"types": [
-			"bluebird-global"
 		],
 		"alwaysStrict": true
 	},

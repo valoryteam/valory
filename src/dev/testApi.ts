@@ -1,6 +1,7 @@
 import {
-	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, DefaultAdaptor,
+	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get,
 } from "../main";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 // Define basic info for the api
 const info: Swagger.Info = {
 	title: "CNP POC API",

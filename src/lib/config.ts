@@ -1,11 +1,6 @@
 import * as path from "path";
 import {readFileSync} from "fs";
-import {ThreadSpinner} from "thread-spin";
 import {IPackageJSON} from "./package";
-import {gt, coerce} from "semver";
-import {execSync, spawnSync} from "child_process";
-import chalk from "chalk";
-import {spinnerFail} from "./helpers";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
 export const VALORY_ROOT = "VALORY_ROOT";
@@ -18,6 +13,58 @@ export interface ValoryConfig {
 }
 
 export namespace Config {
+	export const DOC_HTML = `<!DOCTYPE html>
+		<meta charset="UTF-8">
+		<html>
+		<head>
+			<title>ModoPayments | Appserver</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1">
+			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+			<style>
+				body {
+					margin: 0;
+					padding: 0;
+				}
+				.powered-by-badge{
+					display:none;
+				},
+				.api-info-header + p{
+					display: none !important;
+				}
+			</style>
+		</head>
+		<body>
+		<style>
+			header{
+				text-align: right;
+				padding-right: 20px;
+			}
+		</style>
+		<redoc></redoc>
+		<script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js">
+		</script>
+		<script>
+			$(document).ready(function() {
+		
+				$(".api-info-header + p").hide();
+				$(document).on("click", function(e) {
+					if ( window.history && window.history.pushState ) {
+						window.history.pushState('', '', window.location.pathname)
+					} else {
+						window.location.href = window.location.href.replace(/#.*$/, '#');
+					}
+				});
+				var path = window.location.pathname;
+				if (path.endsWith("/")) {
+					path = path.substr(0, path.length - 1);
+				}
+				Redoc.init(path+"/swagger.json",{
+				});
+		
+			});
+		</script>
+		</body>
+		</html>`;
 	export const CONFIG_FILE = "valory.json";
 	export const SWAGGER_FILE = "swagger.json";
 	export const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -25,14 +72,13 @@ export namespace Config {
 	export const COMPILED_ROUTES_FILE = "generatedRoutes.js";
 	export let RootPath = "";
 	export let CompilerMode = false;
-	export let Spinner: ThreadSpinner;
 	export let Loaded = false;
+	export let ValoryRuntime = false;
 	export let ConfigPath = "";
 	export let SwaggerPath = "";
 	export let CompSwagPath = "";
 	export let ConfigData: ValoryConfig;
 	export let PackageJSON: IPackageJSON = null;
-	export let ValoryVersion = "";
 	export let GeneratedRoutePath = "";
 	export let SourceRoutePath = "";
 	export let PackageJSONPath = "";
@@ -52,9 +98,10 @@ export namespace Config {
 		CompSwagPath = `${RootPath}/${COMPILED_SWAGGER_FILE}`;
 		PackageJSONPath = `${RootPath}/package.json`;
 		if (CompilerMode) {
-			Spinner = new ThreadSpinner(undefined, process.env.NODE_ENV === "test");
-			ValoryVersion = require("../../package.json").version;
 			PackageJSON = require(PackageJSONPath);
+			if (Object.keys(PackageJSON.dependencies).includes("valory-runtime")) {
+				ValoryRuntime = true;
+			}
 		}
 		if (loadConfig) {
 			try {
@@ -71,30 +118,6 @@ export namespace Config {
 			}
 		}
 		// console.log(Config);
-	}
-
-	export async function checkRequirements() {
-		const versionRegex = /version \"([A-Za-z0-9\_\.]*?)\"/g;
-		console.log(chalk.bold("Requirements"));
-		await Spinner.start("Node 8+");
-		if (!gt(coerce(process.version), "8.0.0")) {
-			await spinnerFail("Node version too low", null);
-		}
-		await Spinner.succeed(chalk.green(`Node ${process.version}`));
-		await Spinner.start("Java 1.7+");
-		try {
-			const javaOutput = spawnSync("java", ["-version"]).stderr;
-			// console.log(javaOutput);
-			// console.log( versionRegex.exec(javaOutput.toString()));
-			const javaVersion = versionRegex.exec(javaOutput.toString())[1];
-			if (!gt(coerce(javaVersion), coerce("1.7"))) {
-				await spinnerFail("Java version too low", null);
-			}
-			await Spinner.succeed(chalk.green(`Java ${javaVersion}`));
-		} catch (e) {
-			await spinnerFail("Java installation missing or broken", e);
-		}
-		console.log("");
 	}
 
 	function resolveRootPath(): string {

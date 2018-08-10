@@ -1,7 +1,8 @@
 import "./decRoute";
 import {
-	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, Post, Body, Header, DefaultAdaptor,
+	Valory, ErrorDef, ApiRequest, ApiMiddleware, ApiResponse, Swagger, Route, Get, Post, Body, Header,
 } from "../main";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 // Define basic info for the api
 const info: Swagger.Info = {
 	title: "CNP POC API",

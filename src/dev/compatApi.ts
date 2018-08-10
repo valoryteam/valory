@@ -1,4 +1,5 @@
-import {ApiRequest, Valory, Swagger, DefaultAdaptor} from "../main";
+import {ApiRequest, Valory, Swagger} from "../main";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 
 const info = {
 	version: "1.0.0",

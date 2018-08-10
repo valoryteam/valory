@@ -7,23 +7,51 @@ import {VALORYLOGGERVAR, ValoryMetadata, VALORYMETAVAR, VALORYPRETTYLOGGERVAR} f
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Swagger} from "../server/swagger";
 import {compileAndSave} from "../compiler/compileRunner";
-import {isNil, omitBy} from "lodash";
+import isNil = require("lodash/isNil");
+import omitBy = require("lodash/omitBy");
 import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import * as inquirer from "inquirer";
 import {existsSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
-import {convertTime, spinnerFail} from "./helpers";
+import {convertTime} from "./helpers";
 import chalk from "chalk";
+import {Spinner, spinnerFail} from "./spinner";
+import {coerce, gt} from "semver";
+import {spawnSync} from "child_process";
+
+async function checkRequirements() {
+	const versionRegex = /version \"([A-Za-z0-9\_\.]*?)\"/g;
+	console.log(chalk.bold("Requirements"));
+	await Spinner.start("Node 8+");
+	if (!gt(coerce(process.version), "8.0.0")) {
+		await spinnerFail("Node version too low", null);
+	}
+	await Spinner.succeed(chalk.green(`Node ${process.version}`));
+	await Spinner.start("Java 1.7+");
+	try {
+		const javaOutput = spawnSync("java", ["-version"]).stderr;
+		// console.log(javaOutput);
+		// console.log( versionRegex.exec(javaOutput.toString()));
+		const javaVersion = versionRegex.exec(javaOutput.toString())[1];
+		if (!gt(coerce(javaVersion), coerce("1.7"))) {
+			await spinnerFail("Java version too low", null);
+		}
+		await Spinner.succeed(chalk.green(`Java ${javaVersion}`));
+	} catch (e) {
+		await spinnerFail("Java installation missing or broken", e);
+	}
+	console.log("");
+}
 
 async function compilerRunner(args: any) {
-	console.log(chalk.bold(`valory compile v${Config.ValoryVersion}\n`));
+	console.log(chalk.bold(`valory compile v${require("../../package.json").version}\n`));
 	console.log(`Project:       ${Config.PackageJSON.name}`);
 	console.log(`Version:       ${Config.PackageJSON.version}`);
 	console.log(`Config:        ${Config.ConfigPath}\n`);
 
-	await Config.checkRequirements();
+	await checkRequirements();
 	const start = process.hrtime();
 	require("ts-node").register({
 		project: join(__dirname, "../../tsconfig.json"),
@@ -42,8 +70,7 @@ async function compilerRunner(args: any) {
 		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
 	console.log(chalk.bold("Appserver Warmup"));
-	const spinner = Config.Spinner;
-	await spinner.start("Registering routes");
+	await Spinner.start("Registering routes");
 	let valExport: { valory: ValoryMetadata };
 	try {
 		require((Config.ConfigData.sourceEntrypoint !== ""
@@ -53,7 +80,7 @@ async function compilerRunner(args: any) {
 	} catch (e) {
 		await spinnerFail("failed to load apperver", e);
 	}
-	spinner.succeed();
+	Spinner.succeed();
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;

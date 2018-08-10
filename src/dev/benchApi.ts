@@ -11,7 +11,8 @@ const timings = {
 };
 
 const loadStart = process.hrtime();
-import {ApiMiddleware, ApiRequest, ApiResponse, DefaultAdaptor, ErrorDef, Valory, Swagger} from "../main";
+import {ApiMiddleware, ApiRequest, ApiResponse, ErrorDef, Valory, Swagger} from "../main";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 const loadDone = process.hrtime(loadStart);
 // console.log(JSON.stringify(Object.keys(require.cache)));
 const loadTime = convertTime(loadDone);

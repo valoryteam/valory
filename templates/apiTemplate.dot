@@ -27,7 +27,7 @@ function paramPath(type, name) {
     }
 }
 }}
-import {Valory, ApiRequest} from "{{= process.env.NODE_ENV === "test" ? "../main" : "valory"}}";
+import {Valory, ApiRequest} from "{{= process.env.NODE_ENV === "test" ? "../main" : (it.valoryRuntime ? "valory-runtime" : "valory")}}";
 {{~ it.metadata.controllers : item}}
   import {{{= item.name}}} from "{{=item.location}}";{{~}}
 {{~ it.metadata.controllers : item}}

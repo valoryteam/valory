@@ -4,7 +4,7 @@ import {dirname, extname, join, relative} from "path";
 import {writeFileSync} from "fs";
 import {Config} from "../lib/config";
 import chalk from "chalk";
-import {spinnerFail} from "../lib/helpers";
+import {Spinner, spinnerFail} from "../lib/spinner";
 
 const dotJs = require("dot");
 dotJs.log = false;
@@ -13,33 +13,33 @@ const templates = dotJs.process({path: join(__dirname, "../../templates")});
 
 export async function routeBuild(entryPoint: string) {
 	console.log(chalk.bold("Controller Generation"));
-	const spinner = Config.Spinner;
-	await spinner.start("Generating route controller metadata");
+	await Spinner.start("Generating route controller metadata");
 	let metadata;
 	try {
 		metadata = new MetadataGenerator(entryPoint).Generate();
 	} catch (e) {
 		await spinnerFail("Metadata Failure", e);
 	}
-	await spinner.succeed();
-	await spinner.start("Building swagger content from metadata");
+	await Spinner.succeed();
+	await Spinner.start("Building swagger content from metadata");
 	const swaggerContent = new SpecGenerator(metadata).GetSpec();
 	metadata.controllers.forEach((con) => {
 		const relativePath = relative(dirname(entryPoint), con.location);
 		con.location = "./" + relativePath.replace(extname(relativePath), "");
 	});
-	await spinner.succeed();
+	await Spinner.succeed();
 	try {
-		await spinner.start("Generating routes");
+		await Spinner.start("Generating routes");
 		const generatedRoutes = templates.apiTemplate({
 			swagger: swaggerContent,
 			metadata,
+			valoryRuntime: Config.ValoryRuntime,
 		});
 
 		const generatedPath = Config.SourceRoutePath;
 
 		writeFileSync(generatedPath, generatedRoutes.replace(/\"([a-zA-Z_$][0-9a-zA-Z_$]+)\":/g, "$1:"));
-		await spinner.succeed();
+		await Spinner.succeed();
 	} catch (e) {
 		await spinnerFail("Route Generation Failure", e);
 	}

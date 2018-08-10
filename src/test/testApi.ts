@@ -1,5 +1,6 @@
-import {ApiMiddleware, ApiRequest, DefaultAdaptor, Swagger, Valory} from "../main";
+import {ApiMiddleware, ApiRequest, Swagger, Valory} from "../main";
 import "./testRoute";
+import {DefaultAdaptor} from "../lib/defaultAdaptor";
 const info: Swagger.Info = {
 	title: "Test api",
 	version: "1",

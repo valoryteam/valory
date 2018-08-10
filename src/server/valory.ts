@@ -1,14 +1,14 @@
-global.Promise = require("bluebird");
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
-import {forIn, isNil, omitBy, set, uniq} from "lodash";
 import {loadModule} from "../compiler/loader";
-import {readFileSync} from "fs";
+import isNil = require("lodash/isNil");
+import omitBy = require("lodash/omitBy");
+import set = require("lodash/set");
+import uniq = require("lodash/uniq");
 import {Steed} from "steed";
 import {Logger} from "pino";
 import {ApiRequest, AttachmentKey} from "./request";
 import {Config} from "../lib/config";
-import {DefaultAdaptor} from "../lib/defaultAdaptor";
 import {
 	ApiExchange,
 	ApiHandler,
@@ -25,7 +25,6 @@ import {
 } from "./valoryheaders";
 
 import P = require("pino");
-import pathMod = require("path");
 
 const steed: Steed = require("steed")();
 const uuid = require("hyperid")();
@@ -55,6 +54,10 @@ export interface ValoryOptions {
 	definitions?: { [x: string]: Swagger.Schema };
 	tags?: Swagger.Tag[];
 	basePath?: string;
+	// compiledLibOverride?: {
+	// 	generatedRoutes?: any;
+	// 	compswag: ValidatorModule;
+	// };
 }
 
 const DefaultErrors: { [x: string]: ErrorDef } = {
@@ -76,6 +79,10 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 };
 
 export class Valory {
+	public static CompileLibOverride: {
+        generatedRoutes?: any;
+        compswag: ValidatorModule;
+    };
 	public static ValidationResultKey: AttachmentKey<true | string[] | string>
 		= ApiRequest.createKey<true | string[] | string>();
 	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
@@ -125,11 +132,11 @@ export class Valory {
 	/**
 	 * @deprecated use [[Valory.createInstance]] instead
 	 */
-	constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [], produces: string[] = [],
-				definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[], public server: ApiServer, basePath?: string,
-				parameters: { [name: string]: Swagger.Parameter } = {},
-				responses: { [name: string]: Swagger.Response } = {}) {
-		Config.load();
+	private constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [],
+						produces: string[] = [], definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[],
+						public server: ApiServer, basePath?: string, parameters: { [name: string]: Swagger.Parameter } = {},
+						responses: { [name: string]: Swagger.Response } = {}) {
+		Config.load(!(!this.COMPILERMODE && Valory.CompileLibOverride));
 		if (Valory.instance != null) {
 			throw Error("Only a single valory instance is allowed");
 		}
@@ -159,14 +166,23 @@ export class Valory {
 			this.Logger.info("Starting valory");
 
 			if (this.TESTMODE) {
-				this.server = new DefaultAdaptor();
+				// this.server = new DefaultAdaptor();
 			}
-			if (Config.SourceRoutePath !== "") {
-				const genRoutes = require(Config.GeneratedRoutePath);
+			if (Config.SourceRoutePath !== "" || Valory.CompileLibOverride) {
+				let genRoutes: any;
+				if (Valory.CompileLibOverride != null && Valory.CompileLibOverride.generatedRoutes != null) {
+					genRoutes = Valory.CompileLibOverride.generatedRoutes;
+				} else {
+					genRoutes = require(Config.GeneratedRoutePath);
+				}
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				this.registerGeneratedRoutes = genRoutes.register;
 			}
-			this.validatorModule = loadModule(definitions);
+			if (Valory.CompileLibOverride != null) {
+				this.validatorModule = Valory.CompileLibOverride.compswag;
+			} else {
+				this.validatorModule = loadModule(definitions);
+			}
 			if (this.server.allowDocSite) {
 				this.registerDocSite();
 			}
@@ -414,7 +430,6 @@ export class Valory {
 
 	private registerDocSite() {
 		const prefix = this.apiDef.basePath || "";
-		let redoc: string;
 		const swaggerBlob = this.validatorModule.swaggerBlob;
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			return {
@@ -427,11 +442,8 @@ export class Valory {
 			};
 		});
 		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
-			if (!redoc) {
-				redoc = readFileSync(pathMod.join(__dirname, REDOCPATH), {encoding: "utf8"});
-			}
 			return {
-				body: redoc,
+				body: Config.DOC_HTML,
 				headers: {"Content-Type": "text/html"},
 				query: null,
 				path: null,
