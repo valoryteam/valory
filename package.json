@@ -24,13 +24,11 @@
   "files": [
     "package.json",
     "README.md",
-    "html",
+    "dist",
     "templates",
     "tsconfig.json",
     "tslint.json",
-    "tsfmt.json",
-    "pkg",
-    "types"
+    "tsfmt.json"
   ],
   "devDependencies": {
     "@commitlint/cli": "^7.0.0",
