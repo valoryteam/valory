@@ -89,6 +89,7 @@
     "xxhashjs": "^0.2.2",
     "yargs": "^12.0.1"
   },
+  "preferGlobal": true,
   "bin": {
     "valory": "dist/lib/cli.js"
   },
