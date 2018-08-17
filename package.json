@@ -92,8 +92,9 @@
   "bin": {
     "valory": "dist/lib/cli.js"
   },
+  "repository": "https://github.com/jfrconley/valory.git",
   "release": {
-    "repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
+    "repositoryUrl": "https://github.com/jfrconley/valory.git",
     "branch": "master",
     "verifyConditions": [
       {
