@@ -16,7 +16,11 @@ export class DefaultAdaptor implements ApiServer {
 	public register(path: string, method: HttpMethod,
 					handler: (request: ApiRequest) => ApiResponse | Promise<ApiResponse>) {
 		const route = `${path}:${HttpMethod[method]}`;
+
+		// Path parameters must translated from {param} to :param to work with fastify
 		path = path.replace(pathReplacer, ":$1");
+
+		// We create a fastify endpoint that runs the provided handler
 		this.instance.route({
 			method: HttpMethod[method] as HTTPMethod,
 			url: path,

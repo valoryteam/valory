@@ -33,7 +33,7 @@ export class ApiRequest implements ApiExchange {
 	private attachments: {[key: string]: any} = {};
     // public attachments: AttachmentDict;
 
-    constructor(options: ApiRequestOptions) {
+        constructor(options: ApiRequestOptions) {
         this.headers = options.headers;
         this.body = options.body;
         this.rawBody = options.rawBody;

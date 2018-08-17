@@ -139,5 +139,11 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
-  }
+  },
+  "keywords": [
+    "rest",
+    "framework",
+    "validation",
+    "decorators"
+  ]
 }
