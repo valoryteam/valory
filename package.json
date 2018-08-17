@@ -98,6 +98,9 @@
     "branch": "master",
     "verifyConditions": [
       {
+        "path": "@semantic-release/github"
+      },
+      {
         "path": "@semantic-release/npm"
       },
       {
@@ -108,6 +111,9 @@
     "publish": [
       {
         "path": "@semantic-release/npm"
+      },
+      {
+        "path": "@semantic-release/github"
       },
       {
         "path": "@semantic-release/npm",
