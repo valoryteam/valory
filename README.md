@@ -2,6 +2,8 @@
 ![build](https://teamcity.modoapi.com/app/rest/builds/buildType:(id:Valory2_Build)/statusIcon)
 # Valory
 *A server agnostic web framework for creating bulletproof apis*
+
+
 [![NPM](https://nodei.co/npm/valory.png)](https://nodei.co/npm/valory/)
 ## Contents
 * [Usage Guide](DOCS.md)
