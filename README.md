@@ -1,6 +1,8 @@
+[![npm](https://img.shields.io/npm/v/valory.svg)]()
+![build](https://teamcity.modoapi.com/app/rest/builds/buildType:(id:Valory2_Build)/statusIcon)
 # Valory
 *A server agnostic web framework for creating bulletproof apis*
-
+[![NPM](https://nodei.co/npm/valory.png)](https://nodei.co/npm/valory/)
 ## Contents
 * [Usage Guide](DOCS.md)
 * [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
