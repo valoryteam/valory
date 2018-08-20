@@ -471,7 +471,7 @@ function processMiddleware(middlewares: ApiMiddleware[],
 				if (error != null) {
 					err = error;
 					done(error);
-					return
+					return;
 				}
 
 				done();
