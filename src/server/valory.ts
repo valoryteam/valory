@@ -3,6 +3,7 @@ import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
 import isNil = require("lodash/isNil");
 import omitBy = require("lodash/omitBy");
+import omit = require("lodash/omit");
 import set = require("lodash/set");
 import uniq = require("lodash/uniq");
 import {Steed} from "steed";
@@ -204,6 +205,9 @@ export class Valory {
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 					middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
 		const stringMethod = HttpMethod[method].toLowerCase();
+        if (!documented) {
+            this.metadata.undocumentedEndpoints.push(path);
+        }
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
 			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented, postMiddleware);
@@ -340,9 +344,6 @@ export class Valory {
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
 							postMiddleware: ApiMiddleware[] = []) {
-		if (!documented) {
-			this.metadata.undocumentedEndpoints.push(path);
-		}
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware,
 			this.globalPostMiddleware, postMiddleware);
 		for (const item of middlewares) {
@@ -430,10 +431,14 @@ export class Valory {
 
 	private registerDocSite() {
 		const prefix = this.apiDef.basePath || "";
-		const swaggerBlob = this.validatorModule.swaggerBlob;
+		let swaggerBlob: Swagger.Spec;
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
+			if (swaggerBlob == null) {
+				swaggerBlob = JSON.parse(this.validatorModule.swaggerBlob);
+				swaggerBlob.paths = omit(swaggerBlob.paths, this.metadata.undocumentedEndpoints);
+			}
 			return {
-				body: swaggerBlob,
+				body: JSON.stringify(swaggerBlob),
 				headers: {"Content-Type": "text/plain"},
 				query: null,
 				path: null,
