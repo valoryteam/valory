@@ -116,6 +116,7 @@ export class Valory {
 	});
 	private COMPILERMODE = process.env.VALORYCOMPILER === "TRUE";
 	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
+	private DEFAULTADAPTOR: string = process.env.DEFAULT_ADAPTOR;
 	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
 	private globalMiddleware: ApiMiddleware[] = [];
 	private globalPostMiddleware: ApiMiddleware[] = [];
@@ -167,7 +168,7 @@ export class Valory {
 			this.Logger.info("Starting valory");
 
 			if (this.TESTMODE) {
-				// this.server = new DefaultAdaptor();
+				this.server = new (require(this.DEFAULTADAPTOR)).DefaultAdaptor();
 			}
 			if (Config.SourceRoutePath !== "" || Valory.CompileLibOverride) {
 				let genRoutes: any;
@@ -470,7 +471,7 @@ function processMiddleware(middlewares: ApiMiddleware[],
 				if (error != null) {
 					err = error;
 					done(error);
-					return;
+					return
 				}
 
 				done();

@@ -103,6 +103,7 @@ async function compilerRunner(args: any) {
 function cliRunner(args: any) {
 	// require("ts-node").register();
 	process.env.TEST_MODE = "TRUE";
+	process.env.DEFAULT_ADAPTOR = require.resolve("./defaultAdaptor");
 	process.env.PORT = args.port;
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
