@@ -700,6 +700,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 				return {
 					description: getNodeDescription(propertyDeclaration),
 					format: getNodeFormat(propertyDeclaration),
+					example: getNodeExample(propertyDeclaration),
 					name: identifier.text,
 					required: !propertyDeclaration.questionToken,
 					type: resolveType(aType, aType.parent),
@@ -813,6 +814,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
 				default: getInitializerValue(property.initializer, type),
 				description: getNodeDescription(property),
 				format: getNodeFormat(property),
+				example: getNodeExample(property),
 				name: identifier.text,
 				required: !property.questionToken && !property.initializer,
 				type,

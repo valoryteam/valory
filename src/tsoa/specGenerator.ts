@@ -269,6 +269,7 @@ export class SpecGenerator {
 			const swaggerType = this.getSwaggerType(property.type);
 			const format = property.format as Swagger.DataFormat;
 			swaggerType.description = property.description;
+			swaggerType.example = property.example;
 			swaggerType.format = format || swaggerType.format;
 
 			if (property.type.dataType === "object") {

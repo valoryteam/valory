@@ -60,6 +60,7 @@ export namespace Tsoa {
 	export interface Property {
 		default?: any;
 		description?: string;
+		example?: string;
 		format?: string;
 		name: string;
 		type: Type;

@@ -11,9 +11,6 @@ import {
     ApiMiddleware,
     Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp,
 } from "../main";
-import * as P from "pino";
-
-type Logger = P.Logger;
 
 export interface TestResponse<T> {
     status_code: number;
@@ -49,18 +46,29 @@ export type LiteralAlias = "test";
 export type LiteralEnum = "thing" | "otherthing";
 export type LiteralNum = 2;
 
-export class TestObj<T> {
+export class TestObj {
+    /**
+     * @example "nested example"
+     */
     public thing: string;
-    public generic: T;
     public otherThing: number;
-    /** nested description */
     public nested: {
-        /** nestedprop description */
+        /**
+         * nestedprop description
+         * @example "nested prop exmaple"
+         */
         nestedProp: string;
         nestedObj: {
             num: number;
         };
     };
+}
+
+export interface SimpleExampleTest {
+    /**
+     * @example 34
+     */
+    test: number;
 }
 
 const TestMiddleware: ApiMiddleware = {
@@ -104,19 +112,13 @@ export class BurnRoutes extends Controller {
      * @param thing test
      */
     @Post("other/{thing}")
-    public test(@Path() thing: string, @Body() input: ParentType) {
+    public test(@Path() thing: string, @BodyProp() testObj: TestObj, @BodyProp() exampleTest: SimpleExampleTest) {
         // if (input.dtype === "OtherChildType") {
         //     return input.other;
         // } else {
         //     return input.thing;
         // }
         return "yay";
-    }
-
-    @Hidden()
-    @Post("stub")
-    public stub(@BodyProp() childType: ChildType, @BodyProp() otherChildType: OtherChildType) {
-        return "stub";
     }
 }
 
