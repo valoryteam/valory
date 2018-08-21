@@ -84,7 +84,7 @@ export namespace Swagger {
 	}
 
 	export interface RefParameter {
-		$ref: string;
+		$ref?: string;
 	}
 
 	export interface BodyParameter extends BaseParameter {
