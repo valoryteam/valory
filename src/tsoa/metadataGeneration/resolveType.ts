@@ -421,7 +421,7 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
         if (disciminatorMatches.length === 1) {
             // Bingo, we got ourselves a discriminator
             const discriminator = disciminatorMatches[0] as string;
-            console.log(`Found discrim union ${literalName} with discriminator ${discriminator}`);
+            // console.log(`Found discrim union ${literalName} with discriminator ${discriminator}`);
             const refObj = {
                 dataType: "refObject",
                 description: getNodeDescription(literalTypes[0] as any),
