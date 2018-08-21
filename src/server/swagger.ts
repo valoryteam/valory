@@ -180,7 +180,7 @@ export namespace Swagger {
 	export interface Schema extends BaseSchema {
 		type?: DataType;
 		format?: DataFormat;
-		allOf?: Schema[];
+		allOf?: Array<Schema | RefParameter>;
 		additionalProperties?: boolean | BaseSchema;
 		properties?: { [propertyName: string]: Schema };
 		discriminator?: string;

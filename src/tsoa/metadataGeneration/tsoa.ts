@@ -112,6 +112,8 @@ export namespace Tsoa {
 		additionalProperties?: Type;
 		enums?: string[];
 		example?: any;
+		allOf?: ReferenceType[];
+		discriminator?: string;
 		additionalSwagger?: Swagger.Schema;
 	}
 

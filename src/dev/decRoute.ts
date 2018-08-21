@@ -23,11 +23,9 @@ export class Burn {
     public name: string = "steven";
     public content: string;
     public powerlevel?: number;
-    // public tuple: TupleAlias;
     public array: ArrayAlias;
     public string: StringAlias;
     public alias: AliasAlias;
-    // public object: ObjectAlias;
     public literalEnum: LiteralEnum;
     public literal: LiteralAlias;
     public literalNum: LiteralNum;
@@ -83,25 +81,35 @@ const TestMiddleware: ApiMiddleware = {
 };
 
 /**
- * @swagger {"discriminator": "dtype"}
+ * Parent type description
  */
-export class ParentType {
-    public dtype: string;
-    // public implementations?: ChildType | OtherChildType;
-}
+export type ParentType = ChildType | OtherChildType;
 
 /**
- * @swagger {"allOf": [{"$ref": "#/definitions/ParentType"}]}
+ * ChildType description
  */
 export interface ChildType {
+    dtype: "ChildType";
+    /**
+     * @example "joe"
+     */
     thing: string;
 }
 
-/**
- * @swagger {"allOf": [{"$ref": "#/definitions/ParentType"}]}
- */
 export interface OtherChildType {
+    dtype: "OtherChildType";
     other: number;
+}
+
+export interface ApiRes<T> {
+    status_code: 1;
+    response_data: T;
+}
+
+export type ApiResAsync<T> = Promise<ApiRes<T>>;
+
+export interface NestedGeneric<T> {
+    data: ApiRes<T>;
 }
 
 @Route("burn")
@@ -112,13 +120,13 @@ export class BurnRoutes extends Controller {
      * @param thing test
      */
     @Post("other/{thing}")
-    public test(@Path() thing: string, @BodyProp() testObj: TestObj, @BodyProp() exampleTest: SimpleExampleTest) {
-        // if (input.dtype === "OtherChildType") {
-        //     return input.other;
-        // } else {
-        //     return input.thing;
-        // }
-        return "yay";
+    public test(@Path() thing: string, @Body() input: ParentType) {
+        if (input.dtype === "OtherChildType") {
+            return input.other;
+        } else {
+            return input.thing;
+        }
+        return {status_code: 1, response_data: "yay"};
     }
 }
 

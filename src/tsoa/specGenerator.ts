@@ -45,8 +45,19 @@ export class SpecGenerator {
 					}
 				}
 
+				if (referenceType.discriminator) {
+					definitions[referenceType.refName].discriminator = referenceType.discriminator;
+				}
+
 				if (referenceType.example) {
 					definitions[referenceType.refName].example = referenceType.example;
+				}
+
+				if (referenceType.allOf) {
+					definitions[referenceType.refName].allOf = [];
+					referenceType.allOf.forEach((ref) => {
+						definitions[referenceType.refName].allOf.push(this.getSwaggerTypeForReferenceType(ref as Tsoa.ReferenceType));
+					});
 				}
 
 				// Enum definition
