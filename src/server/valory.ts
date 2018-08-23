@@ -383,14 +383,13 @@ export class Valory {
 		const childLogger = this.Logger.child({endpoint: route});
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware);
 		const postMiddlewares = this.globalPostMiddleware.concat(postMiddleware);
-		const chindings: string = (childLogger as any).chindings;
 		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
 			const requestId = uuid();
 			req.putAttachment(Valory.RequestIDKey, requestId);
-			(childLogger as any).chindings = `${chindings},"requestId":"${requestId}"`;
-			childLogger.debug(req, "Received request");
+			const requestLogger = childLogger.child({requestId});
+			requestLogger.debug(req, "Received request");
 			try {
-				const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, childLogger);
+				const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, requestLogger);
 				if (middlewareResp != null) {
 					return (middlewareResp as ApiResponse);
 				}
@@ -400,20 +399,20 @@ export class Valory {
 					response = this.buildError("ValidationError", result as string[]);
 				} else {
 					try {
-						response = await handler(req, childLogger, {requestId});
+						response = await handler(req, requestLogger, {requestId});
 					} catch (error) {
 						if (error.name === "ValoryEndpointError") {
 							response = this.buildError(error.valoryErrorCode, error.message || undefined);
 						} else {
-							childLogger.error("Internal exception occurred while processing request");
-							childLogger.error(error);
+							requestLogger.error("Internal exception occurred while processing request");
+							requestLogger.error(error);
 							response = this.buildError("InternalError");
 						}
 					}
 				}
 				req.putAttachment(Valory.ValidationResultKey, result);
 				req.putAttachment(Valory.ResponseKey, response);
-				const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, childLogger);
+				const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, requestLogger);
 				if (postMiddlewareResp != null) {
 					return (postMiddlewareResp as ApiResponse);
 				}
@@ -422,8 +421,8 @@ export class Valory {
 				if (error.name === "ValoryEndpointError") {
 					return this.buildError(error.valoryErrorCode, error.message || undefined);
 				}
-				childLogger.error("Internal exception occurred while processing request");
-				childLogger.error(error);
+				requestLogger.error("Internal exception occurred while processing request");
+				requestLogger.error(error);
 				return this.buildError("InternalError");
 			}
 		};
