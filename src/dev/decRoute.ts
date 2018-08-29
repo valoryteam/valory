@@ -130,4 +130,17 @@ export class BurnRoutes extends Controller {
     }
 }
 
+@Route("thing")
+export class ThingRoutes extends Controller {
+    @Post("other")
+    public test(@Body() input: ParentType) {
+        if (input.dtype === "OtherChildType") {
+            return input.other;
+        } else {
+            return input.thing;
+        }
+        return {status_code: 1, response_data: "yay"};
+    }
+}
+
 type func = (test: string) => number;

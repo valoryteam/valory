@@ -184,7 +184,7 @@ export class SpecGenerator {
 			name: "body",
 			schema: {
 				properties,
-				title: `${this.getOperationId(method.name)}Body`,
+				title: `${this.getOperationId(controllerName, method.name)}Body`,
 				type: "object",
 			},
 		} as Swagger.BodyParameter;
@@ -334,14 +334,14 @@ export class SpecGenerator {
 		});
 
 		return {
-			operationId: this.getOperationId(method.name),
+			operationId: this.getOperationId(controllerName, method.name),
 			produces: ["application/json"],
 			responses: swaggerResponses,
 		};
 	}
 
-	private getOperationId(methodName: string) {
-		return methodName.charAt(0).toUpperCase() + methodName.substr(1);
+	private getOperationId(controllerName: string, methodName: string) {
+		return controllerName + methodName.charAt(0).toUpperCase() + methodName.substr(1);
 	}
 
 	private getSwaggerType(type: Tsoa.Type): Swagger.Schema {
