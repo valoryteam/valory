@@ -13,7 +13,7 @@ import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import * as inquirer from "inquirer";
-import {existsSync, readFileSync, readFileSync, writeFileSync} from "fs";
+import {existsSync, readFileSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
 import {convertTime} from "./helpers";
 import chalk from "chalk";
