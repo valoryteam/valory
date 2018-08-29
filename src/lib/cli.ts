@@ -13,7 +13,7 @@ import {extname, join, resolve} from "path";
 import {routeBuild} from "../tsoa/tsoaRunner";
 import yargs = require("yargs");
 import * as inquirer from "inquirer";
-import {existsSync, writeFileSync} from "fs";
+import {existsSync, readFileSync, readFileSync, writeFileSync} from "fs";
 import {ThreadSpinner} from "thread-spin";
 import {convertTime} from "./helpers";
 import chalk from "chalk";
@@ -113,6 +113,10 @@ function cliRunner(args: any) {
 }
 
 async function configBuilder(args: object) {
+	let defaults: any = {};
+	if (existsSync(Config.ConfigPath)) {
+		defaults = JSON.parse(readFileSync(Config.ConfigPath, "utf8"));
+	}
 	const config = await inquirer.prompt([
 		{
 			name: "entrypoint",
@@ -130,11 +134,13 @@ async function configBuilder(args: object) {
 
 				return true;
 			},
+			default: defaults.entrypoint,
 		},
 		{
 			name: "isTS",
 			message: "Is this a typescript project?",
 			type: "confirm",
+			default: defaults.isTS,
 		},
 		{
 			name: "sourceEntrypoint",
@@ -155,16 +161,18 @@ async function configBuilder(args: object) {
 
 				return true;
 			},
+			default: defaults.sourceEntrypoint,
 		},
 		{
 			name: "singleError",
 			message: "Enable single error mode",
 			type: "confirm",
-			default: false,
+			default: defaults.singleError || false,
 		},
 	]);
 
 	writeFileSync(Config.ConfigPath, JSON.stringify(config, null, 2));
+	process.exit(0);
 }
 
 yargs
