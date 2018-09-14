@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+global.Promise = require("bluebird");
+
 import {CLI_MODE_FLAG, Config} from "./config";
 
 process.env[CLI_MODE_FLAG] = "true";

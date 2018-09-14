@@ -1,3 +1,5 @@
+global.Promise = require("bluebird");
+
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
@@ -29,6 +31,8 @@ import P = require("pino");
 
 const steed: Steed = require("steed")();
 const uuid = require("hyperid")();
+const flatStr = require("flatstr");
+// const steedSeries = (Promise as any).promisify(steed.eachSeries, {context: steed, multiArgs: true});
 
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
@@ -238,10 +242,12 @@ export class Valory {
 	/**
 	 * Convenience method to build a return exchange when only body and/or header customization is required
 	 */
-	public buildSuccess(body: any, headers: { [key: string]: any } = {}): ApiResponse {
+	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200,
+						serializer: (data: any) => string = JSON.stringify): ApiResponse {
 		if (headers["Content-Type"] == null) {
 			if (typeof body === "object") {
 				headers["Content-Type"] = "application/json";
+				body = flatStr(serializer(body));
 			} else if (typeof body === "string") {
 				headers["Content-Type"] = "text/plain";
 			}
@@ -249,7 +255,7 @@ export class Valory {
 		return {
 			body,
 			headers,
-			statusCode: 200,
+			statusCode,
 		};
 	}
 
@@ -383,48 +389,42 @@ export class Valory {
 		const childLogger = this.Logger.child({endpoint: route});
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware);
 		const postMiddlewares = this.globalPostMiddleware.concat(postMiddleware);
-		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
+		const middlewareProcessor = (middlewares.length > 0) ? processMiddleware : noopPromise;
+		const postMiddlewareProcessor = (postMiddlewares.length > 0) ? processMiddleware : noopPromise;
+		const wrapper = (req: ApiRequest): Promise<ApiResponse> => {
 			const requestId = uuid();
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			const requestLogger = childLogger.child({requestId});
 			requestLogger.debug(req, "Received request");
-			try {
-				const middlewareResp: void | ApiResponse = await processMiddleware(middlewares, req, requestLogger);
-				if (middlewareResp != null) {
-					return (middlewareResp as ApiResponse);
+			let initialResponse: ApiResponse = null;
+			return middlewareProcessor(middlewares, req, requestLogger).then((middlewareResp) => {
+                if (middlewareResp != null) {
+                    return Promise.resolve(middlewareResp);
+                }
+                const result = validator(req);
+                req.putAttachment(Valory.ValidationResultKey, result);
+                if (result !== true) {
+                    return Promise.resolve(this.buildError("ValidationError", result as string[]));
+                } else {
+                    return Promise.resolve(handler(req, requestLogger, {requestId}));
+                }
+			}).catch((error) => {
+                if (error.name === "ValoryEndpointError") {
+                    return this.buildError(error.valoryErrorCode, error.message || undefined);
+                }
+                requestLogger.error("Internal exception occurred while processing request");
+                requestLogger.error(error);
+                return Promise.resolve(this.buildError("InternalError"));
+			}).then((response: ApiResponse) => {
+                req.putAttachment(Valory.ResponseKey, response);
+                initialResponse = response;
+                return postMiddlewareProcessor(postMiddlewares, req, requestLogger);
+			}).then((response) => {
+				if (response != null) {
+					return (response as ApiResponse);
 				}
-				const result = validator(req);
-				let response: ApiResponse;
-				if (result !== true) {
-					response = this.buildError("ValidationError", result as string[]);
-				} else {
-					try {
-						response = await handler(req, requestLogger, {requestId});
-					} catch (error) {
-						if (error.name === "ValoryEndpointError") {
-							response = this.buildError(error.valoryErrorCode, error.message || undefined);
-						} else {
-							requestLogger.error("Internal exception occurred while processing request");
-							requestLogger.error(error);
-							response = this.buildError("InternalError");
-						}
-					}
-				}
-				req.putAttachment(Valory.ValidationResultKey, result);
-				req.putAttachment(Valory.ResponseKey, response);
-				const postMiddlewareResp: void | ApiResponse = await processMiddleware(postMiddlewares, req, requestLogger);
-				if (postMiddlewareResp != null) {
-					return (postMiddlewareResp as ApiResponse);
-				}
-				return response;
-			} catch (error) {
-				if (error.name === "ValoryEndpointError") {
-					return this.buildError(error.valoryErrorCode, error.message || undefined);
-				}
-				requestLogger.error("Internal exception occurred while processing request");
-				requestLogger.error(error);
-				return this.buildError("InternalError");
-			}
+				return initialResponse;
+			});
 		};
 		this.server.register(path, method, wrapper);
 	}
@@ -459,26 +459,32 @@ export class Valory {
 	}
 }
 
+function noopPromise(...args: any[]) {
+	return Promise.resolve();
+}
+
 function processMiddleware(middlewares: ApiMiddleware[],
 						   req: ApiRequest, logger: Logger): Promise<void | ApiResponse> {
-	return new Promise<void | ApiResponse>((resolve) => {
-		let err: ApiExchange = null;
-		steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
-			const childLog = logger.child({middleware: handler.name});
-			childLog.debug("Running Middleware");
-			handler.handler(req, childLog, (error) => {
-				if (error != null) {
-					err = error;
-					done(error);
-					return;
-				}
+    return new Promise<void | ApiResponse>((resolve) => {
+        let err: ApiExchange = null;
+        steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
+        	if ((handler as any).logger == null) {
+				(handler as any).logger = logger.child({middleware: handler.name});
+			}
+			(handler as any).logger.debug("Running Middleware");
+            handler.handler(req, (handler as any).logger, (error) => {
+                if (error != null) {
+                    err = error;
+                    done(error);
+                    return;
+                }
 
-				done();
-			});
-		}, (error) => {
-			resolve(err as ApiResponse);
-		});
-	});
+                done();
+            });
+        }, (error) => {
+            resolve(err as ApiResponse);
+        });
+    });
 }
 
 function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {

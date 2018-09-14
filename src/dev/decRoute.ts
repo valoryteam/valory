@@ -120,26 +120,17 @@ export class BurnRoutes extends Controller {
      * @param thing test
      */
     @Post("other/{thing}")
-    public test(@Path() thing: string, @Body() input: ParentType) {
-        if (input.dtype === "OtherChildType") {
-            return input.other;
-        } else {
-            return input.thing;
-        }
+    public test(@Path() thing: string, @Body() input: ParentType): ApiRes<string> {
         return {status_code: 1, response_data: "yay"};
     }
 }
 
 @Route("thing")
 export class ThingRoutes extends Controller {
-    @Post("other")
-    public test(@Body() input: ParentType) {
-        if (input.dtype === "OtherChildType") {
-            return input.other;
-        } else {
-            return input.thing;
-        }
-        return {status_code: 1, response_data: "yay"};
+    // @PostMiddleware(TestMiddleware)
+    @Get()
+    public yay() {
+        return "yay";
     }
 }
 
