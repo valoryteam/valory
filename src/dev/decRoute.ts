@@ -85,6 +85,8 @@ const TestMiddleware: ApiMiddleware = {
  */
 export type ParentType = ChildType | OtherChildType;
 
+export type ImpostorType = ChildType | OtherChildType;
+
 /**
  * ChildType description
  */
@@ -131,6 +133,11 @@ export class ThingRoutes extends Controller {
     @Get()
     public yay() {
         return "yay";
+    }
+
+    @Post("other")
+    public test(@Body() input: ImpostorType): ApiRes<string> {
+        return {status_code: 1, response_data: "yay"};
     }
 }
 

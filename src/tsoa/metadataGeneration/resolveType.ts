@@ -8,6 +8,7 @@ import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
 import {Swagger} from "../../server/swagger";
+import {all_of} from "tstl";
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -15,6 +16,7 @@ syntaxKindMap[ts.SyntaxKind.StringKeyword] = "string";
 syntaxKindMap[ts.SyntaxKind.BooleanKeyword] = "boolean";
 syntaxKindMap[ts.SyntaxKind.VoidKeyword] = "void";
 
+const localDiscriminatorCache: { [typeName: string]: Tsoa.ReferenceType} = {};
 const localReferenceTypeCache: { [typeName: string]: Tsoa.ReferenceType | Tsoa.ReferenceAlias } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
@@ -391,6 +393,10 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
     }
     const unionTypes = (literalTypes[0] as any).type.types;
 
+    if (localDiscriminatorCache[literalName]) {
+        return localDiscriminatorCache[literalName];
+    }
+
     // Check for a union of all reference types
     if (unionTypes.filter((node: ts.TypeNode) =>
         node.kind === ts.SyntaxKind.TypeReference).length === unionTypes.length) {
@@ -399,6 +405,13 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
             return resolveType(node);
         });
         const discriminatorCandidates = resolvedTypes.map((modelType: Tsoa.ReferenceType) => {
+            if (modelType.allOf) {
+                modelType.allOf.forEach((type) => {
+                   if (type.discriminator) {
+                       throw new GenerateMetadataError(`${modelType.refName} is claimed by multiple discriminators`);
+                   }
+                });
+            }
             return modelType.properties.filter((prop) => {
                 if (prop.type.dataType === "enum") {
                     const propType = prop.type as Tsoa.EnumerateType;
@@ -437,12 +450,13 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
                 discriminator,
             } as Tsoa.ReferenceType;
             resolvedTypes.forEach((modelType: Tsoa.ReferenceType) => {
-                if (modelType.allOf) {
+                if (modelType.allOf && modelType.allOf.indexOf(refObj)) {
                     modelType.allOf.push(refObj);
                 } else {
                     modelType.allOf = [refObj];
                 }
             });
+            localDiscriminatorCache[literalName] = refObj;
             return refObj;
         }
     }
