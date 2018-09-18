@@ -162,6 +162,12 @@ export function Header(name?: string): any {
 // 	return () => { return; };
 // }
 
+export function DisableSerialization(): any {
+	return () => {
+		return;
+	};
+}
+
 /**
  * Inject request logger instance
  */

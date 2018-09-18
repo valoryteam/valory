@@ -1,0 +1,6 @@
+{{? it.schema.type === "object" }}
+{{= it.serializer.toString().replace(/function [a-zA-Z$]+?\(([a-zA-Z]+?)\)/g, `const ${it.hash} = ($1) => `) }};
+{{?}}
+{{? it.schema.type !== "object" }}
+const {{= it.hash}} = null;
+{{?}}

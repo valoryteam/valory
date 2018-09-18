@@ -60,7 +60,20 @@ export class ControllerGenerator {
 			name: this.node.name.text,
 			path: this.path || "",
 			extendsController,
+			disableSerialization: this.isControllerDisableSerialization(),
+			isHidden: this.getIsHidden(),
 		};
+	}
+
+    private getIsHidden() {
+        const hiddenDecorators = getDecorators(this.node, (identifier) => identifier.text === "Hidden");
+        return !(!hiddenDecorators || !hiddenDecorators.length);
+
+    }
+
+	private isControllerDisableSerialization() {
+        const disableDecorators = getDecorators(this.node, (identifier) => identifier.text === "DisableSerialization");
+        return disableDecorators.length > 0;
 	}
 
 	private buildMethods() {

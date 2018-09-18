@@ -8,6 +8,9 @@ export interface ExtendedSchema extends Swagger.Schema {
 	anyOf?: ExtendedSchema[];
 }
 
+export type Validator = (data: any) => string | string[] | boolean;
+export type Serializer = (data: any) => string;
+
 export interface RequestFieldMap {
 	header: string;
 	body: string;
@@ -22,7 +25,10 @@ export interface ValidatorModule {
 	defHash: string;
 	globalConsume: string[];
 	swaggerBlob: string;
-	getValidator: (path: string, method: string) => (data: any) => string | string[] | boolean;
+	getValidator: (path: string, method: string) => {
+		validator: Validator,
+		serializer?: Serializer,
+	};
 }
 
 export type ValidatorModuleContent = string;
@@ -43,12 +49,14 @@ export interface CompilerOutput {
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
 		hashes: string[];
+		serializerHashes: string[];
 		preSwagger: { swagger: Swagger.Spec, discriminators: DiscriminatorMap };
 		derefSwagger: Swagger.Spec;
 		initialSchema: ExtendedSchema[];
 		processedSchema: ExtendedSchema[];
 		initialCompiles: any[];
 		mangledSchema: Array<{ schema: ExtendedSchema, mangledKeys: MangledKey[] }>;
+		serializers: string[];
 		intermediateFunctions: string[];
 		intermediateModule: ValidatorModuleContent;
 		postCompileModule: ValidatorModuleContent;
@@ -68,6 +76,8 @@ export interface ICompilerOptions {
 	compilationLevel?: CompilationLevel;
 	singleError?: boolean;
 	discrimFastFail?: boolean;
+	disableSerialization?: string[];
 }
 
 export const FUNCTION_PREFIX = "f";
+export const SERIALIZER_SUFFIX = "s";

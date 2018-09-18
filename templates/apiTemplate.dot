@@ -33,74 +33,6 @@ import {Valory, ApiRequest} from "{{= process.env.NODE_ENV === "test" ? "../main
 {{~ it.metadata.controllers : item}}
   const {{=item.name}}Controller = new {{=item.name}}();{{~}}
 
-const isLong: any = null;
-
-function $asNull () {
-    return 'null'
-}
-
-function $asInteger (i: any) {
-    if (isLong && isLong(i)) {
-        return i.toString()
-    } else {
-        return $asNumber(i)
-    }
-}
-
-function $asNumber (i: any) {
-    var num = Number(i);
-    if (isNaN(num)) {
-        return 'null'
-    } else {
-        return '' + num
-    }
-}
-
-function $asBoolean (bool: any) {
-    return bool && 'true' || 'false' // eslint-disable-line
-}
-
-function $asString (str: any) {
-    if (str instanceof Date) {
-        return '"' + str.toISOString() + '"'
-    } else if (str === null) {
-        return '""'
-    } else if (str instanceof RegExp) {
-        str = str.source
-    } else if (typeof str !== 'string') {
-        str = str.toString()
-    }
-
-    if (str.length < 42) {
-        return $asStringSmall(str)
-    } else {
-        return JSON.stringify(str)
-    }
-}
-
-function $asStringSmall (str: any) {
-    var result = '';
-    var last = 0;
-    var found = false;
-    var l = str.length;
-    var point = 255;
-    for (var i = 0; i < l && point >= 32; i++) {
-        point = str.charCodeAt(i);
-        if (point === 34 || point === 92) {
-            result += str.slice(last, i) + '\\';
-            last = i;
-            found = true
-        }
-    }
-
-    if (!found) {
-        result = str
-    } else {
-        result += str.slice(last)
-    }
-    return point < 32 ? JSON.stringify(str) : '"' + result + '"'
-}
-
 function pushArr(target: any[], other: any[]): any[] {
     if (other == null) {
         return target;
@@ -121,12 +53,6 @@ export = {
         {{~ it.metadata.controllers: route}}{{~ route.methods: method}}{{let path = `/${route.path}/${method.path}`.replace("//","/"); if (path.endsWith("/")) {path = path.slice(0, -1);} }}{{const conName = `${route.name}Controller`;}}{{const methodName = `${conName}.${method.name}`;}}
         const {{=conName}}{{=method.name}}Middleware = pushArr(({{=methodName}} as any).middleware, ({{=conName}} as any).middleware);
         const {{=conName}}{{=method.name}}PostMiddleware = pushArr(({{=methodName}} as any).postMiddleware, ({{=conName}} as any).postMiddleware);
-        {{? it.swaggerResolved.paths[path][method.method].responses["200"].schema.type === "object"}}
-        {{= it.fastJson(it.swaggerResolved.paths[path][method.method].responses["200"].schema).toString().replace(/function [a-zA-Z$]+?\(([a-zA-Z]+?)\)/g, `const ${conName}${method.name}Serializer = ($1: any) => `) }};
-        {{?}}
-        {{? it.swaggerResolved.paths[path][method.method].responses["200"].schema.type !== "object"}}
-        const {{=conName}}{{=method.name}}Serializer: any = null;
-        {{?}}
         app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method])}},(req: ApiRequest, logger: any)=>{
             {{? route.extendsController}}
             {{= conName}}.logger = logger;
@@ -135,16 +61,16 @@ export = {
                 {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
             )).then((response) => {
                 {{? route.extendsController}}
-                const fullResponse = app.buildSuccess(response, {{=conName}}.getHeaders(), {{=conName}}.getStatus(), {{=conName}}{{=method.name}}Serializer);
+                const fullResponse = app.buildSuccess(response, {{=conName}}.getHeaders(), {{=conName}}.getStatus());
                 {{= conName}}.clearStatus();
                 {{= conName}}.clearHeaders();
                 return fullResponse;
                 {{?}}
                 {{? !route.extendsController}}
-                return app.buildSuccess(response, undefined, undefined, {{=conName}}{{=method.name}}Serializer);
+                return app.buildSuccess(response);
                 {{?}}
             });
-        },{{=conName}}{{=method.name}}Middleware,{{=!method.isHidden}},{{=conName}}{{=method.name}}PostMiddleware);
+        },{{=conName}}{{=method.name}}Middleware,{{=!(method.isHidden || route.isHidden)}},{{=conName}}{{=method.name}}PostMiddleware, {{= route.disableSerialization || method.disableSerialization}});
         {{~}}{{~}}
     },
     definitions: {{=JSON.stringify(it.swagger.definitions)}},

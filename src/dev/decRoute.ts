@@ -9,7 +9,7 @@ import {
     Logger,
     Middleware,
     ApiMiddleware,
-    Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp,
+    Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization,
 } from "../main";
 
 export interface TestResponse<T> {
@@ -127,6 +127,7 @@ export class BurnRoutes extends Controller {
     }
 }
 
+@Hidden()
 @Route("thing")
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
@@ -136,7 +137,7 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other")
-    public test(@Body() input: ImpostorType): ApiRes<string> {
+    public test(@Body() input: ParentType): ApiRes<string> {
         return {status_code: 1, response_data: "yay"};
     }
 }

@@ -51,6 +51,7 @@ export class MethodGenerator {
 			summary: getJSDocComment(this.node, "summary"),
 			tags: this.getTags(),
 			type,
+			disableSerialization: this.isMethodDisableSerialization(),
 		};
 	}
 
@@ -175,6 +176,11 @@ export class MethodGenerator {
 			name,
 			schema: type,
 		};
+	}
+
+	private isMethodDisableSerialization(): boolean {
+		const disableDecorators = getDecorators(this.node, (identifier) => identifier.text === "DisableSerialization");
+		return disableDecorators.length > 0;
 	}
 
 	private getMethodSuccessExamples() {

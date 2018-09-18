@@ -58,6 +58,7 @@ export interface ApiServer {
 
 export interface ValoryMetadata {
 	undocumentedEndpoints: string[];
+	disableSerialization: string[];
 	valoryPath: string;
 	compiledSwaggerPath: string;
 	swagger: Swagger.Spec;

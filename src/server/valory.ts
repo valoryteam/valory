@@ -133,6 +133,7 @@ export class Valory {
 		valoryPath: __dirname,
 		compiledSwaggerPath: Config.CompSwagPath,
 		swagger: null,
+		disableSerialization: [],
 	};
 
 	/**
@@ -208,16 +209,16 @@ export class Valory {
 	 * Register an endpoint with a given method
 	 */
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
-					middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
+					middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = [],
+					disableSerializer: boolean = false) {
 		const stringMethod = HttpMethod[method].toLowerCase();
-        if (!documented) {
-            this.metadata.undocumentedEndpoints.push(path);
-        }
 		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
 		if (this.COMPILERMODE) {
-			this.endpointCompile(path, method, swaggerDef, handler, stringMethod, middleware, documented, postMiddleware);
+			this.endpointCompile(path, method, swaggerDef, handler, stringMethod,
+				middleware, documented, postMiddleware, disableSerializer);
 		} else {
-			this.endpointRun(path, method, swaggerDef, handler, stringMethod, middleware, documented, postMiddleware);
+			this.endpointRun(path, method, swaggerDef, handler, stringMethod,
+				middleware, documented, postMiddleware, disableSerializer);
 		}
 	}
 
@@ -242,12 +243,10 @@ export class Valory {
 	/**
 	 * Convenience method to build a return exchange when only body and/or header customization is required
 	 */
-	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200,
-						serializer: (data: any) => string = JSON.stringify): ApiResponse {
+	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200): ApiResponse {
 		if (headers["Content-Type"] == null) {
 			if (typeof body === "object") {
 				headers["Content-Type"] = "application/json";
-				body = flatStr(serializer(body));
 			} else if (typeof body === "string") {
 				headers["Content-Type"] = "text/plain";
 			}
@@ -263,48 +262,49 @@ export class Valory {
 	 * Register GET endpoint
 	 */
 	public get(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented, postMiddleware);
+			   documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.GET, swaggerDef, handler, middleware, documented, postMiddleware, disableSerializer);
 	}
 
 	/**
 	 * Register POST endpoint
 	 */
 	public post(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented, postMiddleware);
+				documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.POST, swaggerDef, handler, middleware, documented, postMiddleware, disableSerializer);
 	}
 
 	/**
 	 * Register DELETE endpoint
 	 */
 	public delete(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				  documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented, postMiddleware);
+				  documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.DELETE, swaggerDef, handler, middleware, documented, postMiddleware,
+			disableSerializer);
 	}
 
 	/**
 	 * Register HEAD endpoint
 	 */
 	public head(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented, postMiddleware);
+				documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.HEAD, swaggerDef, handler, middleware, documented, postMiddleware, disableSerializer);
 	}
 
 	/**
 	 * Register PATCH endpoint
 	 */
 	public patch(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-				 documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented, postMiddleware);
+				 documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.PATCH, swaggerDef, handler, middleware, documented, postMiddleware, disableSerializer);
 	}
 
 	/**
 	 * Register PUT endpoint
 	 */
 	public put(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
-			   documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
-		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented, postMiddleware);
+			   documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
+		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented, postMiddleware, disableSerializer);
 	}
 
 	/**
@@ -350,9 +350,15 @@ export class Valory {
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 							stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
-							postMiddleware: ApiMiddleware[] = []) {
+							postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware,
 			this.globalPostMiddleware, postMiddleware);
+        if (!documented) {
+            this.metadata.undocumentedEndpoints.push(path);
+        }
+        if (disableSerializer) {
+        	this.metadata.disableSerialization.push(`${path}:${HttpMethod[method].toLowerCase()}`);
+		}
 		for (const item of middlewares) {
 			if (item.tag != null) {
 				if (!(item.tag instanceof Array)) {
@@ -377,7 +383,7 @@ export class Valory {
 
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Swagger.Operation,
 						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
-						documented: boolean = true, postMiddleware: ApiMiddleware[] = []) {
+						documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = false) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
 		if (this.apiDef.basePath != null) {
 			path = this.apiDef.basePath + path;
@@ -401,12 +407,15 @@ export class Valory {
                 if (middlewareResp != null) {
                     return Promise.resolve(middlewareResp);
                 }
-                const result = validator(req);
+                const result = validator.validator(req);
                 req.putAttachment(Valory.ValidationResultKey, result);
                 if (result !== true) {
                     return Promise.resolve(this.buildError("ValidationError", result as string[]));
                 } else {
-                    return Promise.resolve(handler(req, requestLogger, {requestId}));
+                    return Promise.resolve(handler(req, requestLogger, {requestId})).then((response) => {
+						response.body = validator.serializer(response.body);
+						return response;
+					});
                 }
 			}).catch((error) => {
                 if (error.name === "ValoryEndpointError") {

@@ -12,6 +12,8 @@ export namespace Tsoa {
 		name: string;
 		path: string;
 		extendsController: boolean;
+		disableSerialization: boolean;
+		isHidden: boolean;
 	}
 
 	export interface Method {
@@ -27,7 +29,7 @@ export namespace Tsoa {
 		security: Security[];
 		summary?: string;
 		isHidden: boolean;
-
+        disableSerialization: boolean;
 	}
 
 	export interface Parameter {

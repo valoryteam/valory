@@ -94,6 +94,7 @@ async function compilerRunner(args: any) {
 			debug: args.debugMode, compilationLevel: compLevel,
 			singleError: args.singleError,
 			discrimFastFail: args.discrimFastFail,
+			disableSerialization: valExport.valory.disableSerialization,
 		}, args.debugArtifactPath)
 		.then(() => {
 			console.log("\nDone", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");

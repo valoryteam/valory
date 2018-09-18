@@ -5,10 +5,7 @@ import {writeFileSync} from "fs";
 import {Config} from "../lib/config";
 import chalk from "chalk";
 import {Spinner, spinnerFail} from "../lib/spinner";
-import {dereference} from "swagger-parser";
-import {cloneDeep} from "lodash";
 
-const fastJson = require("fast-json-stringify");
 const dotJs = require("dot");
 dotJs.log = false;
 dotJs.templateSettings.strip = false;
@@ -33,13 +30,12 @@ export async function routeBuild(entryPoint: string) {
 	await Spinner.succeed();
 	try {
 		await Spinner.start("Generating routes");
-		const resolved = await dereference(cloneDeep(swaggerContent as any));
+		// const resolved = await dereference(cloneDeep(swaggerContent as any));
 		const generatedRoutes = templates.apiTemplate({
 			swagger: swaggerContent,
-			swaggerResolved: resolved,
+			// swaggerResolved: resolved,
 			metadata,
 			valoryRuntime: Config.ValoryRuntime,
-			fastJson,
 		});
 
 		const generatedPath = Config.SourceRoutePath;

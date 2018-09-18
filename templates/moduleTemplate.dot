@@ -11,9 +11,82 @@ function pushArr(target, other) {
     }
 }
 
+const isLong = null;
+
+function $asNull () {
+    return 'null'
+}
+
+function $asInteger (i) {
+    if (isLong && isLong(i)) {
+        return i.toString()
+    } else {
+        return $asNumber(i)
+    }
+}
+
+function $asNumber (i) {
+    var num = Number(i);
+    if (isNaN(num)) {
+        return 'null'
+    } else {
+        return '' + num
+    }
+}
+
+function $asBoolean (bool) {
+    return bool && 'true' || 'false' // eslint-disable-line
+}
+
+function $asString (str) {
+    if (str instanceof Date) {
+        return '"' + str.toISOString() + '"'
+    } else if (str === null) {
+        return '""'
+    } else if (str instanceof RegExp) {
+        str = str.source
+    } else if (typeof str !== 'string') {
+        str = str.toString()
+    }
+
+    if (str.length < 42) {
+        return $asStringSmall(str)
+    } else {
+        return JSON.stringify(str)
+    }
+}
+
+function $asStringSmall (str) {
+    var result = '';
+    var last = 0;
+    var found = false;
+    var l = str.length;
+    var point = 255;
+    for (var i = 0; i < l && point >= 32; i++) {
+        point = str.charCodeAt(i);
+        if (point === 34 || point === 92) {
+            result += str.slice(last, i) + '\\';
+            last = i;
+            found = true
+        }
+    }
+
+    if (!found) {
+        result = str
+    } else {
+        result += str.slice(last)
+    }
+    return point < 32 ? JSON.stringify(str) : '"' + result + '"'
+}
+
+
 function validate(path, method, data) {
     const key = FUNCTION_PREFIX + hasher(`${path}:${method}`, 3141997).toString();
-    return module["exports"][key];
+    const serializer = module["exports"][key + "s"];
+    return {
+        "validator": module["exports"][key],
+        "serializer": (serializer != null) ? serializer : data => data,
+    };
 }
 
 function ucs2length(str) {
