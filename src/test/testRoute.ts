@@ -6,7 +6,7 @@ import {Get, Header, Post, Route, Body, ApiError} from "../main";
 		return {message: "yay"};
 	}
 
-	@Post("submit") public submit(@Body() item: {name: string, isCool: boolean}) {
+	@Post("submit") public submit(@Body() item: {name: string, isCool: boolean}): string {
 		return `${item.name} is ${(item.isCool) ? "cool" : "not cool"}`;
 	}
 

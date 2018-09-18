@@ -48,6 +48,8 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 			}
 		}
 		finalMessage += "]";
+	} else {
+		finalMessage = `"${finalMessage}"`;
 	}
 	return {
 		statusCode: error.statusCode,
@@ -441,7 +443,7 @@ export class Valory {
 					return (response as ApiResponse);
 				}
 				if (handlerResponded) {
-					initialResponse.body = validator.serializer(initialResponse.body);
+					initialResponse.body = flatStr(validator.serializer(initialResponse.body));
 				}
 				return initialResponse;
 			});

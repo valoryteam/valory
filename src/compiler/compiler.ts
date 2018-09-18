@@ -142,7 +142,9 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                 discriminators: output.debugArtifacts.preSwagger.discriminators,
                 discrimFastFail: options.discrimFastFail,
             });
-            if (options.disableSerialization.indexOf(`${path}:${method}`) === -1) {
+            if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
+                (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
+                (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
                 Spinner.text = "Compiling serializer function";
                 const serializerHash = hash + SERIALIZER_SUFFIX;
                 const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
