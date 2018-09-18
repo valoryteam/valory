@@ -137,8 +137,8 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other")
-    public test(@Body() input: ParentType): ApiRes<string> {
-        return {status_code: 1, response_data: "yay"};
+    public test(@Body() input: ParentType): ApiRes<string[]> {
+        return {status_code: 1, response_data: ["yay"]};
     }
 }
 

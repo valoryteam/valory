@@ -239,9 +239,9 @@ yargs
 					default: false,
 				},
 				discrimFastFail: {
-					desc: "Enables discriminator fast fail EXPERIMENTAL",
+					desc: "Enables discriminator fast fail",
 					boolean: true,
-					default: false,
+					default: true,
 				},
 				compilationLevel: {
 					alias: "l",

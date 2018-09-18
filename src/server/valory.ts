@@ -38,12 +38,20 @@ const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
 const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
+	let finalMessage = (message != null) ? message : error.defaultMessage;
+	if (typeof finalMessage !== "string") {
+		finalMessage = "[";
+		for (let i = 0; i < message.length; i++) {
+			finalMessage += `"${message[i]}"`;
+			if (i + 1 !== message.length) {
+				finalMessage += ",";
+			}
+		}
+		finalMessage += "]";
+	}
 	return {
 		statusCode: error.statusCode,
-		body: {
-			code: error.errorCode,
-			message: (message != null) ? message : error.defaultMessage,
-		},
+		body: flatStr(`{"code":${error.errorCode},"message":${finalMessage}}`),
 		headers: {"Content-Type": "application/json"},
 	};
 };
@@ -403,6 +411,7 @@ export class Valory {
 			const requestLogger = childLogger.child({requestId});
 			requestLogger.debug(req, "Received request");
 			let initialResponse: ApiResponse = null;
+			let handlerResponded = false;
 			return middlewareProcessor(middlewares, req, requestLogger).then((middlewareResp) => {
                 if (middlewareResp != null) {
                     return Promise.resolve(middlewareResp);
@@ -412,12 +421,11 @@ export class Valory {
                 if (result !== true) {
                     return Promise.resolve(this.buildError("ValidationError", result as string[]));
                 } else {
-                    return Promise.resolve(handler(req, requestLogger, {requestId})).then((response) => {
-						response.body = validator.serializer(response.body);
-						return response;
-					});
+                	handlerResponded = true;
+                    return Promise.resolve(handler(req, requestLogger, {requestId}));
                 }
 			}).catch((error) => {
+				handlerResponded = false;
                 if (error.name === "ValoryEndpointError") {
                     return this.buildError(error.valoryErrorCode, error.message || undefined);
                 }
@@ -431,6 +439,9 @@ export class Valory {
 			}).then((response) => {
 				if (response != null) {
 					return (response as ApiResponse);
+				}
+				if (handlerResponded) {
+					initialResponse.body = validator.serializer(initialResponse.body);
 				}
 				return initialResponse;
 			});

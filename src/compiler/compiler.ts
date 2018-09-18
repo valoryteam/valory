@@ -29,7 +29,7 @@ dotJs.log = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const errorSup = "undefinedVars";
 const XXH = require("xxhashjs");
-const fastJson = require("fast-json-stringify");
+import {build as fastJson, preamble} from "../lib/fastStringify";
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
@@ -84,9 +84,9 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         unicode: false,
         allErrors: !options.singleError,
     });
-    if (options.discrimFastFail) {
-        CompileLog.warn("discriminator fast fail is enabled EXPERIMENTAL");
-    }
+    // if (options.discrimFastFail) {
+    //     CompileLog.warn("discriminator fast fail is enabled EXPERIMENTAL");
+    // }
     // const start = process.hrtime();
     console.log(chalk.bold("Prepare Swagger"));
     // CompileLog.info("Validating swagger");
@@ -145,10 +145,11 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
             if (options.disableSerialization.indexOf(`${path}:${method}`) === -1) {
                 Spinner.text = "Compiling serializer function";
                 const serializerHash = hash + SERIALIZER_SUFFIX;
+                const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
+                    [method].responses["200"].schema, true);
                 const serializer = templates.serializerTemplate({
                     hash: serializerHash,
-                    serializer: fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
-                        [method].responses["200"].schema),
+                    serializer: generatedSerializer,
                     schema: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema,
                 });
                 output.debugArtifacts.serializerHashes.push(serializerHash);
@@ -170,6 +171,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         defHash: XXH.h32(JSON.stringify(spec.definitions), HASH_SEED).toString(),
         exportHashes: output.debugArtifacts.hashes.concat(output.debugArtifacts.serializerHashes),
         swagger: spec,
+        preamble,
     });
 
     const intermediateTemp = tmp.fileSync({prefix: "valCI"});

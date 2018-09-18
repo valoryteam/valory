@@ -1,0 +1,14 @@
+{
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string"
+    },
+    "message": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

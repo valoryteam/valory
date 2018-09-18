@@ -1,5 +1,7 @@
-{{? it.schema.type === "object" }}
-{{= it.serializer.toString().replace(/function [a-zA-Z$]+?\(([a-zA-Z]+?)\)/g, `const ${it.hash} = ($1) => `) }};
+{{? it.schema.type === "object" || it.schema.type === "array" }}
+{{~ it.serializer : func }}
+{{= func.replace(/\$main/g, it.hash).replace(/function ([^\s]+) \(([a-zA-Z]+?)\)/g, `const $1 = ($2) => `) }};
+{{~}}
 {{?}}
 {{? it.schema.type !== "object" }}
 const {{= it.hash}} = null;
