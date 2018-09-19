@@ -57,6 +57,7 @@ export interface ApiServer {
 }
 
 export interface ValoryMetadata {
+	metadataVersion: number;
 	undocumentedEndpoints: string[];
 	disableSerialization: string[];
 	valoryPath: string;

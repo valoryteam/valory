@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 global.Promise = require("bluebird");
 
-import {CLI_MODE_FLAG, Config} from "./config";
+import {CLI_MODE_FLAG, COMPSWAG_VERION, Config, GENROUTES_VERSION, METADATA_VERSION} from "./config";
 
 process.env[CLI_MODE_FLAG] = "true";
 
@@ -44,15 +44,34 @@ async function checkRequirements() {
 	} catch (e) {
 		await spinnerFail("Java installation missing or broken", e);
 	}
+	await Spinner.start("valory-runtime");
+	const pkg = Config.PackageJSON;
+	if (process.env.NODE_ENV === "test" || pkg.dependencies["valory-runtime"]) {
+		await Spinner.succeed(chalk.green(`valory-runtime ${pkg.dependencies["valory-runtime"]}`));
+	} else {
+		await spinnerFail("valory-runtime must be a dependency", null);
+	}
 	console.log("");
 }
 
-async function compilerRunner(args: any) {
-	console.log(chalk.bold(`valory compile v${require("../../package.json").version}\n`));
-	console.log(`Project:       ${Config.PackageJSON.name}`);
-	console.log(`Version:       ${Config.PackageJSON.version}`);
-	console.log(`Config:        ${Config.ConfigPath}\n`);
+function printHeader() {
+    console.log(chalk.bold(`valory compile\n`));
 
+    console.log(chalk.bold("Valory"));
+    console.log(`Compiler:      v${require("../../package.json").version}`);
+    console.log(`CompSwag:      v${COMPSWAG_VERION}`);
+    console.log(`GenRoutes:     v${GENROUTES_VERSION}`);
+    console.log(`Metadata:      v${METADATA_VERSION}`);
+    console.log();
+
+    console.log(chalk.bold("Project"));
+    console.log(`Project:       ${Config.PackageJSON.name}`);
+    console.log(`Version:       ${Config.PackageJSON.version}`);
+    console.log(`Config:        ${Config.ConfigPath}\n`);
+}
+
+async function compilerRunner(args: any) {
+	printHeader();
 	await checkRequirements();
 	const start = process.hrtime();
 	require("ts-node").register({
@@ -81,6 +100,10 @@ async function compilerRunner(args: any) {
 		valExport = JSON.parse(process.env[VALORYMETAVAR]);
 	} catch (e) {
 		await spinnerFail("failed to load apperver", e);
+	}
+	if (valExport.valory.metadataVersion !== METADATA_VERSION) {
+		await spinnerFail(
+			`Compiler metadata version ${METADATA_VERSION} incompatible with version ${valExport.valory.metadataVersion}`, "");
 	}
 	Spinner.succeed();
 	const api = valExport.valory.swagger;

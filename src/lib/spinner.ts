@@ -5,7 +5,9 @@ export const Spinner = new ThreadSpinner(undefined, process.env.NODE_ENV === "te
 export async function spinnerFail(message: string, e: any, die: boolean = true) {
 	await Spinner.fail(chalk.red.bold(message + "\n"));
 	ThreadSpinner.shutdown();
-	console.error(e);
+	if (e != null) {
+        console.error(e);
+    }
 	if (die) {
 		process.exit(1);
 	}

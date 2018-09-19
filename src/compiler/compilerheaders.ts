@@ -22,6 +22,7 @@ export interface RequestFieldMap {
 }
 
 export interface ValidatorModule {
+	compswagVersion: number;
 	defHash: string;
 	globalConsume: string[];
 	swaggerBlob: string;

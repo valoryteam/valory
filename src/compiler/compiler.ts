@@ -17,7 +17,7 @@ import {join} from "path";
 import {VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
 import Pino = require("pino");
 import {Swagger} from "../server/swagger";
-import {Config} from "../lib/config";
+import {COMPSWAG_VERION, Config} from "../lib/config";
 import chalk from "chalk";
 import {Spinner, spinnerFail} from "../lib/spinner";
 
@@ -179,6 +179,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         exportHashes: output.debugArtifacts.hashes.concat(output.debugArtifacts.serializerHashes),
         swagger: spec,
         preamble,
+        compswagVersion: COMPSWAG_VERION,
     });
 
     const intermediateTemp = tmp.fileSync({prefix: "valCI"});

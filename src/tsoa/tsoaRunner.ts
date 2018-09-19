@@ -2,7 +2,7 @@ import {MetadataGenerator} from "./metadataGeneration/metadataGenerator";
 import {SpecGenerator} from "./specGenerator";
 import {dirname, extname, join, relative} from "path";
 import {writeFileSync} from "fs";
-import {Config} from "../lib/config";
+import {Config, GENROUTES_VERSION} from "../lib/config";
 import chalk from "chalk";
 import {Spinner, spinnerFail} from "../lib/spinner";
 
@@ -36,6 +36,7 @@ export async function routeBuild(entryPoint: string) {
 			// swaggerResolved: resolved,
 			metadata,
 			valoryRuntime: Config.ValoryRuntime,
+			genroutesVersion: GENROUTES_VERSION,
 		});
 
 		const generatedPath = Config.SourceRoutePath;

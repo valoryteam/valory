@@ -92,6 +92,7 @@ exportsDefinitions = exportsDefinitions.join("");
 }}
 module["exports"]= {
 {{=exportsDefinitions}}
+"compswagVersion":{{= it.compswagVersion}},
 "defHash": "{{= it.defHash }}",
 "globalConsume": {{= JSON.stringify(it.swagger.consumes) }},
 "swaggerBlob": {{= JSON.stringify(JSON.stringify(it.swagger)) }},

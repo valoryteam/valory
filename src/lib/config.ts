@@ -4,6 +4,9 @@ import {IPackageJSON} from "./package";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
 export const VALORY_ROOT = "VALORY_ROOT";
+export const COMPSWAG_VERION = 1;
+export const METADATA_VERSION = 1;
+export const GENROUTES_VERSION = 1;
 
 export interface ValoryConfig {
 	entrypoint: string;

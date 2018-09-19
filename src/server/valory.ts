@@ -11,7 +11,7 @@ import uniq = require("lodash/uniq");
 import {Steed} from "steed";
 import {Logger} from "pino";
 import {ApiRequest, AttachmentKey} from "./request";
-import {Config} from "../lib/config";
+import {Config, GENROUTES_VERSION, METADATA_VERSION} from "../lib/config";
 import {
 	ApiExchange,
 	ApiHandler,
@@ -139,6 +139,7 @@ export class Valory {
 	private errors = DefaultErrors;
 	private registerGeneratedRoutes: (app: Valory) => void;
 	private metadata: ValoryMetadata = {
+		metadataVersion: METADATA_VERSION,
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
 		compiledSwaggerPath: Config.CompSwagPath,
@@ -192,6 +193,10 @@ export class Valory {
 				} else {
 					genRoutes = require(Config.GeneratedRoutePath);
 				}
+				if (genRoutes.genroutesVersion !== GENROUTES_VERSION) {
+					throw Error(
+						`Generated routes are version ${genRoutes.genroutesVersion} but version ${GENROUTES_VERSION} is required`);
+				}
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				this.registerGeneratedRoutes = genRoutes.register;
 			}
@@ -209,6 +214,10 @@ export class Valory {
 			// console.log(Config);
 			if (Config.SourceRoutePath !== "") {
 				const genRoutes = require(Config.SourceRoutePath);
+                if (genRoutes.genroutesVersion !== GENROUTES_VERSION) {
+                    // tslint:disable-next-line:max-line-length
+                	throw Error(`Generated routes are version ${genRoutes.genroutesVersion} but version ${GENROUTES_VERSION} is required`);
+                }
 				Object.assign(this.apiDef.definitions, genRoutes.definitions);
 				this.registerGeneratedRoutes = genRoutes.register;
 			}
