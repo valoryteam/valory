@@ -48,6 +48,7 @@ export enum HttpMethod {
 }
 
 export interface ApiServer {
+	disableSerialization?: boolean;
 	locallyRunnable: boolean;
 	register: (path: string, method: HttpMethod, handler: (request: ApiRequest) =>
 		ApiResponse | Promise<ApiResponse>) => void;

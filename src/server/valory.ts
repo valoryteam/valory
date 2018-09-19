@@ -58,6 +58,14 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 	};
 };
 
+const DefaultErrorFormatterNoSerialization: ErrorFormatter = (error, message): ApiResponse => {
+    return {
+        statusCode: error.statusCode,
+        body: (message != null) ? message : error.defaultMessage,
+        headers: {"Content-Type": "application/json"},
+    };
+};
+
 export interface ValoryOptions {
 	info: Swagger.Info;
 	server: ApiServer;
@@ -177,6 +185,10 @@ export class Valory {
 		if (basePath != null) {
 			this.Logger.debug("Path prefix set:", basePath);
 			this.apiDef.basePath = basePath;
+		}
+
+		if (this.server.disableSerialization) {
+			this.setErrorFormatter(DefaultErrorFormatterNoSerialization);
 		}
 
 		Object.assign(this.errors, errors);
@@ -404,6 +416,10 @@ export class Valory {
 						handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
 						documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = true) {
 		const validator = this.validatorModule.getValidator(path, stringMethod);
+		if (this.server.disableSerialization) {
+			validator.serializer = (a: any) => a;
+		}
+
 		if (this.apiDef.basePath != null) {
 			path = this.apiDef.basePath + path;
 		}
