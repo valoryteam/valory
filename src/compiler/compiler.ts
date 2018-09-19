@@ -37,6 +37,7 @@ export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "
 export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 
     const output: CompilerOutput = {
+        success: false,
         module: null,
         debugArtifacts: {
             hashes: [],
@@ -94,7 +95,8 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
     try {
         await validate(cloneDeep(spec as any));
     } catch (e) {
-        await spinnerFail("Swagger Validation Failure", e);
+        await spinnerFail("Swagger Validation Failure", e, false);
+        return output;
     }
     await Spinner.succeed();
     // CompileLog.info("Preprocessing swagger");
@@ -102,14 +104,16 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
     try {
         output.debugArtifacts.preSwagger = swaggerPreproccess(cloneDeep(spec as any));
     } catch (e) {
-        await spinnerFail("Swagger Preprocessor Failure", e);
+        await spinnerFail("Swagger Preprocessor Failure", e, false);
+        return output;
     }
     await Spinner.succeed();
     Spinner.start("Dereferencing Swagger");
     try {
         output.debugArtifacts.derefSwagger = await dereference(output.debugArtifacts.preSwagger.swagger as any);
     } catch (e) {
-        await spinnerFail("Swagger Dereference Failure", e);
+        await spinnerFail("Swagger Dereference Failure", e, false);
+        return output;
     }
     await Spinner.succeed();
     console.log(chalk.bold("Build Endpoints"));
@@ -141,6 +145,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                 singleError: options.singleError,
                 discriminators: output.debugArtifacts.preSwagger.discriminators,
                 discrimFastFail: options.discrimFastFail,
+                lodash: require("lodash"),
             });
             if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
                 (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
@@ -210,13 +215,15 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
             });
         });
     } catch (e) {
-        await spinnerFail("Closure Compiler Failure", e);
+        await spinnerFail("Closure Compiler Failure", e, false);
+        return output;
     }
     await Spinner.succeed();
     await Spinner.start("Final post process");
     output.module = finalProcess(output.debugArtifacts.postCompileModule);
     await Spinner.succeed();
     // console.log("\nDone", (convertTime(process.hrtime(start)) / 1000).toFixed(3) + "s");
+    output.success = true;
     return output;
 }
 

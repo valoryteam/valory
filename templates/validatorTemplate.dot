@@ -1,7 +1,7 @@
 var {{= it.hash }} =
     {{
-      const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
-      const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;[\s]*?(if[\s\S]*?else[\s\S]*?;)/g;
+      const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?schemaPath:[\s\S]*?'([\s\S]*?)'[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
+      const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?schemaPath:[\s\S]*?'([\s\S]*?)'[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;[\s]*?(if[\s\S]*?else[\s\S]*?;)/g;
       const anyOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
       const reverseLabelDisc = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
       const propGetter = /\.([^\.]*)'/g;
@@ -16,6 +16,18 @@ var {{= it.hash }} =
           return Buffer.from(firstPart + secondPart).toString("base64");
       }
 
+      function getSchemaValue(dataPath) {
+          let parts = dataPath.replace("#/","").split("/");
+          parts = parts.map(seg => {
+              if (isNaN(seg)) {
+                  return seg;
+              } else {
+                  return "t" + seg;
+              }
+          });
+          return it.lodash.get(it.schema, parts.join("."));
+      }
+
       let code = it.validate.toString();
       /* Call our own schema var */
       code = code.replace(/validate.schema/g, 'schema');
@@ -24,10 +36,13 @@ var {{= it.hash }} =
       code = code.replace(/validate.errors/g, 'validationErrors');
 
       /* Transform returned errors */
-      code = code.replace(errorReg, function(match, keyword, dataPath, params, message){
+      code = code.replace(errorReg, function(match, keyword, dataPath, schemaPath, params, message){
             let replace = "";
-            dataPath = dataPath.replace("normalizedHeaders", "headers");
             var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
+            dataPath = dataPath.replace("normalizedHeaders", "headers");
+            if (keyword =="const") {
+                allowedVal = `: ${getSchemaValue(schemaPath)}`;
+            }
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
                 replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\'');
@@ -42,7 +57,8 @@ var {{= it.hash }} =
       });
 
       /* Transform returned errors inside of discriminators */
-      code = code.replace(vErrorReg, function(match, keyword, dataPath, params, message, errPush){
+      code = code.replace(vErrorReg, function(match, keyword, dataPath, schemaPath, params, message, errPush){
+            var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
             let replace = "";
             dataPath = dataPath.replace("normalizedHeaders", "headers");
             /* anyOf's are always the end of a discriminator */
@@ -65,9 +81,10 @@ var {{= it.hash }} =
                     } else {
                         return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n`;
                     }
+                } else {
+                    allowedVal = `: ${getSchemaValue(schemaPath)}`;
                 }
             }
-            var allowedVal = (keyword=="enum") ? (": [\' + " + params.replace("allowedValues: ","") + " + ']") : "";
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
                 replace = ('\'ValidationError[' + keyword + ']: request' + dataPath + ' ' + message + allowedVal + '\'');

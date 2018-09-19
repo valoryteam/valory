@@ -459,24 +459,24 @@ export class Valory {
 				swaggerBlob = JSON.parse(this.validatorModule.swaggerBlob);
 				swaggerBlob.paths = omit(swaggerBlob.paths, this.metadata.undocumentedEndpoints);
 			}
-			return {
+			return Promise.resolve({
 				body: JSON.stringify(swaggerBlob),
 				headers: {"Content-Type": "text/plain"},
 				query: null,
 				path: null,
 				statusCode: 200,
 				formData: null,
-			};
+			});
 		});
 		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
-			return {
+			return Promise.resolve({
 				body: Config.DOC_HTML,
 				headers: {"Content-Type": "text/html"},
 				query: null,
 				path: null,
 				statusCode: 200,
 				formData: null,
-			};
+			});
 		});
 	}
 }

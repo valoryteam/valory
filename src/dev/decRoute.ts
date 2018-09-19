@@ -85,8 +85,6 @@ const TestMiddleware: ApiMiddleware = {
  */
 export type ParentType = ChildType | OtherChildType;
 
-export type ImpostorType = ChildType | OtherChildType;
-
 /**
  * ChildType description
  */
@@ -96,6 +94,7 @@ export interface ChildType {
      * @example "joe"
      */
     thing: string;
+    constant: "yay";
 }
 
 export interface OtherChildType {
@@ -122,7 +121,7 @@ export class BurnRoutes extends Controller {
      * @param thing test
      */
     @Post("other/{thing}")
-    public test(@Path() thing: string, @Body() input: ParentType): ApiRes<string> {
+    public test(@Path() thing: string, @Body() input: ChildType): ApiRes<string> {
         return {status_code: 1, response_data: "yay"};
     }
 }
@@ -137,7 +136,7 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other")
-    public test(@Body() input: ParentType): ApiRes<string[]> {
+    public test(@Body() input: ChildType): ApiRes<string[]> {
         return {status_code: 1, response_data: ["yay"]};
     }
 }

@@ -46,6 +46,7 @@ export interface DiscriminatorMap {
 }
 
 export interface CompilerOutput {
+	success: boolean;
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
 		hashes: string[];
