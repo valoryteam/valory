@@ -3,6 +3,7 @@ import {Valory} from "../main";
 
 export class Controller {
 	public logger: Logger;
+	public disableSerializer: boolean;
 	private statusCode: number = 200;
 	private headers = {} as { [name: string]: string | undefined };
 
@@ -37,6 +38,7 @@ export class Controller {
 	public buildError(error: string, message?: string) {
 		const obj = Valory.getInstance().buildError(error, message);
 		this.setStatus(obj.statusCode);
+		this.disableSerializer = true;
 		return obj.body;
 	}
 }

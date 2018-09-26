@@ -57,7 +57,8 @@ const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 		statusCode: error.statusCode,
 		body: flatStr(`{"code":${error.errorCode},"message":${finalMessage}}`),
 		headers: {"Content-Type": "application/json"},
-	};
+        disableSerializer: true,
+    };
 };
 
 const DefaultErrorFormatterNoSerialization: ErrorFormatter = (error, message): ApiResponse => {
@@ -65,6 +66,7 @@ const DefaultErrorFormatterNoSerialization: ErrorFormatter = (error, message): A
         statusCode: error.statusCode,
         body: (message != null) ? message : error.defaultMessage,
         headers: {"Content-Type": "application/json"},
+		disableSerializer: true,
     };
 };
 
@@ -291,7 +293,8 @@ export class Valory {
 	/**
 	 * Convenience method to build a return exchange when only body and/or header customization is required
 	 */
-	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200): ApiResponse {
+	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200,
+						disableSerializer: boolean = false): ApiResponse {
 		if (headers["Content-Type"] == null) {
 			if (typeof body === "object") {
 				headers["Content-Type"] = "application/json";
@@ -303,6 +306,7 @@ export class Valory {
 			body,
 			headers,
 			statusCode,
+			disableSerializer,
 		};
 	}
 
@@ -486,7 +490,7 @@ export class Valory {
 				if (response != null) {
 					return (response as ApiResponse);
 				}
-				if (handlerResponded) {
+				if (handlerResponded && !initialResponse.disableSerializer) {
 					initialResponse.body = flatStr(validator.serializer(initialResponse.body));
 				}
 				return initialResponse;
@@ -571,6 +575,7 @@ function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
 			return 1;
 		}
 	});
+
 	for (const name of keys) {
 		const error = errors[name];
 		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";

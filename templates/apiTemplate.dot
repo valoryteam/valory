@@ -56,12 +56,13 @@ export = {
         app.{{=method.method}}("{{=path}}",{{=JSON.stringify(it.swagger.paths[path][method.method])}},(req: ApiRequest, logger: any)=>{
             {{? route.extendsController}}
             {{= conName}}.logger = logger;
+            {{= conName}}.disableSerializer = false;
             {{?}}
             return Promise.resolve({{=methodName}}(
                 {{~ method.parameters: param}}{{= paramPath(param.in, param.name) }},{{~}}
             )).then((response) => {
                 {{? route.extendsController}}
-                const fullResponse = app.buildSuccess(response, {{=conName}}.getHeaders(), {{=conName}}.getStatus());
+                const fullResponse = app.buildSuccess(response, {{=conName}}.getHeaders(), {{=conName}}.getStatus(), {{=conName}}.disableSerializer);
                 {{= conName}}.clearStatus();
                 {{= conName}}.clearHeaders();
                 return fullResponse;

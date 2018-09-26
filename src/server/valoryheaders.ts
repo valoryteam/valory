@@ -14,6 +14,7 @@ export interface ApiExchange {
 
 export interface ApiResponse extends ApiExchange {
 	statusCode: number;
+    disableSerializer?: boolean;
 }
 
 export type ApiMiddlewareHandler = (req: ApiRequest, logger: Logger,
