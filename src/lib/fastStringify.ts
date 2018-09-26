@@ -132,7 +132,7 @@ function $asStringSmall(str: any) {
     return point < 32 ? JSON.stringify(str) : '"' + result + '"';
 }
 
-function addPatternProperties(schema: JSONSchema6, externalSchema: JSONSchema6, fullSchema: JSONSchema6) {
+function addPatternProperties(schema: any, externalSchema: any, fullSchema: any) {
     const pp: any = schema.patternProperties;
     let code = `
       var properties = ${JSON.stringify(schema.properties)} || {}
@@ -206,7 +206,7 @@ function addPatternProperties(schema: JSONSchema6, externalSchema: JSONSchema6, 
     return code;
 }
 
-function additionalProperty(schema: JSONSchema6, externalSchema: any, fullSchema: any) {
+function additionalProperty(schema: any, externalSchema: any, fullSchema: any) {
     let ap = schema.additionalProperties as any;
     let code = "";
     if (ap === true) {
@@ -284,7 +284,7 @@ function additionalProperty(schema: JSONSchema6, externalSchema: any, fullSchema
     return code;
 }
 
-function addAdditionalProperties(schema: JSONSchema6, externalSchema: any, fullSchema: any) {
+function addAdditionalProperties(schema: any, externalSchema: any, fullSchema: any) {
     return `
       var properties = ${JSON.stringify(schema.properties)} || {}
       var keys = Object.keys(obj)
@@ -295,7 +295,7 @@ function addAdditionalProperties(schema: JSONSchema6, externalSchema: any, fullS
   `;
 }
 
-function refFinder(ref: any, schema: JSONSchema6, externalSchema: any) {
+function refFinder(ref: any, schema: any, externalSchema: any) {
     // Split file from walk
     ref = ref.split("#");
     // If external file
@@ -396,10 +396,10 @@ function buildCode(schema: any, code: string, laterCode: string, name: string, e
     return {code, laterCode};
 }
 
-function buildCodeWithAllOfs(schema: JSONSchema6, code: string, laterCode: string,
+function buildCodeWithAllOfs(schema: any, code: string, laterCode: string,
                              name: string, externalSchema: any, fullSchema: any) {
     if (schema.allOf) {
-        schema.allOf.forEach((ss) => {
+        schema.allOf.forEach((ss: any) => {
             const builtCode = buildCodeWithAllOfs(ss, code, laterCode, name, externalSchema, fullSchema);
 
             code = builtCode.code;
@@ -415,7 +415,7 @@ function buildCodeWithAllOfs(schema: JSONSchema6, code: string, laterCode: strin
     return {code, laterCode};
 }
 
-function buildInnerObject(schema: JSONSchema6, name: string, externalSchema: any, fullSchema: any) {
+function buildInnerObject(schema: any, name: string, externalSchema: any, fullSchema: any) {
     const laterCode = "";
     let code = "";
     if (schema.patternProperties) {
@@ -551,7 +551,7 @@ function buildArrayTypeCondition(type: any, accessor: any): any {
     return condition;
 }
 
-function nested(laterCode: string, name: string, key: string, schema: JSONSchema6,
+function nested(laterCode: string, name: string, key: string, schema: any,
                 externalSchema: any, fullSchema: any, subKey: any) {
     let code = "";
     let funcName;
@@ -599,7 +599,7 @@ function nested(laterCode: string, name: string, key: string, schema: JSONSchema
             break;
         case undefined:
             if ("anyOf" in schema) {
-                schema.anyOf.forEach((s, index) => {
+                schema.anyOf.forEach((s: any, index: any) => {
                     const nestedResult = nested(laterCode, name, key, s, externalSchema, fullSchema, subKey);
                     code += `
             ${index === 0 ? "if" : "else if"}(ajv.validate(${require("util")
@@ -665,7 +665,7 @@ function nested(laterCode: string, name: string, key: string, schema: JSONSchema
     };
 }
 
-function isEmpty(schema: JSONSchema6) {
+function isEmpty(schema: any) {
     for (const key in schema) {
         if (schema.hasOwnProperty(key)) {
             return false;
