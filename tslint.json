@@ -17,7 +17,8 @@
 		"no-trailing-whitespace": false,
 		"max-classes-per-file": false,
 		"no-namespace": false,
-		"no-bitwise": false
+		"no-bitwise": false,
+		"member-ordering": false
 	},
 	"rulesDirectory": []
 }

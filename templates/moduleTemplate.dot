@@ -18,9 +18,11 @@ function validate(path, method, data) {
     const serializer = module["exports"][key + "s"];
     return {
         "validator": module["exports"][key],
-        "serializer": (serializer != null) ? serializer : data => data,
+        "serializer": (serializer != null) ? serializer : noop,
     };
 }
+
+const noop = data => data;
 
 function ucs2length(str) {
   var length = 0

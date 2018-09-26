@@ -10,6 +10,8 @@ import set = require("lodash/set");
 import uniq = require("lodash/uniq");
 import {Steed} from "steed";
 import {Logger} from "pino";
+import {openSync} from "fs";
+import {resolve as resolvePath} from "path";
 import {ApiRequest, AttachmentKey} from "./request";
 import {Config, GENROUTES_VERSION, METADATA_VERSION} from "../lib/config";
 import {
@@ -136,17 +138,18 @@ export class Valory {
 		level: process.env[VALORYLOGGERVAR] || "info",
 		prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
 	});
+	private RequestLogger: Logger;
 	private COMPILERMODE = process.env.VALORYCOMPILER === "TRUE";
-	private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
-	private DEFAULTADAPTOR: string = process.env.DEFAULT_ADAPTOR;
-	private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
-	private globalMiddleware: ApiMiddleware[] = [];
-	private globalPostMiddleware: ApiMiddleware[] = [];
-	private apiDef: Swagger.Spec;
-	private validatorModule: ValidatorModule;
-	private errors = DefaultErrors;
-	private registerGeneratedRoutes: (app: Valory) => void;
-	private metadata: ValoryMetadata = {
+    private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
+    private DEFAULTADAPTOR: string = process.env.DEFAULT_ADAPTOR;
+    private errorFormatter: ErrorFormatter = DefaultErrorFormatter;
+    private globalMiddleware: ApiMiddleware[] = [];
+    private globalPostMiddleware: ApiMiddleware[] = [];
+    private apiDef: Swagger.Spec;
+    private validatorModule: ValidatorModule;
+    private errors = DefaultErrors;
+    private registerGeneratedRoutes: (app: Valory) => void;
+    private metadata: ValoryMetadata = {
 		metadataVersion: METADATA_VERSION,
 		undocumentedEndpoints: [],
 		valoryPath: __dirname,
@@ -154,6 +157,7 @@ export class Valory {
 		swagger: null,
 		disableSerialization: [],
 	};
+    private logRequest: (req: ApiRequest, res: ApiResponse, id: string) => void = () => null;
 
 	/**
 	 * @deprecated use [[Valory.createInstance]] instead
@@ -193,6 +197,19 @@ export class Valory {
 
 		Object.assign(this.errors, errors);
 		if (!this.COMPILERMODE) {
+			if (process.env.REQUEST_AUDIT_LOG) {
+				try {
+					const stream = openSync(process.env.REQUEST_AUDIT_LOG, "w");
+					this.RequestLogger = P((P as any).extreme(stream));
+					this.logRequest = (req, res, id) => {
+						this.RequestLogger.info({request: req, response: res, id});
+					};
+					this.Logger.info(`Request logging enabled: ${resolvePath(process.env.REQUEST_AUDIT_LOG)}`);
+				} catch (e) {
+					throw Error("Could not create write stream for request audit log: " + e.message);
+                }
+			}
+
 			this.Logger.info("Starting valory");
 
 			if (this.TESTMODE) {
@@ -432,11 +449,12 @@ export class Valory {
 		const postMiddlewares = this.globalPostMiddleware.concat(postMiddleware);
 		const middlewareProcessor = (middlewares.length > 0) ? processMiddleware : noopPromise;
 		const postMiddlewareProcessor = (postMiddlewares.length > 0) ? processMiddleware : noopPromise;
+		const logRequest = this.logRequest;
 		const wrapper = (req: ApiRequest): Promise<ApiResponse> => {
 			const requestId = uuid();
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			const requestLogger = childLogger.child({requestId});
-			requestLogger.debug(req, "Received request");
+			requestLogger.debug("Received request");
 			let initialResponse: ApiResponse = null;
 			let handlerResponded = false;
 			return middlewareProcessor(middlewares, req, requestLogger).then((middlewareResp) => {
@@ -464,6 +482,7 @@ export class Valory {
                 initialResponse = response;
                 return postMiddlewareProcessor(postMiddlewares, req, requestLogger);
 			}).then((response) => {
+				logRequest(req, response || initialResponse, requestId);
 				if (response != null) {
 					return (response as ApiResponse);
 				}
