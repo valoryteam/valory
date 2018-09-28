@@ -491,9 +491,21 @@ export class Valory {
 					return (response as ApiResponse);
 				}
 				if (handlerResponded && !initialResponse.disableSerializer) {
-					initialResponse.body = flatStr(validator.serializer(initialResponse.body));
-				}
+                    try {
+                        initialResponse.body = flatStr(validator.serializer(initialResponse.body));
+                    } catch (e) {
+                    	requestLogger.error(e, "Failed to serialize response");
+                    	return this.buildError("InternalError");
+                    }
+                }
 				return initialResponse;
+			}).catch((error) => {
+                requestLogger.error("Internal exception occurred while processing request");
+                requestLogger.error(error);
+				return this.buildError("InternalError");
+			}).then((res: ApiResponse) => {
+				res.headers["request-id"] = requestId;
+				return res;
 			});
 		};
 		this.server.register(path, method, wrapper);

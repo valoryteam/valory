@@ -122,7 +122,7 @@ export class BurnRoutes extends Controller {
      */
     @Post("other/{thing}")
     public test(@Path() thing: string, @Body() input: ChildType): ApiRes<string> {
-        return {status_code: 1, response_data: "yay"};
+        return {status_code: 1, response_data: ["yay2", 2]} as any;
     }
 }
 
