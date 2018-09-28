@@ -19,6 +19,7 @@
 		"bluebird": "^3.5.2",
 		"flatstr": "^1.0.8"
 	},
+	"license": "ISC",
 	"release": {
 		"repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
 		"branch": "master",
