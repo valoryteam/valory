@@ -9,7 +9,7 @@ const addComma = `
   addComma = true
 `;
 
-const isLong: void = null;
+const isLong: any = null;
 let codeCache: string[] = [];
 export const preamble = `
     ${$asString.toString()}
