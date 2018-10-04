@@ -1,5 +1,5 @@
 import * as path from "path";
-import {readFileSync} from "fs";
+import {readFileSync, existsSync} from "fs";
 import {IPackageJSON} from "./package";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
@@ -121,6 +121,21 @@ export namespace Config {
 			}
 		}
 		// console.log(Config);
+	}
+
+	export function checkPaths() {
+		if (!existsSync(ConfigData.entrypoint)) {
+			throw Error("Entrypoint file does not exist");
+		}
+		if (!ConfigData.entrypoint.endsWith(".js")) {
+			throw Error("Compiled entrypoint must be a js file");
+		}
+		if (!existsSync(ConfigData.sourceEntrypoint)) {
+			throw Error("Source entrypoint file does not exist");
+		}
+		if (!ConfigData.sourceEntrypoint.endsWith(".ts")) {
+			throw Error("Source entrypoint must not be a ts file");
+		}
 	}
 
 	function resolveRootPath(): string {

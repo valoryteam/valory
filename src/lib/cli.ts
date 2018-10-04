@@ -51,7 +51,14 @@ async function checkRequirements() {
 	} else {
 		await spinnerFail("valory-runtime must be a dependency", null);
 	}
-	console.log("");
+	await Spinner.start("Config");
+    try {
+		Config.checkPaths();
+		await Spinner.succeed(chalk.green("Config OK"));
+	} catch (e) {
+		await spinnerFail(e.message, e, true);
+    }
+    console.log("");
 }
 
 function printHeader() {
