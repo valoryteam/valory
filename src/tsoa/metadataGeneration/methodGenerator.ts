@@ -38,6 +38,16 @@ export class MethodGenerator {
 		const responses = this.getMethodResponses();
 		responses.push(this.getMethodSuccessResponse(type));
 
+        let path = this.path || "";
+
+        if (path.startsWith("/")) {
+            path = path.substr(1);
+        }
+
+        if (path.endsWith("/")) {
+            path = path.substr(0, path.length - 1);
+        }
+
 		return {
 			deprecated: isExistJSDocTag(this.node, (tag) => tag.tagName.text === "deprecated"),
 			description: getJSDocDescription(this.node),
@@ -45,7 +55,7 @@ export class MethodGenerator {
 			method: this.method,
 			name: (this.node.name as ts.Identifier).text,
 			parameters: this.buildParameters(),
-			path: this.path,
+			path,
 			responses,
 			security: this.getSecurity(),
 			summary: getJSDocComment(this.node, "summary"),

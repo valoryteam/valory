@@ -113,14 +113,14 @@ export interface NestedGeneric<T> {
     data: ApiRes<T>;
 }
 
-@Route("burn")
+@Route("/")
 export class BurnRoutes extends Controller {
 
     /**
      *
      * @param thing test
      */
-    @Post("other/{thing}")
+    @Post("/other/{thing}/")
     public test(@Path() thing: string, @Body() input: ChildType): ApiRes<string> {
         return {status_code: 1, response_data: ["yay2", 2]} as any;
     }

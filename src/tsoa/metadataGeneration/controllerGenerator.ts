@@ -54,11 +54,21 @@ export class ControllerGenerator {
 			});
 		}
 
+		let path = this.path || "";
+
+		if (path.startsWith("/")) {
+			path = path.substr(1);
+		}
+
+		if (path.endsWith("/")) {
+			path = path.substr(0, path.length - 1);
+		}
+
 		return {
 			location: sourceFile.fileName,
 			methods: this.buildMethods(),
 			name: this.node.name.text,
-			path: this.path || "",
+			path,
 			extendsController,
 			disableSerialization: this.isControllerDisableSerialization(),
 			isHidden: this.getIsHidden(),
