@@ -87,7 +87,7 @@ export interface Item {
 }
 
 // Use fancy decorators to generate endpoints
-@Route("/") export class SimpleController extends Controller {
+@Route("base") export class SimpleController extends Controller {
     /**
      * Swagger endpoint description
      * @summary swagger summary
@@ -97,7 +97,7 @@ export interface Item {
     }
     
     // Function arguments can be injected from request object   
-    @Get("{name}") public async someHandler(@Path() name: string, @Header() authorization: string): Promise<string> {
+    @Get("{name}") public async someOtherHandler(@Path() name: string, @Header() authorization: string): Promise<string> {
         return `name is ${name}`;
     }
     
@@ -138,8 +138,12 @@ By default, this will also host a [ReDoc](https://www.npmjs.com/package/redoc) p
 These are the officially maintained adaptors and middleware available for Valory.
 
 **Adaptors**
+* [valory-adaptor-slimjim](https://www.npmjs.com/package/valory-adaptor-slimjim)
+    * Adaptor that uses slimjim (High speed)
+* [valory-adaptor-polka](https://www.npmjs.com/package/valory-adaptor-polka)
+    * Adaptor that uses polka (Smallest size)
 * [valory-adaptor-fastify](https://www.npmjs.com/package/valory-adaptor-fastify)
-    * Adaptor for use with fastify framework, good option for use as a standalone app server
+    * Adaptor that uses fastify (High stability)
 * [valory-adaptor-claudia](https://www.npmjs.com/package/valory-adaptor-claudia)
     * Adaptor for use with [Claudia](https://www.npmjs.com/package/claudia) and [claudia-api-builder](https://www.npmjs.com/package/claudia-api-builder). Allows valory to be deployed as a serverless application in AWS Lambda.
 
