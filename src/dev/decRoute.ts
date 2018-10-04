@@ -131,8 +131,10 @@ export class BurnRoutes extends Controller {
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
     @Get()
-    public yay() {
-        return this.buildError("AccessDenied");
+    public yay(): {thing: "yay"} {
+        return {
+            thing: "yay",
+        };
     }
 
     @Post("other")

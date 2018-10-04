@@ -980,12 +980,15 @@ function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration |
         symbol.flags = 0;
     }
 
-    const comments = symbol.getDocumentationComment(undefined);
-    if (comments.length) {
-        return ts.displayPartsToString(comments);
+    try {
+        const comments = symbol.getDocumentationComment(undefined);
+        if (comments.length) {
+            return ts.displayPartsToString(comments);
+        }
+        return undefined;
+    } catch (e) {
+        return undefined;
     }
-
-    return undefined;
 }
 
 function getNodeFormat(node: UsableDeclaration | ts.PropertyDeclaration |

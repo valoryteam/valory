@@ -4,404 +4,417 @@ import {Swagger} from "../server/swagger";
 import {merge, isString} from "lodash";
 
 export class SpecGenerator {
-	constructor(private readonly metadata: Tsoa.Metadata) {
-	}
+    constructor(private readonly metadata: Tsoa.Metadata) {
+    }
 
-	public GetSpec() {
-		const spec: Swagger.Spec = {
-			// basePath: normalisePath(this.config.basePath as string, "/"),
-			consumes: ["application/json"],
-			definitions: this.buildDefinitions(),
-			info: {
-				title: "",
-			},
-			paths: this.buildPaths(),
-			produces: ["application/json"],
-			swagger: "2.0",
-		};
+    public GetSpec() {
+        const spec: Swagger.Spec = {
+            // basePath: normalisePath(this.config.basePath as string, "/"),
+            consumes: ["application/json"],
+            definitions: this.buildDefinitions(),
+            info: {
+                title: "",
+            },
+            paths: this.buildPaths(),
+            produces: ["application/json"],
+            swagger: "2.0",
+        };
 
-		return spec;
-	}
+        return spec;
+    }
 
-	private buildDefinitions() {
-		const definitions: { [definitionsName: string]: Swagger.Schema } = {};
-		Object.keys(this.metadata.referenceTypeMap).map((typeName) => {
-			const referenceType = this.metadata.referenceTypeMap[typeName];
+    private buildObject(type: Tsoa.ReferenceType | Tsoa.ObjectType | Tsoa.ReferenceAlias): Swagger.Schema {
+        const required = type.properties.filter((p) => p.required).map((p) => p.name);
+        const retObj: Swagger.Schema = {
+            description: type.description,
+            properties: this.buildProperties(type.properties),
+            required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
+            type: "object",
+        };
 
-			if (referenceType.dataType === "refObject" || referenceType.dataType === "refEnum") {
-				// Object definition
-				if (referenceType.properties) {
-					const required = referenceType.properties.filter((p) => p.required).map((p) => p.name);
-					definitions[referenceType.refName] = {
-						description: referenceType.description,
-						properties: this.buildProperties(referenceType.properties),
-						required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
-						type: "object",
-					};
+        if (type.additionalProperties) {
+            retObj.additionalProperties = this.buildAdditionalProperties(type.additionalProperties);
+        }
 
-					if (referenceType.additionalProperties) {
-						definitions[referenceType.refName].additionalProperties =
-							this.buildAdditionalProperties(referenceType.additionalProperties);
-					}
-				}
+        return retObj;
+    }
 
-				if (referenceType.discriminator) {
-					definitions[referenceType.refName].discriminator = referenceType.discriminator;
-				}
+    private buildDefinitions() {
+        const definitions: { [definitionsName: string]: Swagger.Schema } = {};
+        Object.keys(this.metadata.referenceTypeMap).map((typeName) => {
+            const referenceType = this.metadata.referenceTypeMap[typeName];
 
-				if (referenceType.example) {
-					definitions[referenceType.refName].example = referenceType.example;
-				}
+            if (referenceType.dataType === "refObject" || referenceType.dataType === "refEnum") {
+                // Object definition
+                if (referenceType.properties) {
+                    definitions[referenceType.refName] = this.buildObject(referenceType);
+                }
 
-				if (referenceType.allOf) {
-					definitions[referenceType.refName].allOf = [];
-					referenceType.allOf.forEach((ref) => {
-						definitions[referenceType.refName].allOf.push(this.getSwaggerTypeForReferenceType(ref as Tsoa.ReferenceType));
-					});
-				}
+                if (referenceType.discriminator) {
+                    definitions[referenceType.refName].discriminator = referenceType.discriminator;
+                }
 
-				// Enum definition
-				if (referenceType.enums) {
-					definitions[referenceType.refName] = {
-						description: referenceType.description,
-						enum: referenceType.enums,
-						type: "string",
-					};
-				}
+                if (referenceType.example) {
+                    definitions[referenceType.refName].example = referenceType.example;
+                }
 
-				// Actual type info overrides swagger tag
-				if (referenceType.additionalSwagger) {
-					definitions[referenceType.refName] = merge(definitions[referenceType.refName], referenceType.additionalSwagger);
-				}
-			}
+                if (referenceType.allOf) {
+                    definitions[referenceType.refName].allOf = [];
+                    referenceType.allOf.forEach((ref) => {
+                        definitions[referenceType.refName].allOf
+                            .push(this.getSwaggerTypeForReferenceType(ref as Tsoa.ReferenceType));
+                    });
+                }
 
-			if (referenceType.dataType === "refAlias") {
-				const swaggerType = this.getSwaggerType(referenceType.type);
-				const format = referenceType.format as Swagger.DataFormat;
-				swaggerType.description = referenceType.description;
-				swaggerType.format = format || swaggerType.format;
-				swaggerType.example = referenceType.example;
-				if (!swaggerType.$ref) {
-					Object.keys(referenceType.validators)
-						.filter((key) => {
-							return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
-						})
-						.forEach((key) => {
-							(swaggerType as any)[key] = referenceType.validators[key].value;
-						});
-				}
+                // Enum definition
+                if (referenceType.enums) {
+                    definitions[referenceType.refName] = {
+                        description: referenceType.description,
+                        enum: referenceType.enums,
+                        type: "string",
+                    };
+                }
 
-				definitions[referenceType.refName] = swaggerType;
-			}
+                // Actual type info overrides swagger tag
+                if (referenceType.additionalSwagger) {
+                    definitions[referenceType.refName] =
+                        merge(definitions[referenceType.refName], referenceType.additionalSwagger);
+                }
+            }
 
-		});
+            if (referenceType.dataType === "refAlias") {
+                const swaggerType = this.getSwaggerType(referenceType.type);
+                const format = referenceType.format as Swagger.DataFormat;
+                swaggerType.description = referenceType.description;
+                swaggerType.format = format || swaggerType.format;
+                swaggerType.example = referenceType.example;
+                if (!swaggerType.$ref) {
+                    Object.keys(referenceType.validators)
+                        .filter((key) => {
+                            return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
+                        })
+                        .forEach((key) => {
+                            (swaggerType as any)[key] = referenceType.validators[key].value;
+                        });
+                }
 
-		return definitions;
-	}
+                definitions[referenceType.refName] = swaggerType;
+            }
 
-	private buildPaths() {
-		const paths: { [pathName: string]: Swagger.Path } = {};
+        });
 
-		this.metadata.controllers.forEach((controller) => {
-			const normalisedControllerPath = normalisePath(controller.path, "/");
-			controller.methods.forEach((method) => {
-				const normalisedMethodPath = normalisePath(method.path, "/");
-				const path = normalisePath(`${normalisedControllerPath}${normalisedMethodPath}`, "/", "", false);
-				paths[path] = paths[path] || {};
-				this.buildMethod(controller.name, method, paths[path]);
-			});
-		});
+        return definitions;
+    }
 
-		return paths;
-	}
+    private buildPaths() {
+        const paths: { [pathName: string]: Swagger.Path } = {};
 
-	private buildMethod(controllerName: string, method: Tsoa.Method, pathObject: any) {
-		const pathMethod: Swagger.Operation = pathObject[method.method] = this.buildOperation(controllerName, method);
-		pathMethod.description = method.description;
-		pathMethod.summary = method.summary;
-		pathMethod.tags = method.tags;
+        this.metadata.controllers.forEach((controller) => {
+            const normalisedControllerPath = normalisePath(controller.path, "/");
+            controller.methods.forEach((method) => {
+                const normalisedMethodPath = normalisePath(method.path, "/");
+                const path = normalisePath(`${normalisedControllerPath}${normalisedMethodPath}`, "/", "", false);
+                paths[path] = paths[path] || {};
+                this.buildMethod(controller.name, method, paths[path]);
+            });
+        });
 
-		if (method.deprecated) {
-			pathMethod.deprecated = method.deprecated;
-		}
-		if (method.security) {
+        return paths;
+    }
 
-			const methodSecurity: any[] = [];
-			for (const thisSecurity of method.security) {
-				const security: any = {};
-				security[thisSecurity.name] = thisSecurity.scopes ? thisSecurity.scopes : [];
-				methodSecurity.push(security);
-			}
+    private buildMethod(controllerName: string, method: Tsoa.Method, pathObject: any) {
+        const pathMethod: Swagger.Operation = pathObject[method.method] = this.buildOperation(controllerName, method);
+        pathMethod.description = method.description;
+        pathMethod.summary = method.summary;
+        pathMethod.tags = method.tags;
 
-			pathMethod.security = methodSecurity;
-		}
+        if (method.deprecated) {
+            pathMethod.deprecated = method.deprecated;
+        }
+        if (method.security) {
 
-		pathMethod.parameters = method.parameters
-			.filter((p) => {
-				return !(p.in === "request" || p.in === "body-prop" || p.in === "logger");
-			})
-			.map((p) => this.buildParameter(p));
+            const methodSecurity: any[] = [];
+            for (const thisSecurity of method.security) {
+                const security: any = {};
+                security[thisSecurity.name] = thisSecurity.scopes ? thisSecurity.scopes : [];
+                methodSecurity.push(security);
+            }
 
-		const bodyPropParameter = this.buildBodyPropParameter(controllerName, method);
-		if (bodyPropParameter) {
-			pathMethod.parameters.push(bodyPropParameter);
-		}
-		if ((pathMethod.parameters.filter as any)((p: Swagger.BaseParameter) => p.in === "body").length > 1) {
-			throw new Error("Only one body parameter allowed per controller method.");
-		}
-	}
+            pathMethod.security = methodSecurity;
+        }
 
-	private buildBodyPropParameter(controllerName: string, method: Tsoa.Method) {
-		const properties = {} as { [name: string]: Swagger.Schema };
-		const required: string[] = [];
+        pathMethod.parameters = method.parameters
+            .filter((p) => {
+                return !(p.in === "request" || p.in === "body-prop" || p.in === "logger");
+            })
+            .map((p) => this.buildParameter(p));
 
-		method.parameters
-			.filter((p) => p.in === "body-prop")
-			.forEach((p) => {
-				properties[p.name] = this.getSwaggerType(p.type);
-				properties[p.name].default = p.default;
-				properties[p.name].description = p.description;
-				if (p.type.dataType === "object") {
-					const resolved = this.buildLiteralObject(p.type as Tsoa.ObjectType);
-					properties[p.name].properties = resolved.properties;
-					properties[p.name].additionalProperties = resolved.additionalProperties;
-					properties[p.name].required = resolved.required;
-					properties[p.name].type = resolved.type;
-					properties[p.name].description = resolved.description;
-				}
+        const bodyPropParameter = this.buildBodyPropParameter(controllerName, method);
+        if (bodyPropParameter) {
+            pathMethod.parameters.push(bodyPropParameter);
+        }
+        if ((pathMethod.parameters.filter as any)((p: Swagger.BaseParameter) => p.in === "body").length > 1) {
+            throw new Error("Only one body parameter allowed per controller method.");
+        }
+    }
 
-				if (p.required) {
-					required.push(p.name);
-				}
-			});
+    private buildBodyPropParameter(controllerName: string, method: Tsoa.Method) {
+        const properties = {} as { [name: string]: Swagger.Schema };
+        const required: string[] = [];
 
-		if (!Object.keys(properties).length) {
-			return;
-		}
+        method.parameters
+            .filter((p) => p.in === "body-prop")
+            .forEach((p) => {
+                properties[p.name] = this.getSwaggerType(p.type);
+                properties[p.name].default = p.default;
+                properties[p.name].description = p.description;
+                if (p.type.dataType === "object") {
+                    const resolved = this.buildLiteralObject(p.type as Tsoa.ObjectType);
+                    properties[p.name].properties = resolved.properties;
+                    properties[p.name].additionalProperties = resolved.additionalProperties;
+                    properties[p.name].required = resolved.required;
+                    properties[p.name].type = resolved.type;
+                    properties[p.name].description = resolved.description;
+                }
 
-		const parameter = {
-			in: "body",
-			name: "body",
-			schema: {
-				properties,
-				title: `${this.getOperationId(controllerName, method.name)}Body`,
-				type: "object",
-			},
-		} as Swagger.BodyParameter;
-		if (required.length) {
-			parameter.schema.required = required;
-		}
-		return parameter;
-	}
+                if (p.required) {
+                    required.push(p.name);
+                }
+            });
 
-	private buildParameter(source: Tsoa.Parameter): Swagger.Parameter {
-		let parameter = {
-			default: source.default,
-			description: source.description,
-			in: source.in,
-			name: source.name,
-			required: source.required,
-		} as Swagger.Parameter;
+        if (!Object.keys(properties).length) {
+            return;
+        }
 
-		const parameterType = this.getSwaggerType(source.type);
-		parameter.format = parameterType.format || undefined;
+        const parameter = {
+            in: "body",
+            name: "body",
+            schema: {
+                properties,
+                title: `${this.getOperationId(controllerName, method.name)}Body`,
+                type: "object",
+            },
+        } as Swagger.BodyParameter;
+        if (required.length) {
+            parameter.schema.required = required;
+        }
+        return parameter;
+    }
 
-		if (parameter.in === "query" && parameter.type === "array") {
-			(parameter as Swagger.QueryParameter).collectionFormat = "multi";
-		}
+    private buildParameter(source: Tsoa.Parameter): Swagger.Parameter {
+        let parameter = {
+            default: source.default,
+            description: source.description,
+            in: source.in,
+            name: source.name,
+            required: source.required,
+        } as Swagger.Parameter;
 
-		if (parameterType.$ref) {
-			(parameter as Swagger.BodyParameter).schema = parameterType as Swagger.Schema;
-			return parameter;
-		}
+        const parameterType = this.getSwaggerType(source.type);
+        parameter.format = parameterType.format || undefined;
 
-		const validatorObjs = {};
-		Object.keys(source.validators)
-			.filter((key) => {
-				return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
-			})
-			.forEach((key: string) => {
-				(validatorObjs as any)[key] = source.validators[key].value;
-			});
+        if (parameter.in === "query" && parameter.type === "array") {
+            (parameter as Swagger.QueryParameter).collectionFormat = "multi";
+        }
 
-		if (source.type.dataType === "object" && source.in === "body") {
-			(parameter as Swagger.BodyParameter).schema = this.buildLiteralObject(source.type as Tsoa.ObjectType);
-		}
+        if (parameterType.$ref) {
+            (parameter as Swagger.BodyParameter).schema = parameterType as Swagger.Schema;
+            return parameter;
+        }
 
-		if (source.in === "body" && source.type.dataType === "array") {
-			(parameter as Swagger.BodyParameter).schema = {
-				items: parameterType.items,
-				type: "array",
-			};
-		} else {
-			if (source.type.dataType === "any") {
-				if (source.in === "body") {
-					(parameter as Swagger.BodyParameter).schema = {type: "object"};
-				} else {
-					parameter.type = "string";
-				}
-			} else if (!(source.in === "body" && source.type.dataType === "object")) {
-				parameter.type = parameterType.type;
-				parameter.items = parameterType.items;
-				parameter.enum = parameterType.enum;
-			}
-		}
+        const validatorObjs = {};
+        Object.keys(source.validators)
+            .filter((key) => {
+                return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
+            })
+            .forEach((key: string) => {
+                (validatorObjs as any)[key] = source.validators[key].value;
+            });
 
-		if ((parameter as Swagger.BodyParameter).schema != null) {
-			(parameter as Swagger.BodyParameter).schema =
-				Object.assign({}, (parameter as Swagger.BodyParameter).schema, validatorObjs);
-		} else {
-			parameter = Object.assign({}, parameter, validatorObjs);
-		}
+        if (source.type.dataType === "object" && source.in === "body") {
+            (parameter as Swagger.BodyParameter).schema = this.buildLiteralObject(source.type as Tsoa.ObjectType);
+        }
 
-		return parameter;
-	}
+        if (source.in === "body" && source.type.dataType === "array") {
+            (parameter as Swagger.BodyParameter).schema = {
+                items: parameterType.items,
+                type: "array",
+            };
+        } else {
+            if (source.type.dataType === "any") {
+                if (source.in === "body") {
+                    (parameter as Swagger.BodyParameter).schema = {type: "object"};
+                } else {
+                    parameter.type = "string";
+                }
+            } else if (!(source.in === "body" && source.type.dataType === "object")) {
+                parameter.type = parameterType.type;
+                parameter.items = parameterType.items;
+                parameter.enum = parameterType.enum;
+            }
+        }
 
-	private buildLiteralObject(type: Tsoa.ObjectType): Swagger.Schema {
-		const required = type.properties.filter((p) => p.required).map((p) => p.name);
-		const schema = {
-			type: "object",
-			properties: this.buildProperties(type.properties),
-			required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
-			description: type.description,
-		} as Swagger.Schema;
+        if ((parameter as Swagger.BodyParameter).schema != null) {
+            (parameter as Swagger.BodyParameter).schema =
+                Object.assign({}, (parameter as Swagger.BodyParameter).schema, validatorObjs);
+        } else {
+            parameter = Object.assign({}, parameter, validatorObjs);
+        }
 
-		if (type.additionalProperties) {
-			schema.additionalProperties = this.buildAdditionalProperties(type.additionalProperties);
-		}
+        return parameter;
+    }
 
-		return schema;
-	}
+    private buildLiteralObject(type: Tsoa.ObjectType): Swagger.Schema {
+        const required = type.properties.filter((p) => p.required).map((p) => p.name);
+        const schema = {
+            type: "object",
+            properties: this.buildProperties(type.properties),
+            required: required && required.length > 0 ? Array.from(new Set(required)) : undefined,
+            description: type.description,
+        } as Swagger.Schema;
 
-	private buildProperties(source: Tsoa.Property[]) {
-		const properties: { [propertyName: string]: Swagger.Schema } = {};
+        if (type.additionalProperties) {
+            schema.additionalProperties = this.buildAdditionalProperties(type.additionalProperties);
+        }
 
-		source.forEach((property) => {
-			const swaggerType = this.getSwaggerType(property.type);
-			const format = property.format as Swagger.DataFormat;
-			swaggerType.description = property.description;
-			swaggerType.example = property.example;
-			swaggerType.format = format || swaggerType.format;
+        return schema;
+    }
 
-			if (property.type.dataType === "object") {
-				const resolved = this.buildLiteralObject(property.type as Tsoa.ObjectType);
-				swaggerType.properties = resolved.properties;
-				swaggerType.additionalProperties = resolved.additionalProperties;
-				swaggerType.type = resolved.type;
-				swaggerType.required = resolved.required;
-				swaggerType.description = swaggerType.description ? swaggerType.description : resolved.description;
-			}
+    private buildProperties(source: Tsoa.Property[]) {
+        const properties: { [propertyName: string]: Swagger.Schema } = {};
 
-			if (!swaggerType.$ref) {
-				swaggerType.default = property.default;
+        source.forEach((property) => {
+            const swaggerType = this.getSwaggerType(property.type);
+            const format = property.format as Swagger.DataFormat;
+            swaggerType.description = property.description;
+            swaggerType.example = property.example;
+            swaggerType.format = format || swaggerType.format;
 
-				Object.keys(property.validators)
-					.filter((key) => {
-						return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
-					})
-					.forEach((key) => {
-						(swaggerType as any)[key] = property.validators[key].value;
-					});
-			}
+            if (property.type.dataType === "object") {
+                const resolved = this.buildLiteralObject(property.type as Tsoa.ObjectType);
+                swaggerType.properties = resolved.properties;
+                swaggerType.additionalProperties = resolved.additionalProperties;
+                swaggerType.type = resolved.type;
+                swaggerType.required = resolved.required;
+                swaggerType.description = swaggerType.description ? swaggerType.description : resolved.description;
+            }
 
-			// if (!property.required)  {
-			//   (swaggerType as any)["x-nullable"] = true;
-			// }
+            if (!swaggerType.$ref) {
+                swaggerType.default = property.default;
 
-			properties[property.name] = swaggerType as Swagger.Schema;
-		});
+                Object.keys(property.validators)
+                    .filter((key) => {
+                        return !key.startsWith("is") && key !== "minDate" && key !== "maxDate";
+                    })
+                    .forEach((key) => {
+                        (swaggerType as any)[key] = property.validators[key].value;
+                    });
+            }
 
-		return properties;
-	}
+            // if (!property.required)  {
+            //   (swaggerType as any)["x-nullable"] = true;
+            // }
 
-	private buildAdditionalProperties(type: Tsoa.Type) {
-		return this.getSwaggerType(type);
-	}
+            properties[property.name] = swaggerType as Swagger.Schema;
+        });
 
-	private buildOperation(controllerName: string, method: Tsoa.Method): Swagger.Operation {
-		const swaggerResponses: any = {};
+        return properties;
+    }
 
-		method.responses.forEach((res: Tsoa.Response) => {
-			swaggerResponses[res.name] = {
-				description: res.description,
-			};
-			if (res.schema && res.schema.dataType !== "void") {
-				swaggerResponses[res.name].schema = this.getSwaggerType(res.schema);
-			}
-			if (res.examples) {
-				swaggerResponses[res.name].examples = {"application/json": res.examples};
-			}
-		});
+    private buildAdditionalProperties(type: Tsoa.Type) {
+        return this.getSwaggerType(type);
+    }
 
-		return {
-			operationId: this.getOperationId(controllerName, method.name),
-			produces: ["application/json"],
-			responses: swaggerResponses,
-		};
-	}
+    private buildOperation(controllerName: string, method: Tsoa.Method): Swagger.Operation {
+        const swaggerResponses: any = {};
 
-	private getOperationId(controllerName: string, methodName: string) {
-		return controllerName + methodName.charAt(0).toUpperCase() + methodName.substr(1);
-	}
+        method.responses.forEach((res: Tsoa.Response) => {
+            swaggerResponses[res.name] = {
+                description: res.description,
+            };
+            if (res.schema && res.schema.dataType !== "void") {
+                if (res.schema.dataType === "object") {
+                    swaggerResponses[res.name].schema = this.buildObject(res.schema as Tsoa.ObjectType);
+                } else {
+                    swaggerResponses[res.name].schema = this.getSwaggerType(res.schema);
+                }
+            }
+            if (res.examples) {
+                swaggerResponses[res.name].examples = {"application/json": res.examples};
+            }
+        });
 
-	private getSwaggerType(type: Tsoa.Type): Swagger.Schema {
-		const swaggerType = this.getSwaggerTypeForPrimitiveType(type);
-		if (swaggerType) {
-			return swaggerType;
-		}
+        return {
+            operationId: this.getOperationId(controllerName, method.name),
+            produces: ["application/json"],
+            responses: swaggerResponses,
+        };
+    }
 
-		if (type.dataType === "array") {
-			return this.getSwaggerTypeForArrayType(type as Tsoa.ArrayType);
-		}
+    private getOperationId(controllerName: string, methodName: string) {
+        return controllerName + methodName.charAt(0).toUpperCase() + methodName.substr(1);
+    }
 
-		if (type.dataType === "enum") {
-			return this.getSwaggerTypeForEnumType(type as Tsoa.EnumerateType);
-		}
+    private getSwaggerType(type: Tsoa.Type): Swagger.Schema {
+        const swaggerType = this.getSwaggerTypeForPrimitiveType(type);
+        if (swaggerType) {
+            return swaggerType;
+        }
 
-		return this.getSwaggerTypeForReferenceType(type as Tsoa.ReferenceType) as Swagger.Schema;
-	}
+        if (type.dataType === "array") {
+            return this.getSwaggerTypeForArrayType(type as Tsoa.ArrayType);
+        }
 
-	private getSwaggerTypeForPrimitiveType(type: Tsoa.Type): Swagger.Schema | undefined {
-		const map = {
-			any: {type: "object"},
-			binary: {type: "string", format: "binary"},
-			boolean: {type: "boolean"},
-			buffer: {type: "string", format: "byte"},
-			byte: {type: "string", format: "byte"},
-			date: {type: "string", format: "date"},
-			datetime: {type: "string", format: "date-time"},
-			double: {type: "number", format: "double"},
-			float: {type: "number", format: "float"},
-			integer: {type: "integer", format: "int32"},
-			long: {type: "integer", format: "int64"},
-			object: {type: "object"},
-			string: {type: "string"},
-		} as { [name: string]: Swagger.Schema };
+        if (type.dataType === "enum") {
+            return this.getSwaggerTypeForEnumType(type as Tsoa.EnumerateType);
+        }
 
-		return map[type.dataType];
-	}
+        return this.getSwaggerTypeForReferenceType(type as Tsoa.ReferenceType) as Swagger.Schema;
+    }
 
-	private getSwaggerTypeForArrayType(arrayType: Tsoa.ArrayType): Swagger.Schema {
-		return {type: "array", items: this.getSwaggerType(arrayType.elementType)};
-	}
+    private getSwaggerTypeForPrimitiveType(type: Tsoa.Type): Swagger.Schema | undefined {
+        const map = {
+            any: {type: "object"},
+            binary: {type: "string", format: "binary"},
+            boolean: {type: "boolean"},
+            buffer: {type: "string", format: "byte"},
+            byte: {type: "string", format: "byte"},
+            date: {type: "string", format: "date"},
+            datetime: {type: "string", format: "date-time"},
+            double: {type: "number", format: "double"},
+            float: {type: "number", format: "float"},
+            integer: {type: "integer", format: "int32"},
+            long: {type: "integer", format: "int64"},
+            object: {type: "object"},
+            string: {type: "string"},
+        } as { [name: string]: Swagger.Schema };
 
-	private getSwaggerTypeForEnumType(enumType: Tsoa.EnumerateType): Swagger.Schema {
-		let isStringEnum = false;
-		enumType.enums.forEach((member) => {
-			if (isString(member)) {
-				isStringEnum = true;
-			}
-		});
-		return {type: (isStringEnum) ? "string" : "number", enum: enumType.enums.map((member) => {
-			if (isStringEnum) {
-				return String(member);
-			} else {
-				return member;
-			}
-		})};
-	}
+        return map[type.dataType];
+    }
 
-	private getSwaggerTypeForReferenceType(referenceType: Tsoa.ReferenceType): Swagger.BaseSchema {
-		return {$ref: `#/definitions/${referenceType.refName}`};
-	}
+    private getSwaggerTypeForArrayType(arrayType: Tsoa.ArrayType): Swagger.Schema {
+        return {type: "array", items: this.getSwaggerType(arrayType.elementType)};
+    }
+
+    private getSwaggerTypeForEnumType(enumType: Tsoa.EnumerateType): Swagger.Schema {
+        let isStringEnum = false;
+        enumType.enums.forEach((member) => {
+            if (isString(member)) {
+                isStringEnum = true;
+            }
+        });
+        return {
+            type: (isStringEnum) ? "string" : "number", enum: enumType.enums.map((member) => {
+                if (isStringEnum) {
+                    return String(member);
+                } else {
+                    return member;
+                }
+            }),
+        };
+    }
+
+    private getSwaggerTypeForReferenceType(referenceType: Tsoa.ReferenceType): Swagger.BaseSchema {
+        return {$ref: `#/definitions/${referenceType.refName}`};
+    }
 }
