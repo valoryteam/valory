@@ -124,18 +124,21 @@ export namespace Config {
 	}
 
 	export function checkPaths() {
-		if (!existsSync(ConfigData.entrypoint)) {
-			throw Error("Entrypoint file does not exist");
-		}
-		if (!ConfigData.entrypoint.endsWith(".js")) {
-			throw Error("Compiled entrypoint must be a js file");
-		}
-		if (!existsSync(ConfigData.sourceEntrypoint)) {
-			throw Error("Source entrypoint file does not exist");
-		}
-		if (!ConfigData.sourceEntrypoint.endsWith(".ts")) {
-			throw Error("Source entrypoint must not be a ts file");
-		}
+		if (ConfigData.sourceEntrypoint == null) {
+            if (!existsSync(ConfigData.entrypoint)) {
+                throw Error("Entrypoint file does not exist");
+            }
+            if (!ConfigData.entrypoint.endsWith(".js")) {
+                throw Error("Compiled entrypoint must be a js file");
+            }
+		} else {
+            if (!existsSync(ConfigData.sourceEntrypoint)) {
+                throw Error("Source entrypoint file does not exist");
+            }
+            if (!ConfigData.sourceEntrypoint.endsWith(".ts")) {
+                throw Error("Source entrypoint must not be a ts file");
+            }
+        }
 	}
 
 	function resolveRootPath(): string {
