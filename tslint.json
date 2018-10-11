@@ -18,6 +18,7 @@
 		"max-classes-per-file": false,
 		"no-namespace": false,
 		"no-bitwise": false,
+		"only-arrow-functions": false,
 		"member-ordering": false
 	},
 	"rulesDirectory": []

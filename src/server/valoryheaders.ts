@@ -24,6 +24,7 @@ export interface ApiMiddleware {
 	tag?: Array<Swagger.Tag | string> | Swagger.Tag | string;
 	name: string;
 	handler: ApiMiddlewareHandler;
+	[x: string]: unknown;
 }
 
 export interface ErrorDef {

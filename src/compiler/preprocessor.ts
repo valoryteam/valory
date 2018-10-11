@@ -34,7 +34,7 @@ export function swaggerPreproccess(swagger: Swagger.Spec): {swagger: Swagger.Spe
 
 	// Find parents
 	deep.deepMapValues(swagger, (value, path) => {
-		if (path.indexOf("discriminator") > -1) {
+		if (path.endsWith(".discriminator")) {
 			// console.log(path, "is", value);
 			removePaths.push(path);
 			const disPath = path.replace(".discriminator", "");

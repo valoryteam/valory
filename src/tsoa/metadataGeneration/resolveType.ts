@@ -1,6 +1,6 @@
 // tslint:disable:max-line-length
 
-import {map, indexOf, intersection} from "lodash";
+import {indexOf, intersection, map,} from "lodash";
 import * as ts from "typescript";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
@@ -8,7 +8,6 @@ import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
 import {Swagger} from "../../server/swagger";
-import {all_of} from "tstl";
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -16,7 +15,7 @@ syntaxKindMap[ts.SyntaxKind.StringKeyword] = "string";
 syntaxKindMap[ts.SyntaxKind.BooleanKeyword] = "boolean";
 syntaxKindMap[ts.SyntaxKind.VoidKeyword] = "void";
 
-const localDiscriminatorCache: { [typeName: string]: Tsoa.ReferenceType} = {};
+const localDiscriminatorCache: { [typeName: string]: Tsoa.ReferenceType } = {};
 const localReferenceTypeCache: { [typeName: string]: Tsoa.ReferenceType | Tsoa.ReferenceAlias } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
@@ -407,9 +406,9 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
         const discriminatorCandidates = resolvedTypes.map((modelType: Tsoa.ReferenceType) => {
             if (modelType.allOf) {
                 modelType.allOf.forEach((type) => {
-                   if (type.discriminator) {
-                       throw new GenerateMetadataError(`${modelType.refName} is claimed by multiple discriminators`);
-                   }
+                    if (type.discriminator) {
+                        throw new GenerateMetadataError(`${modelType.refName} is claimed by multiple discriminators`);
+                    }
                 });
             }
             return modelType.properties.filter((prop) => {
@@ -460,10 +459,16 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
             return refObj;
         }
     }
+    const filteredLiteral = unionTypes.filter((node: any) => {
+        return unionTypes.literal
+    });
+    if (filteredLiteral.length == 0) {
+        return null;
+    }
 
     return {
         dataType: "enum",
-        enums: unionTypes.map((unionNode: any) => unionNode.literal.text as string),
+        enums: filteredLiteral.map((unionNode: any) => unionNode.literal.text as string),
     } as Tsoa.EnumerateType;
 }
 

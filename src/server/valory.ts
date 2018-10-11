@@ -102,7 +102,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
     InternalError: {
         statusCode: 200,
         errorCode: 1003,
-        defaultMessage: "An internal error occured",
+        defaultMessage: "An internal error occurred",
     },
 };
 
