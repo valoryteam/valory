@@ -7,6 +7,7 @@ var {{= it.hash }} =
       const propGetter = /\.([^\.]*)'/g;
       const errorArrayPushSimplification = /if \(vErrors === null\) vErrors = \[([a-zA-Z0-9]+?)\]; else vErrors.push\(\1\);/g;
       const vErrorDec = /vErrors = null;/g;
+      const reverseEscapeDiscRequired = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?'ytreporp deriuqer a si \1.ydob.tseuqer :\]deriuqer\[rorrEnoitadilaV' = rre rav/g;
 
       const discrimArr = [];
 
@@ -138,6 +139,10 @@ var {{= it.hash }} =
       if(it.discrimFastFail) {
           code = code.split("").reverse().join("").replace(reverseLabelDisc, (match, prop, parent, id) => {
             return `${match} :${parent}${id}`;
+          }).split("").reverse().join("");
+
+          code = code.split("").reverse().join("").replace(reverseEscapeDiscRequired, (match, prop, parent, id) => {
+            return `${match} ;${parent}${id} kaerb\n;++srorre`;
           }).split("").reverse().join("");
       }
 

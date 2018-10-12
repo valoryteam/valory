@@ -35,7 +35,9 @@ class RequestTestBase {
         request.resolveWithFullResponse = true;
         request.url = `http://localhost:8080${request.url}`;
         this.response = await requestPromise(this.request as Options);
-        console.log(JSON.stringify({body: this.response.body, headers: this.response.headers}));
+        if (process.env["LOGLEVEL"] === "debug") {
+            console.log(JSON.stringify({body: this.response.body, headers: this.response.headers}));
+        }
         expect(this.response).property("statusCode").within(200, 299);
     }
 }
@@ -51,7 +53,7 @@ describe("ValoryTest", () => {
         process.env.NODE_ENV = "test";
         const cmdOut = execSync(`${process.execPath} ${valoryPath} compile`, {
             cwd: root,
-            stdio: "ignore",
+            stdio: (process.env["LOGLEVEL"] === "debug") ? "inherit" : "ignore",
         });
         const tsOut = execSync(`${process.execPath} ${tsCompiler}`, {
             cwd: root,
@@ -82,7 +84,8 @@ describe("ValoryTest", () => {
         process.kill(ValoryTest.serverProc.pid + 1, "SIGTERM");
     });
 
-    @suite class SimpleGetTest extends RequestTestBase {
+    @suite
+    class SimpleGetTest extends RequestTestBase {
         private static authBytes = randomBytes(10).toString("base64");
         private static parsed: any;
 
@@ -97,24 +100,29 @@ describe("ValoryTest", () => {
             this.parsed = JSON.parse(this.response.body);
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(SimpleGetTest.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have message 'yay'"() {
+        @test
+        public "Should have message 'yay'"() {
             expect(SimpleGetTest.parsed).to.have.property("message").equal("yay");
         }
 
-        @test public "Should have proper auth header"() {
+        @test
+        public "Should have proper auth header"() {
             expect(SimpleGetTest.parsed).to.have.property("authorization").equal(SimpleGetTest.authBytes);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(SimpleGetTest.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class SimpleGetTestFail extends RequestTestBase {
+    @suite
+    class SimpleGetTestFail extends RequestTestBase {
         private static parsed: any;
         private static headerError = "ValidationError[required]: request.headers.authorization is a required property";
 
@@ -126,20 +134,24 @@ describe("ValoryTest", () => {
             this.parsed = JSON.parse(this.response.body);
         }
 
-        @test public "Should have property code 1001"() {
+        @test
+        public "Should have property code 1001"() {
             expect(SimpleGetTestFail.parsed).to.have.property("code").equal(1001);
         }
 
-        @test public "Should have error message for auth header"() {
+        @test
+        public "Should have error message for auth header"() {
             expect(SimpleGetTestFail.parsed).to.have.property("message").is.contains(SimpleGetTestFail.headerError);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(SimpleGetTestFail.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class SimplePostTest extends RequestTestBase {
+    @suite
+    class SimplePostTest extends RequestTestBase {
         private static parsed: any;
         private static json = {
             name: "steven",
@@ -155,24 +167,29 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(SimplePostTest.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have property name equal to input"() {
+        @test
+        public "Should have property name equal to input"() {
             expect(SimplePostTest.parsed).to.have.property("name").equal(SimplePostTest.json.name);
         }
 
-        @test public "Should have property isCool equal to input"() {
+        @test
+        public "Should have property isCool equal to input"() {
             expect(SimplePostTest.parsed).to.have.property("isCool").equal(true);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(SimplePostTest.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class SimplePostPropTest extends RequestTestBase {
+    @suite
+    class SimplePostPropTest extends RequestTestBase {
         private static parsed: any;
         private static json = {
             item: {
@@ -190,24 +207,29 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(SimplePostPropTest.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have property name equal to input"() {
+        @test
+        public "Should have property name equal to input"() {
             expect(SimplePostPropTest.parsed).to.have.property("name").equal(SimplePostPropTest.json.item.name);
         }
 
-        @test public "Should have property isCool equal to input"() {
+        @test
+        public "Should have property isCool equal to input"() {
             expect(SimplePostPropTest.parsed).to.have.property("isCool").equal(SimplePostPropTest.json.item.isCool);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(SimplePostPropTest.response.headers).to.have.property("request-id").a("string");
         }
     }
-    
-    @suite class SimplePostTestFail extends RequestTestBase {
+
+    @suite
+    class SimplePostTestFail extends RequestTestBase {
         private static parsed: any;
         private static json = {
             isCool: "yay",
@@ -222,26 +244,31 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should have property code 1001"() {
+        @test
+        public "Should have property code 1001"() {
             expect(SimplePostTestFail.parsed).to.have.property("code").equal(1001);
         }
 
-        @test public "Should have error for isCool"() {
+        @test
+        public "Should have error for isCool"() {
             expect(SimplePostTestFail.parsed).to.have.property("message")
                 .contains("ValidationError[type]: request.body.isCool should be boolean");
         }
 
-        @test public "Should have error for missing name"() {
+        @test
+        public "Should have error for missing name"() {
             expect(SimplePostTestFail.parsed).to.have.property("message")
                 .contains("ValidationError[required]: request.body.name is a required property");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(SimplePostTestFail.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class ErrorApiException extends RequestTestBase {
+    @suite
+    class ErrorApiException extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -253,20 +280,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should have property code 1331"() {
+        @test
+        public "Should have property code 1331"() {
             expect(ErrorApiException.parsed).to.have.property("code").equal(1331);
         }
 
-        @test public "Should have message 'Test ApiError'"() {
+        @test
+        public "Should have message 'Test ApiError'"() {
             expect(ErrorApiException.parsed).to.have.property("message").equal("Test ApiError");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(ErrorApiException.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class ErrorObject extends RequestTestBase {
+    @suite
+    class ErrorObject extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -278,20 +309,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should have property code 1331"() {
+        @test
+        public "Should have property code 1331"() {
             expect(ErrorObject.parsed).to.have.property("code").equal(1331);
         }
 
-        @test public "Should have message 'Test ApiError'"() {
+        @test
+        public "Should have message 'Test ApiError'"() {
             expect(ErrorObject.parsed).to.have.property("message").equal("Test ApiError");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(ErrorObject.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class ErrorException extends RequestTestBase {
+    @suite
+    class ErrorException extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -303,20 +338,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should have property code 1003"() {
+        @test
+        public "Should have property code 1003"() {
             expect(ErrorException.parsed).to.have.property("code").equal(1003);
         }
 
-        @test public "Should have message 'Test ApiError'"() {
+        @test
+        public "Should have message 'Test ApiError'"() {
             expect(ErrorException.parsed).to.have.property("message").equal("An internal error occurred");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(ErrorException.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PreClassMiddlewareSuccess extends RequestTestBase {
+    @suite
+    class PreClassMiddlewareSuccess extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -328,11 +367,13 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PreClassMiddlewareSuccess.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have attachments that match"() {
+        @test
+        public "Should have attachments that match"() {
             expect(PreClassMiddlewareSuccess.parsed).to.have.property("key");
             expect(PreClassMiddlewareSuccess.parsed.key).to.have.property("id");
             const key = PreClassMiddlewareSuccess.parsed.key;
@@ -341,12 +382,14 @@ describe("ValoryTest", () => {
             expect(PreClassMiddlewareSuccess.parsed.attachments).to.have.property(key.id).deep.equal(data);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PreClassMiddlewareSuccess.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PreObjectMiddlewareSuccess extends RequestTestBase {
+    @suite
+    class PreObjectMiddlewareSuccess extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -358,11 +401,13 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PreObjectMiddlewareSuccess.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have attachments that match"() {
+        @test
+        public "Should have attachments that match"() {
             expect(PreObjectMiddlewareSuccess.parsed).to.have.property("key");
             expect(PreObjectMiddlewareSuccess.parsed.key).to.have.property("id");
             const key = PreObjectMiddlewareSuccess.parsed.key;
@@ -371,12 +416,14 @@ describe("ValoryTest", () => {
             expect(PreObjectMiddlewareSuccess.parsed.attachments).to.have.property(key.id).deep.equal(data);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PreObjectMiddlewareSuccess.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PreClassMiddlewareFailure extends RequestTestBase {
+    @suite
+    class PreClassMiddlewareFailure extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -387,20 +434,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PreClassMiddlewareFailure.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PreClassMiddlewareFailure.parsed).equal("An error occurred");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PreClassMiddlewareFailure.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PreObjectMiddlewareFailure extends RequestTestBase {
+    @suite
+    class PreObjectMiddlewareFailure extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -411,20 +462,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PreObjectMiddlewareFailure.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PreObjectMiddlewareFailure.parsed).equal("An error occurred");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PreObjectMiddlewareFailure.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PostClassMiddlewareSuccess extends RequestTestBase {
+    @suite
+    class PostClassMiddlewareSuccess extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -435,20 +490,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PostClassMiddlewareSuccess.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PostClassMiddlewareSuccess.parsed).equal("no error");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PostClassMiddlewareSuccess.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PostObjectMiddlewareSuccess extends RequestTestBase {
+    @suite
+    class PostObjectMiddlewareSuccess extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -459,20 +518,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PostObjectMiddlewareSuccess.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PostObjectMiddlewareSuccess.parsed).equal("no error");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PostObjectMiddlewareSuccess.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PostClassMiddlewareFailure extends RequestTestBase {
+    @suite
+    class PostClassMiddlewareFailure extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -483,20 +546,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PostClassMiddlewareFailure.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PostClassMiddlewareFailure.parsed).equal("An error occurred");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PostClassMiddlewareFailure.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class PostObjectMiddlewareFailure extends RequestTestBase {
+    @suite
+    class PostObjectMiddlewareFailure extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -507,20 +574,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(PostObjectMiddlewareFailure.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(PostObjectMiddlewareFailure.parsed).equal("An error occurred");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(PostObjectMiddlewareFailure.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class OverrideMiddlewarePrePost extends RequestTestBase {
+    @suite
+    class OverrideMiddlewarePrePost extends RequestTestBase {
         private static parsed: any;
 
         public static async before() {
@@ -531,20 +602,24 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(OverrideMiddlewarePrePost.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test
+        public "Should have body message"() {
             expect(OverrideMiddlewarePrePost.parsed).equal("post");
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(OverrideMiddlewarePrePost.response.headers).to.have.property("request-id").a("string");
         }
     }
 
-    @suite class TypesDiscriminatorBasic extends RequestTestBase {
+    @suite
+    class TypesDiscriminatorBasic extends RequestTestBase {
         private static parsed: any;
         private static json = {
             name: "Child1",
@@ -563,16 +638,86 @@ describe("ValoryTest", () => {
             this.parsed = this.response.body;
         }
 
-        @test public "Should not have property code"() {
+        @test
+        public "Should not have property code"() {
             expect(TypesDiscriminatorBasic.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body match"() {
+        @test
+        public "Should have body match"() {
             expect(TypesDiscriminatorBasic.parsed).deep.equal(TypesDiscriminatorBasic.json);
         }
 
-        @test public "Should have request-id header"() {
+        @test
+        public "Should have request-id header"() {
             expect(TypesDiscriminatorBasic.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
+    class TypesDiscriminatorNoType extends RequestTestBase {
+        private static parsed: any;
+        private static json = {};
+        private expectedErrors = ["ValidationError[required]: request.body.name is a required property",
+            "ValidationError[discriminator]: request.body should be an implementation of Parent [Child1,Child2]"];
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/types/discriminator/basic",
+                json: TypesDiscriminatorNoType.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should have property code"() {
+            expect(TypesDiscriminatorNoType.parsed).to.have.property("code").equal(1001);
+        }
+
+        @test
+        public "Should have no extra errors"() {
+            expect(TypesDiscriminatorNoType.parsed).property("message").deep.equal(this.expectedErrors);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(TypesDiscriminatorNoType.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
+    class TypesDiscriminatorBranchValidation extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            name: "Child1",
+        };
+        private expectedErrors = ["ValidationError[required]: request.body.hat is a required property",
+            "ValidationError[discriminator]: request.body should be an implementation of Parent [Child1,Child2]"];
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/types/discriminator/basic",
+                json: TypesDiscriminatorBranchValidation.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should have property code"() {
+            expect(TypesDiscriminatorBranchValidation.parsed).to.have.property("code").equal(1001);
+        }
+
+        @test
+        public "Should only have errors from selected branch"() {
+            expect(TypesDiscriminatorBranchValidation.parsed).property("message")
+                .deep.equal(this.expectedErrors);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(TypesDiscriminatorBranchValidation.response.headers).to.have.property("request-id").a("string");
         }
     }
 });
