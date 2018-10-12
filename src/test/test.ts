@@ -567,7 +567,7 @@ describe("ValoryTest", () => {
             expect(TypesDiscriminatorBasic.parsed).to.not.have.property("code");
         }
 
-        @test public "Should have body message"() {
+        @test public "Should have body match"() {
             expect(TypesDiscriminatorBasic.parsed).deep.equal(TypesDiscriminatorBasic.json);
         }
 

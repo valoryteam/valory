@@ -1,6 +1,6 @@
 // tslint:disable:max-line-length
 
-import {indexOf, intersection, map,} from "lodash";
+import {indexOf, intersection, map} from "lodash";
 import * as ts from "typescript";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
@@ -460,9 +460,9 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
         }
     }
     const filteredLiteral = unionTypes.filter((node: any) => {
-        return unionTypes.literal
+        return unionTypes.literal;
     });
-    if (filteredLiteral.length == 0) {
+    if (filteredLiteral.length === 0) {
         return null;
     }
 

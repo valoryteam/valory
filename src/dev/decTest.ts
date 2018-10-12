@@ -1,5 +1,5 @@
 import "./decRoute";
-import {ErrorDef, Swagger, Valory,} from "../main";
+import {ErrorDef, Swagger, Valory} from "../main";
 import {DefaultAdaptor} from "../lib/defaultAdaptor";
 // Define basic info for the api
 const info: Swagger.Info = {
@@ -34,7 +34,7 @@ const api = Valory.createInstance({
             type: "string",
         },
     },
-	requestIDName: "callRef",
+    requestIDName: "callRef",
 });
 // Build and export the app, passing any adaptor specific config data
 api.start({port: process.env.PORT || 8080});
