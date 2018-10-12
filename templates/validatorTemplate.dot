@@ -5,6 +5,8 @@ var {{= it.hash }} =
       const anyOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
       const reverseLabelDisc = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
       const propGetter = /\.([^\.]*)'/g;
+      const errorArrayPushSimplification = /if \(vErrors === null\) vErrors = \[([a-zA-Z0-9]+?)\]; else vErrors.push\(\1\);/g;
+      const vErrorDec = /vErrors = null;/g;
 
       const discrimArr = [];
 
@@ -116,7 +118,13 @@ var {{= it.hash }} =
 
       /* Return error array if enabled */
       if (!it.singleError) {
-        code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(vErrors == null || vErrors.length===0){return true;}else{return vErrors;}");
+        code = code.replace(/validationErrors[\s]+?=[\s]+?vErrors;[\s]+?return[\s]+?errors[\s]+?===[\s]+?0;/g, "if(vErrors.length===0){return true;}else{return vErrors;}");
+
+        /* Initialize array so that null checks are unneeded */
+        code = code.replace(vErrorDec, "vErrors = [];");
+        code = code.replace(errorArrayPushSimplification, function(match, varName) {
+          return `vErrors.push(${varName});`;
+        });
       }
 
       /* Fix anyOf error return */
