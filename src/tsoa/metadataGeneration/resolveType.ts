@@ -449,6 +449,8 @@ function getLiteralType(typeName: ts.EntityName): Tsoa.EnumerateType | Tsoa.Refe
                 discriminator,
             } as Tsoa.ReferenceType;
             resolvedTypes.forEach((modelType: Tsoa.ReferenceType) => {
+                // We remove the discriminator from individual models to prevent double validations
+                modelType.properties = modelType.properties.filter((prop) => prop.name !== discriminator);
                 if (modelType.allOf && modelType.allOf.indexOf(refObj)) {
                     modelType.allOf.push(refObj);
                 } else {

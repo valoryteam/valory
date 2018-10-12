@@ -61,7 +61,15 @@ export function swaggerPreproccess(swagger: Swagger.Spec): {swagger: Swagger.Spe
 			const schemaExtention: any = {properties: {}};
 			schemaExtention.properties[pathMap[value].propName] = {const: modelName};
 			discrimMap[pathMap[value].propName].children.push(modelName);
-			set(swagger, path.replace(".$ref", ""), schemaExtention);
+			set(swagger, path.replace(".$ref", ""), {});
+
+			const currentProps = get(swagger, objPath + ".properties") || {};
+			set(swagger, objPath + ".properties", Object.assign(schemaExtention.properties, currentProps));
+
+			const currentRequired = get(swagger, objPath + ".required") || [];
+			currentRequired.push(pathMap[value].propName);
+			set(swagger, objPath + ".required", currentRequired);
+
 			get(swagger, `${pathMap[value].anyOfPath}`).push({$ref: defPath});
 		}
 	});
