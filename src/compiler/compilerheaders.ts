@@ -30,6 +30,7 @@ export interface ValidatorModule {
 		validator: Validator,
 		serializer?: Serializer,
 	};
+	undocumentedEndpoints: string[];
 }
 
 export type ValidatorModuleContent = string;
@@ -79,6 +80,7 @@ export interface ICompilerOptions {
 	singleError?: boolean;
 	discrimFastFail?: boolean;
 	disableSerialization?: string[];
+	undocumentedEndpoints: string[];
 }
 
 export const FUNCTION_PREFIX = "f";

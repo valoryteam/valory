@@ -532,7 +532,7 @@ export class Valory {
         this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
             if (swaggerBlob == null) {
                 swaggerBlob = JSON.parse(this.validatorModule.swaggerBlob);
-                swaggerBlob.paths = omit(swaggerBlob.paths, this.metadata.undocumentedEndpoints);
+                swaggerBlob.paths = omit(swaggerBlob.paths, this.validatorModule.undocumentedEndpoints);
             }
             return Promise.resolve({
                 body: JSON.stringify(swaggerBlob),

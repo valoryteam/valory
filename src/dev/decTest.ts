@@ -14,8 +14,7 @@ const definitions: { [name: string]: Swagger.Schema } = {
             "di$_": {
                 type: "string",
             },
-            ":egg": {
-
+            "\uD83C\uDF46": {
                 type: "boolean",
             },
         },
@@ -88,7 +87,7 @@ api.post("/v1/w3ut", {
     // The handler can be sync or async
     // Build a successful response with the helper
     return api.buildSuccess({});
-});
+}, undefined, false);
 
 // Build and export the app, passing any adaptor specific config data
 api.start({port: process.env.PORT || 8080});

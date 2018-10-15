@@ -68,6 +68,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
             path: "path",
             query: "query",
         },
+        undocumentedEndpoints: [],
         debug: false,
         singleError: true,
         compilationLevel: CompilationLevel.ADVANCED,
@@ -179,6 +180,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         exportHashes: output.debugArtifacts.hashes.concat(output.debugArtifacts.serializerHashes),
         swagger: spec,
         preamble,
+        undocumentedEndpoints: options.undocumentedEndpoints,
         compswagVersion: COMPSWAG_VERION,
     });
 

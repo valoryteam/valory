@@ -98,5 +98,6 @@ module["exports"]= {
 "defHash": "{{= it.defHash }}",
 "globalConsume": {{= JSON.stringify(it.swagger.consumes) }},
 "swaggerBlob": {{= JSON.stringify(JSON.stringify(it.swagger)) }},
-"getValidator": validate
+"getValidator": validate,
+"undocumentedEndpoints": {{= JSON.stringify(it.undocumentedEndpoints) }}
 };
