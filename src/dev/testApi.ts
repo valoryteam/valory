@@ -146,6 +146,26 @@ const definitions: {[name: string]: Swagger.Schema} = {
 			},
 		],
 	},
+	W3IRD$_: {
+		discriminator: "di$_",
+		required: ["di$_"],
+		properties: {
+            di$_: {
+            	type: "string",
+			},
+		},
+	},
+	W3IRD3R_: {
+		type: "object",
+		properties: {
+			thing: {
+				type: "string",
+			},
+		},
+		allOf: [
+			{$ref: "#/definitions/W3IRD$_"},
+		],
+	},
 	Payment: {
 		discriminator: "method",
 		description: "Payload for purchase",
@@ -288,6 +308,46 @@ api.post("/v1/transactions", {
 	// The handler can be sync or async
 	// Build a successful response with the helper
 	return api.buildSuccess({});
+}, [TestMiddleware]);
+
+api.post("/v1/w3ut", {
+    summary: "/v1/transactions ",
+    description: "Use this method to submit payments credit and debit cards. Supported transaction type is purchase",
+    tags: ["Credit Card Payments"],
+    parameters: [
+        {
+            $ref: "#/parameters/fancy_header",
+        },
+        {
+            name: "body",
+            in: "body",
+            schema: {
+                $ref: "#/definitions/W3IRD$_",
+            },
+            required: true,
+        },
+    ],
+    responses: {
+        200: {
+            description: "The response",
+            schema: {
+                type: "object",
+                properties: {
+                    status_code: {
+                        $ref: "#/definitions/status_code",
+                    },
+                    response_data: {
+                        type: "object",
+                        description: "test",
+                    },
+                },
+            },
+        },
+    },
+}, (req) => {
+    // The handler can be sync or async
+    // Build a successful response with the helper
+    return api.buildSuccess({});
 }, [TestMiddleware]);
 
 // Build and export the app, passing any adaptor specific config data

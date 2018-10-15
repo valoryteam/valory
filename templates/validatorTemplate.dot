@@ -3,11 +3,11 @@ var {{= it.hash }} =
       const errorReg = /validationErrors\s*?=\s*?\[\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?schemaPath:[\s\S]*?'([\s\S]*?)'[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}\s*?\];[\s\S]*?return false;/g;
       const vErrorReg = /err\s*?=\s*?{[\s\S]*?keyword:[\s\S]*?'([\s\S]*?)'[\s\S]*?dataPath:[\s\S]*?\+[\s\S]*?\'([\s\S]*?)\s*?,[\s\S]*?schemaPath:[\s\S]*?'([\s\S]*?)'[\s\S]*?params:[\s\S]*?{([\s\S]*?)}[\s\S]*?message:[\s\S]*?'([\s\S]*?)'[\s]*?}[\s]*?;[\s]*?(if[\s\S]*?else[\s\S]*?;)/g;
       const anyOfErrorReturn = /validationErrors[\s]*?=[\s]*?vErrors;[\s\S]*?return[\s\S]*?false;/g;
-      const reverseLabelDisc = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
+      const reverseLabelDisc = /:CSID:([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):[\s\S]*?fi[\s\S]*?\[([a-zA-Z0-9_$]*)[\s\S]*?\([\s\S]*?fi[\s\S]*?\)\)[\s\S]*?fi/g;
       const propGetter = /\.([^\.]*)'/g;
-      const errorArrayPushSimplification = /if \(vErrors === null\) vErrors = \[([a-zA-Z0-9]+?)\]; else vErrors.push\(\1\);/g;
+      const errorArrayPushSimplification = /if \(vErrors === null\) vErrors = \[([a-zA-Z0-9_$]+?)\]; else vErrors.push\(\1\);/g;
       const vErrorDec = /vErrors = null;/g;
-      const reverseEscapeDiscRequired = /:CSID:([a-zA-Z0-9]*):([a-zA-Z0-9]*):([a-zA-Z0-9]*):[\s\S]*?'ytreporp deriuqer a si \1.ydob.tseuqer :\]deriuqer\[rorrEnoitadilaV' = rre rav/g;
+      const reverseEscapeDiscRequired = /:CSID:([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):[\s\S]*?'ytreporp deriuqer a si \1.ydob.tseuqer :\]deriuqer\[rorrEnoitadilaV' = rre rav/g;
 
       const discrimArr = [];
 
