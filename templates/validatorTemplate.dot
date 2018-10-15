@@ -98,14 +98,14 @@ var {{= it.hash }} =
       });
 
       /* Mangle ill-behaved property names */
-      it.mangledKeys.forEach(function(item){
+      /* it.mangledKeys.forEach(function(item){
             var query = "\\.properties\\[['\"]"+item.original+"['\"]\\]";
             var reggy = new RegExp(query, "g");
             code = code.replace(reggy,".properties."+item.mangled);
-      });
+      }); */
 
       /* Protect data properties */
-      code = code.replace(/(data[A-Za-z_$0-9]*?)\.(\w+)/g, '$1["$2"]');
+      code = code.replace(/(data[A-Za-z_$0-9]*?)\.([A-Za-z_$0-9]+)/g, '$1["$2"]');
 
       /* Enum property is changed to prevent keyword collision */
       code = code.replace(/.enum;/g, '.api_enum;');

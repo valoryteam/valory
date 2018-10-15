@@ -141,7 +141,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                 hash,
                 format: (ajv as any)._opts.format,
                 mangledKeys: mangled.mangledKeys,
-                schema: mangled.schema,
+                schema: schemaProcessed.schema,
                 singleError: options.singleError,
                 discriminators: output.debugArtifacts.preSwagger.discriminators,
                 discrimFastFail: options.discrimFastFail,

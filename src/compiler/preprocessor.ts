@@ -15,7 +15,7 @@ const periodRegex = /[.]+?/g;
 const allOfRefRegex = /.allOf.[\d]+?.\$ref/g;
 const variantTestRegex = /definitions.([^.]*).allOf.[\d]+?.\$ref/g;
 const getAllOfRefIndexRegex = /allOf.([^.]*).\$ref/g;
-const safeKey = /^(?:[A-Za-z_$])(?:[0-9a-zA-Z_$]*)$/;
+const safeKey = /^(?:[A-Za-z_])(?:[0-9a-zA-Z_]*)$/;
 
 interface Deep {
 	deepMapValues<T>(obj: T, callback: (value: any, path: string) => any): T;
@@ -159,7 +159,7 @@ export function mangleKeys(schema: ExtendedSchema): {schema: ExtendedSchema, man
 		if (key === "enum") {
 			return "api_enum";
 		}
-		if (!safeKey.test(key)) {
+		if (!safeKey.test(key) && mangledKeys.filter((item) => item.original === key).length === 0) {
 			const mangled = MANGLED_PREFIX + XXH.h32(key, HASH_SEED).toString();
 			mangledKeys.push({original: key, mangled});
 			return mangled;
