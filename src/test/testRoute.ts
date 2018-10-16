@@ -91,7 +91,7 @@ export class TestRoute extends Controller {
     }
 
     @Post("submit")
-    public submit(@Body() item: { name: string, isCool: boolean }) {
+    public submit(@Body() item: { name: string, isCool: boolean, simpleEnum: "thing" | "other" }) {
         return item;
     }
 

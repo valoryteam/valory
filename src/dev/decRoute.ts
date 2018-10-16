@@ -139,7 +139,7 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other")
-    public test(@Body() input: ChildType): ApiRes<string[]> {
+    public test(@Body() input: {test: "thing" | "other"}): ApiRes<string[]> {
         return {status_code: 1, response_data: ["yay"]};
     }
 }

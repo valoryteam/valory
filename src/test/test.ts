@@ -156,6 +156,7 @@ describe("ValoryTest", () => {
         private static json = {
             name: "steven",
             isCool: true,
+            simpleEnum: "thing",
         };
 
         public static async before() {
@@ -269,6 +270,7 @@ describe("ValoryTest", () => {
         private static parsed: any;
         private static json = {
             isCool: "yay",
+            simpleEnum: "blah",
         };
 
         public static async before() {
@@ -295,6 +297,12 @@ describe("ValoryTest", () => {
         public "Should have error for missing name"() {
             expect(SimplePostTestFail.parsed).to.have.property("message")
                 .contains("ValidationError[required]: request.body.name is a required property");
+        }
+
+        @test
+        public "Should have error for bad enum"() {
+            expect(SimplePostTestFail.parsed).to.have.property("message")
+                .contains("ValidationError[enum]: request.body.simpleEnum should be equal to one of the allowed values: [thing,other]");
         }
 
         @test

@@ -159,11 +159,11 @@ export function mangleKeys(schema: ExtendedSchema): {schema: ExtendedSchema, man
 		if (key === "enum") {
 			return "api_enum";
 		}
-		if (!safeKey.test(key) && mangledKeys.filter((item) => item.original === key).length === 0) {
-			const mangled = MANGLED_PREFIX + XXH.h32(key, HASH_SEED).toString();
-			mangledKeys.push({original: key, mangled});
-			return mangled;
-		}
+		// if (!safeKey.test(key) && mangledKeys.filter((item) => item.original === key).length === 0) {
+		// 	const mangled = MANGLED_PREFIX + XXH.h32(key, HASH_SEED).toString();
+		// 	mangledKeys.push({original: key, mangled});
+		// 	return mangled;
+		// }
 		return key;
 	});
 
