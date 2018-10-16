@@ -11,11 +11,12 @@ import {
     Middleware,
     Post, PostMiddleware,
     Request,
-    Route,
+    Route, Valory,
 } from "../main";
 import {Logger} from "pino";
 import {randomBytes} from "crypto";
 import {cloneDeep} from "lodash";
+const pinoSymbols = require("pino/lib/symbols");
 
 class ClassMiddleware implements ApiMiddleware {
     public static ClassMiddlewareDataKey = ApiRequest.createKey<{ data: string }>();
@@ -69,6 +70,15 @@ const ObjectMiddlewareFail: ApiMiddleware = {
     },
 };
 
+const MiddlewareLoggerKey = ApiRequest.createKey<string>();
+class MiddlewareLoggerAttach implements ApiMiddleware {
+    public name = "MiddlewareLoggerAttach";
+    public handler(req: ApiRequest, logger: Logger, done: (err?: ApiResponse) => void) {
+        req.putAttachment(MiddlewareLoggerKey, (logger as any)[pinoSymbols.chindingsSym]);
+        done();
+    }
+}
+
 @Route("test")
 export class TestRoute extends Controller {
     constructor() {
@@ -88,6 +98,17 @@ export class TestRoute extends Controller {
     @Post("submit/property")
     public submitProp(@BodyProp("item") item: { name: string, isCool: boolean }) {
         return item;
+    }
+
+    @Get("id")
+    @DisableSerialization()
+    @Middleware(new MiddlewareLoggerAttach())
+    public testId(@Request() req: ApiRequest) {
+        return {
+            requestId: req.getAttachment(Valory.RequestIDKey),
+            loggerId: (this.logger as any)[pinoSymbols.chindingsSym],
+            middlewareId: req.getAttachment(MiddlewareLoggerKey),
+        };
     }
 }
 

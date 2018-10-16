@@ -189,6 +189,42 @@ describe("ValoryTest", () => {
     }
 
     @suite
+    class RequestIdTest extends RequestTestBase {
+        private static parsed: any;
+
+        public static async before() {
+            await super.before({
+                method: "GET",
+                url: "/test/id",
+                json: true,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should not have property code"() {
+            expect(RequestIdTest.parsed).to.not.have.property("code");
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(RequestIdTest.response.headers).to.have.property("request-id").a("string");
+        }
+
+        @test
+        public "Should match requestId in header and body"() {
+            expect(RequestIdTest.parsed).to.have.property("requestId")
+                .equal(RequestIdTest.response.headers["request-id"]);
+        }
+
+        @test
+        public "Should have request id in middleware and request"() {
+            expect(RequestIdTest.parsed).to.have.property("loggerId").includes(RequestIdTest.parsed.requestId);
+            expect(RequestIdTest.parsed).to.have.property("middlewareId").includes(RequestIdTest.parsed.requestId);
+        }
+    }
+
+    @suite
     class SimplePostPropTest extends RequestTestBase {
         private static parsed: any;
         private static json = {

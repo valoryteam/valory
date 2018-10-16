@@ -537,20 +537,14 @@ export class Valory {
             return Promise.resolve({
                 body: JSON.stringify(swaggerBlob),
                 headers: {"Content-Type": "text/plain"},
-                query: null,
-                path: null,
                 statusCode: 200,
-                formData: null,
             });
         });
         this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
             return Promise.resolve({
                 body: Config.DOC_HTML,
                 headers: {"Content-Type": "text/html"},
-                query: null,
-                path: null,
                 statusCode: 200,
-                formData: null,
             });
         });
     }
@@ -565,11 +559,9 @@ function processMiddleware(middlewares: ApiMiddleware[],
     return new Promise<void | ApiResponse>((resolve) => {
         let err: ApiExchange = null;
         steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
-            if ((handler as any).logger == null) {
-                (handler as any).logger = logger.child({middleware: handler.name});
-            }
-            (handler as any).logger.debug("Running Middleware");
-            handler.handler(req, (handler as any).logger, (error) => {
+            const handlerLogger = logger.child({middleware: handler.name});
+            handlerLogger.debug("Running Middleware");
+            handler.handler(req, handlerLogger, (error) => {
                 if (error != null) {
                     err = error;
                     done(error);
