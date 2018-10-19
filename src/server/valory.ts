@@ -23,6 +23,7 @@ import {
     VALORYMETAVAR,
     VALORYPRETTYLOGGERVAR,
 } from "./valoryheaders";
+import memoize = require("fast-memoize");
 import isNil = require("lodash/isNil");
 import omitBy = require("lodash/omitBy");
 import omit = require("lodash/omit");

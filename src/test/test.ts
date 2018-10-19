@@ -139,6 +139,11 @@ describe("ValoryTest", () => {
             expect(SimpleGetTestFail.parsed).to.have.property("code").equal(1001);
         }
 
+	    @test
+	    public "Should have content-type application/json"() {
+		    expect(SimpleGetTestFail.response.headers).to.have.property("content-type").equal("application/json");
+	    }
+
         @test
         public "Should have error message for auth header"() {
             expect(SimpleGetTestFail.parsed).to.have.property("message").is.contains(SimpleGetTestFail.headerError);
@@ -291,6 +296,11 @@ describe("ValoryTest", () => {
         public "Should have error for isCool"() {
             expect(SimplePostTestFail.parsed).to.have.property("message")
                 .contains("ValidationError[type]: request.body.isCool should be boolean");
+        }
+
+        @test
+        public "Should have content-type application/json"() {
+            expect(SimplePostTestFail.response.headers).to.have.property("content-type").equal("application/json");
         }
 
         @test

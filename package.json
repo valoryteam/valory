@@ -66,6 +66,7 @@
     "bluebird": "^3.5.2",
     "chalk": "^2.4.1",
     "dot": "^1.1.2",
+    "fast-memoize": "^2.5.1",
     "fast.js": "^0.1.1",
     "fastify": "^1.11.2",
     "flatstr": "^1.0.8",

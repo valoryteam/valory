@@ -133,6 +133,7 @@ export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
     @Get()
     public yay(): {thing: "yay"} {
+        return this.buildError("AccessDenied");
         return {
             thing: "yay",
         };

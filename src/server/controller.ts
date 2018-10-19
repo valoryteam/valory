@@ -37,6 +37,7 @@ export class Controller {
 
 	public buildError(error: string, message?: string) {
 		const obj = Valory.getInstance().buildError(error, message);
+		Object.assign(this.headers, obj.headers);
 		this.setStatus(obj.statusCode);
 		this.disableSerializer = true;
 		return obj.body;
