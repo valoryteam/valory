@@ -23,7 +23,6 @@ import {
     VALORYMETAVAR,
     VALORYPRETTYLOGGERVAR,
 } from "./valoryheaders";
-import memoize = require("fast-memoize");
 import isNil = require("lodash/isNil");
 import omitBy = require("lodash/omitBy");
 import omit = require("lodash/omit");
@@ -83,6 +82,7 @@ export interface ValoryOptions {
     tags?: Swagger.Tag[];
     basePath?: string;
     requestIDName?: string;
+    baseLogger?: Logger;
     // compiledLibOverride?: {
     // 	generatedRoutes?: any;
     // 	compswag: ValidatorModule;
@@ -139,10 +139,7 @@ export class Valory {
 
     private static instance: Valory;
     private static directInstantiation = true;
-    public Logger = P({
-        level: process.env[VALORYLOGGERVAR] || "info",
-        prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
-    });
+    public Logger: Logger;
     private RequestLogger: Logger;
     private COMPILERMODE = process.env.VALORYCOMPILER === "TRUE";
     private TESTMODE: boolean = (process.env.TEST_MODE === "TRUE");
@@ -172,7 +169,12 @@ export class Valory {
                         public server: ApiServer, basePath?: string,
                         parameters: { [name: string]: Swagger.Parameter } = {},
                         responses: { [name: string]: Swagger.Response } = {},
-                        public requestIDName: string = "request-id") {
+                        public requestIDName: string = "request-id",
+                        logger?: Logger) {
+        this.Logger = (logger != null) ? logger : P({
+            level: process.env[VALORYLOGGERVAR] || "info",
+            prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
+        });
         Config.load(!(!this.COMPILERMODE && Valory.CompileLibOverride));
         if (Valory.instance != null) {
             throw Error("Only a single valory instance is allowed");

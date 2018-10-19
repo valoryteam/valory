@@ -1,6 +1,7 @@
 import "./decRoute";
 import {ErrorDef, Swagger, Valory} from "../main";
 import {DefaultAdaptor} from "../lib/defaultAdaptor";
+import Pino = require("pino");
 // Define basic info for the api
 const info: Swagger.Info = {
     title: "CNP POC API",
@@ -59,6 +60,8 @@ const api = Valory.createInstance({
         },
     },
     requestIDName: "callRef",
+    baseLogger: Pino({
+    }),
 });
 
 api.post("/v1/w3ut", {

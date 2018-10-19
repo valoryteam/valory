@@ -21,7 +21,7 @@ export interface TestResponse<T> {
 export class Burn {
     /** @minLength 3 */
     public name: string = "steven";
-    public content: string;
+    public "🖕": string;
     public powerlevel?: number;
     public array: ArrayAlias;
     public string: StringAlias;
@@ -127,7 +127,6 @@ export class BurnRoutes extends Controller {
     }
 }
 
-@Hidden()
 @Route("thing")
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
@@ -140,7 +139,7 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other")
-    public test(@Body() input: {test: "thing" | "other"}): ApiRes<string[]> {
+    public test(@Body() input: Burn): ApiRes<string[]> {
         return {status_code: 1, response_data: ["yay"]};
     }
 }
