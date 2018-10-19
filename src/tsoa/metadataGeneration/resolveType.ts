@@ -340,7 +340,11 @@ function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration |
     const example = getJSDocComment(node, "example");
 
     if (example) {
-        return JSON.parse(example);
+	    try {
+		    return JSON.parse(example);
+	    } catch (e) {
+            return example;
+	    }
     } else {
         return undefined;
     }

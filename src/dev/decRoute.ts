@@ -21,7 +21,7 @@ export interface TestResponse<T> {
 export class Burn {
     /** @minLength 3 */
     public name: string = "steven";
-    public "🖕": string;
+    public "🖕" = "😨";
     public powerlevel?: number;
     public array: ArrayAlias;
     public string: StringAlias;
@@ -35,7 +35,7 @@ export type ArrayAlias = number[];
 // export type TupleAlias = [number, number];
 /**
  * alias to a string
- * @example "a string"
+ * @example a string
  * @minLength 3
  */
 export type StringAlias = string;
