@@ -124,7 +124,7 @@ export class Valory {
         Valory.directInstantiation = false;
         return new Valory(options.info, options.errors || {}, options.consumes, options.produces,
             options.definitions || {}, options.tags || [], options.server, options.basePath,
-            options.parameters, options.responses, options.requestIDName);
+            options.parameters, options.responses, options.requestIDName, options.baseLogger);
     }
 
     /**
