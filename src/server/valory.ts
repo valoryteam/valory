@@ -558,8 +558,13 @@ export class Valory {
 			});
 		});
 		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
+			if (Config.DOC_HTML_PROCESSED == null) {
+				Config.processDocHtml({
+					APP_NAME: this.apiDef.info.title
+				})
+			}
 			return Promise.resolve({
-				body: Config.DOC_HTML,
+				body: Config.DOC_HTML_PROCESSED,
 				headers: {"Content-Type": "text/html"},
 				statusCode: 200,
 			});

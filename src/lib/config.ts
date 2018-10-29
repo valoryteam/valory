@@ -20,7 +20,7 @@ export namespace Config {
 		<meta charset="UTF-8">
 		<html>
 		<head>
-			<title>Appserver</title>
+			<title>APP_NAME</title>
 			<meta name="viewport" content="width=device-width, initial-scale=1">
 			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
 			<style>
@@ -68,6 +68,7 @@ export namespace Config {
 		</script>
 		</body>
 		</html>`;
+	export let DOC_HTML_PROCESSED: string = null;
 	export const CONFIG_FILE = "valory.json";
 	export const SWAGGER_FILE = "swagger.json";
 	export const COMPILED_SWAGGER_FILE = ".compswag.js";
@@ -139,6 +140,12 @@ export namespace Config {
                 throw Error("Source entrypoint must not be a ts file");
             }
         }
+	}
+
+	export function processDocHtml(input: {[x: string]: string}) {
+		for (let key in input) {
+			DOC_HTML_PROCESSED = DOC_HTML.replace(key, input[key])
+		}
 	}
 
 	function resolveRootPath(): string {
