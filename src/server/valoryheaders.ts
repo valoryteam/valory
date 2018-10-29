@@ -12,6 +12,8 @@ export interface ApiExchange {
 	body: any;
 }
 
+export type RequestLogProvider = (parent: Logger, requestContext: RequestContext) => Logger;
+
 export interface ApiResponse extends ApiExchange {
 	statusCode: number;
     disableSerializer?: boolean;
@@ -35,6 +37,8 @@ export interface ErrorDef {
 
 export interface RequestContext {
 	requestId: string;
+	requestIdName: string;
+	route: string;
 }
 
 export type ApiHandler = (request: ApiRequest, logger: Logger, requestContext: RequestContext)
