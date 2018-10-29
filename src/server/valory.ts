@@ -110,7 +110,7 @@ const DefaultErrors: { [x: string]: ErrorDef } = {
 function DefaultRequestLogProvider(parent: Logger, requestContext: RequestContext) {
 	const logObj: any = {};
 	logObj[requestContext.requestIdName] = requestContext.requestId;
-	return parent.child(logObj)
+	return parent.child(logObj);
 }
 
 export class Valory {
@@ -560,8 +560,8 @@ export class Valory {
 		this.server.register((prefix !== "") ? prefix : "/", HttpMethod.GET, (req) => {
 			if (Config.DOC_HTML_PROCESSED == null) {
 				Config.processDocHtml({
-					APP_NAME: this.apiDef.info.title
-				})
+					APP_NAME: this.apiDef.info.title,
+				});
 			}
 			return Promise.resolve({
 				body: Config.DOC_HTML_PROCESSED,

@@ -61,7 +61,7 @@ const api = Valory.createInstance({
 	},
 	requestIDName: "Call-Ref",
 	baseLogger: Pino({
-		level: "debug"
+		level: "debug",
 	}),
 });
 
@@ -69,7 +69,7 @@ function logProvider(parent: Pino.Logger, requestCtx: RequestContext) {
 	return parent.child({
 		_CallRef: requestCtx.requestId,
 		_InternalRef: requestCtx.requestId,
-	})
+	});
 }
 
 api.setRequestLogProvider(logProvider);

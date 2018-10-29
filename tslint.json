@@ -20,7 +20,8 @@
 		"no-bitwise": false,
 		"only-arrow-functions": false,
 		"member-ordering": false,
-		"max-line-length": false
+		"max-line-length": false,
+		"forin": false
 	},
 	"rulesDirectory": []
 }

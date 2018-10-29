@@ -143,8 +143,8 @@ export namespace Config {
 	}
 
 	export function processDocHtml(input: {[x: string]: string}) {
-		for (let key in input) {
-			DOC_HTML_PROCESSED = DOC_HTML.replace(key, input[key])
+		for (const key in input) {
+			DOC_HTML_PROCESSED = DOC_HTML.replace(key, input[key]);
 		}
 	}
 
