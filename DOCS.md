@@ -3,12 +3,15 @@
 * [Attachments](#attachments)
 * [Errors](#errors)
 * [Controlling Validation](#controlling-validation)
+* [Response Serialization](#response-serialization)
+* [Adaptors](#adaptors)
 * [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 
 ## Middleware
 Middlewares in valory are essentially just reusable objects (literals or class instances) that provide a name and a handler. All middleware are run regardless of request validation result. There are two main ways of doing this
 
 **Object literal form**
+
 ```typescript
 const middleware: ApiMiddleware = {
 	name: "NameForTheMiddleware",
@@ -20,6 +23,7 @@ const middleware: ApiMiddleware = {
 } 
 ```
 **Class form**
+
 ```typescript
 class middleware implements ApiMiddleware {
 	public name = "NameForTheMiddleware";
@@ -138,13 +142,33 @@ class middleware implements ApiMiddleware {
         return attachmentData;
     }
 }
-``` 
+```
 **Important Notes**
 * Because of the key, this entire process is type safe
-* putAttachment will not clobber existing attachments. Duplicate keys will result in an exception
 * getAttachment will not complain if a key does not exist, it will simply return null
 
+## Logging
+
+Logging in Valory is accomplished using Pino, and makes extensive use of child loggers.  Access to these loggers is provided in both middleware and endpoints with several options for customization. 
+
+### Logging in routes
+
+``` typescript
+// The logger can be accessed through either injection or inheiritance within routes
+@Route() export class SomeController extends Controller {
+    @Get() public someEndpoint(@Logger() logger: Logger) {
+        // @Logger will inject the request logger
+        logger.info("a message");
+        
+        // Because this controller inheirited from Controller, we can also access the
+        // logger through "this"
+        this.logger("a message");
+    }
+}
+```
+
 ## Errors
+
 Valory provides a simple way to manage reusable error messages. Just pass a map of [[ErrorDef]] objects when creating the valory instance.
 
 **Creating Errors**
@@ -233,8 +257,9 @@ export class ItemWithDefaults {
 ```
 
 ### Reusable fields
-Say you have a "name" field use multiple places. You could redefine it multiple places, but that would be require effort and violate DRY.
+Say you have a "name" field used multiple places. You could redefine it multiple places, but that would be require effort and violate DRY.
 Type aliases to the rescue!
+
 ```typescript
 /**
  * JSDOC properties are preserved whenever this is used
@@ -257,6 +282,11 @@ When writing api's you frequently need to be very specific about allowed inputs.
  */
 export type Name = string;
 // all swagger parameter validation keywords are supported this way
+// Supported keywords:
+// isString, isBoolean, isInt, isLong, isFloat, isDouble, isDate, isDateTime, minItems, 
+// maxItems, uniqueItems, minLength, maxLength, pattern, minimum, maximum, minDate, 
+// maxDate, 
+
 
 // Also works on properties in complex objects
 /**
@@ -271,9 +301,55 @@ export interface Item {
 }
 ```
 
+## Response Serialization
+Valory has built in support for static response serialization, using compile time type information to generate fast serialization functions. This obviously has a speed advantage, but more importantly it enforces intentional choices about what is returned and helps to prevent leaks. 
+
+```typescript
+@Route()
+export class SomeController extends Controller {
+    // Serializers work of off detected types, so something like this 
+    // will just work
+    @Get() public thing() {
+        return {
+            stuff: "something"
+        }
+    }
+    
+    // If you set the type explicitly, you can get guarentees about what 
+    // will be returned
+    @Get("other") public other(): {bool: boolean} {
+        return {
+            bool: true,
+            // Properties not included in the return type will be omitted
+            junk: "this property will be omitted"
+        } as any;
+    }
+    
+    // Explicit types will also catch cases where you might return an
+    // invalid response
+    @Get("broken") public broken(): {requiredProp: string} {
+        return {
+            // This will return a generic failure to the user, and log a
+            // message on the server about a broken schema.
+        } as any;
+    }
+    
+    // You can also disable this on an endpoint or controller level,
+    // instead leaving it to the underlying server to serialize the
+    // response
+    @DisableSerialization @Get("noserial") public noSerial() {
+        return {
+            stuff: 
+        }
+    }
+}
+```
+
 ## Adaptors
-One of the central conceits of Valory is that is not a web server, but instead uses adaptors to run on top of any server framework.
+
+One of the central conceits of Valory is that it is not a web server, but instead uses adaptors to run on top of any server framework.
 The [default adaptor](src/lib/defaultAdaptor.ts) is a decent example that uses fastify.
+
 ```typescript
 // adaptors implement ApiServer
 export class SomeAdaptor implements ApiServer {
@@ -293,8 +369,3 @@ export class SomeAdaptor implements ApiServer {
     }
 }
 ```
-
-## Response Serialization
-Valory has built in support for static response serialization, using compile time type information to generate fast serialization functions. This obviously has a speed advantage, but more importantly it enforces intentional choices about what is returned and helps prevent leaks.
-
- 

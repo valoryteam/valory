@@ -1,15 +1,9 @@
 import {ApiMiddleware} from "./valoryheaders";
 import {Controller} from "./controller";
-import {Swagger} from "./swagger";
-
-// export function Example<T>(exampleModel: T): any {
-// 	return () => {
-// 		return;
-// 	};
-// }
 
 /**
- * Register GET endpoint
+ * @Decorator
+ * Register a GET endpoint
  * @param {string} name local route for endpoint
  */
 export function Get(name?: string): any {
@@ -19,7 +13,8 @@ export function Get(name?: string): any {
 }
 
 /**
- * Register POST endpoint
+ * @Decorator
+ * Register a POST endpoint
  * @param {string} name local route for endpoint
  */
 export function Post(name?: string): any {
@@ -29,7 +24,8 @@ export function Post(name?: string): any {
 }
 
 /**
- * Register PUT endpoint
+ * @Decorator
+ * Register a PUT endpoint
  * @param {string} name local route for endpoint
  * @constructor
  */
@@ -40,7 +36,8 @@ export function Put(name?: string): any {
 }
 
 /**
- * Register PATCH endpoint
+ * @Decorator
+ * Register a PATCH endpoint
  * @param {string} name local route for endpoint
  */
 export function Patch(name?: string): any {
@@ -50,7 +47,8 @@ export function Patch(name?: string): any {
 }
 
 /**
- * Register DELETE endpoint
+ * @Decorator
+ * Register a DELETE endpoint
  * @param {string} name local route for endpoint
  */
 export function Delete(name?: string): any {
@@ -60,6 +58,7 @@ export function Delete(name?: string): any {
 }
 
 /**
+ * @Decorator
  * Add a middleware to a controller or route
  * @param {ApiMiddleware} middleware
  */
@@ -78,6 +77,7 @@ export function Middleware(middleware: ApiMiddleware): any {
 }
 
 /**
+ * @Decorator
  * Add a post middleware to a controller or route
  * @param {ApiMiddleware} middleware
  */
@@ -96,8 +96,8 @@ export function PostMiddleware(middleware: ApiMiddleware): any {
 }
 
 /**
- * Inject http Body
- *  @param {string} [name] properties name in body object
+ * @Decorator
+ * Inject the http body into an argument.
  */
 export function Body(): any {
 	return () => {
@@ -106,9 +106,9 @@ export function Body(): any {
 }
 
 /**
- * Inject value from body
- *
- * @param {string} [name] The name of the body parameter
+ *@Decorator
+ * Inject value of a property in the http body into an argument. Uses argument name by default.
+ * @param {string} name The name of the body parameter
  */
 export function BodyProp(name?: string): any {
 	return () => {
@@ -117,7 +117,8 @@ export function BodyProp(name?: string): any {
 }
 
 /**
- * Inject http request
+ * @Decorator
+ * Inject the raw request object into an argument. Useful if you need to access attachments.
  */
 export function Request(): any {
 	return () => {
@@ -126,8 +127,8 @@ export function Request(): any {
 }
 
 /**
- * Inject value from Path
- *
+ * Inject a path parameter into an argument. Uses argument name by default.
+ * @Decorator
  * @param {string} [name] The name of the path parameter
  */
 export function Path(name?: string): any {
@@ -137,8 +138,8 @@ export function Path(name?: string): any {
 }
 
 /**
- * Inject value from query string
- *
+ * Inject a query value into an argument. Uses argument name by default.
+ * @Decorator
  * @param {string} [name] The name of the query parameter
  */
 export function Query(name?: string): any {
@@ -149,7 +150,7 @@ export function Query(name?: string): any {
 
 /**
  * Inject value from Http header
- *
+ * @Decorator
  * @param {string} [name] The name of the header parameter
  */
 export function Header(name?: string): any {
@@ -161,7 +162,10 @@ export function Header(name?: string): any {
 // export function ReferenceParameters(parameters: Swagger.RefParameter[]): any {
 // 	return () => { return; };
 // }
-
+/**
+ * @Decorator
+ * Disables static serializer for either a single endpoint or a controller.
+ */
 export function DisableSerialization(): any {
 	return () => {
 		return;
@@ -169,7 +173,8 @@ export function DisableSerialization(): any {
 }
 
 /**
- * Inject request logger instance
+ * @Decorator
+ * Inject request logger instance into an argument. Useful if you for some reason chose not to inherit from [[Controller]].
  */
 export function Logger(): any {
 	return () => {
@@ -177,31 +182,40 @@ export function Logger(): any {
 	};
 }
 
-export function SuccessResponse(name: string | number, description?: string): any {
-	return () => {
-		return;
-	};
-}
+// export function SuccessResponse(name: string | number, description?: string): any {
+// 	return () => {
+// 		return;
+// 	};
+// }
 
-export function Response<T>(name: string | number, description?: string, example?: T): any {
+/**
+ * @Decorator
+ * Add data about an additional response type.
+ * @param name the status code used by this response
+ * @param description
+ * @param example
+ */
+export function Response(name: number, description?: string, example?: object): any {
 	return () => {
-		return;
-	};
-}
-
-export function Route(name?: string): any {
-	// console.log("route tag factory");
-	return (target: Controller) => {
-		// console.log("route tag evaluated");
-		// console.log(target);
-		// (target as any).prototype.middleware = [];
-		// (target as any).prototype.postMiddleware = [];
 		return;
 	};
 }
 
 /**
- * can be used to entirely hide an method from documentation
+ * @Decorator
+ * Labels a class as a route controller
+ * @param {string} name The path prefix for this controller
+ */
+export function Route(name?: string): any {
+	return (target: Controller) => {
+
+		return;
+	};
+}
+
+/**
+ * @Decorator
+ * Can be used to entirely hide an method from documentation.
  */
 export function Hidden(): any {
 	return () => {
@@ -209,6 +223,10 @@ export function Hidden(): any {
 	};
 }
 
+/**
+ * @Decorator
+ * Adds a given set of tags to either an endpoint or controller
+ */
 export function Tags(...values: string[]): any {
 	return () => {
 		return;

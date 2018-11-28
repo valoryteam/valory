@@ -39,7 +39,7 @@ export {
 	Request,
 	Response,
 	Route,
-	SuccessResponse,
+	// SuccessResponse,
 	Tags,
 } from "./server/decorators";
 export {
@@ -54,7 +54,10 @@ export {
 	ApiExchange,
 	ErrorDef,
 	ApiMiddleware,
+	/** @hidden */
 	VALORYLOGGERVAR,
+	/** @hidden */
 	VALORYMETAVAR,
+	/** @hidden */
 	VALORYPRETTYLOGGERVAR,
 } from "./server/valoryheaders";

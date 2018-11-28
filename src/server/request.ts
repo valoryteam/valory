@@ -1,8 +1,10 @@
 import {ApiExchange} from "./valoryheaders";
-const uuid = require("hyperid")();
 
+/**
+ * A unique key that refers to an attachment and its type.
+ */
 export interface AttachmentKey<T> {
-	readonly id: string;
+	readonly id: symbol;
 	/** @hidden */ readonly marker: T;
 }
 
@@ -16,24 +18,35 @@ export interface ApiRequestOptions {
     route: string;
 }
 
+/**
+ * Holds all the data associated with an incoming request
+ */
 export class ApiRequest implements ApiExchange {
+	/**
+	 * Create an attachment key
+	 * @return {AttachmentKey<T>}
+	 */
 	public static createKey<T>(): AttachmentKey<T> {
 		return {
-			id: uuid(),
+			id: Symbol(),
 			marker: 0 as any,
 		};
 	}
     public headers: { [key: string]: any; };
     public body: any;
-    public rawBody: any;
+	/**
+	 * This is the raw, unparsed body. Due to limitations with some servers, providing this may not always be possible.
+	 * Check with your adaptor before using this.
+	 */
+	public rawBody: any;
     public formData: { [key: string]: any; };
     public query: { [key: string]: any; };
     public path: { [key: string]: any; };
     public route: string;
-	private attachments: {[key: string]: any} = {};
+	private attachments: any = {};
     // public attachments: AttachmentDict;
 
-        constructor(options: ApiRequestOptions) {
+	constructor(options: ApiRequestOptions) {
         this.headers = options.headers;
         this.body = options.body;
         this.rawBody = options.rawBody;
@@ -43,13 +56,16 @@ export class ApiRequest implements ApiExchange {
         this.path = options.path;
     }
 
+	/**
+	 * Add an attachment to this request.
+	 */
 	public putAttachment<T>(key: AttachmentKey<T>, value: T): void {
-		if (this.attachments[key.id] != null) {
-			throw Error("Refusing to clobber existing attachment");
-		}
 		this.attachments[key.id] = value;
 	}
 
+	/**
+	 * Retrieve an attachment from this request
+	 */
 	public getAttachment<T>(key: AttachmentKey<T>): T | null {
 		return this.attachments[key.id] as (T | null);
 	}

@@ -83,10 +83,6 @@ export interface ValoryOptions {
 	basePath?: string;
 	requestIDName?: string;
 	baseLogger?: Logger;
-	// compiledLibOverride?: {
-	// 	generatedRoutes?: any;
-	// 	compswag: ValidatorModule;
-	// };
 }
 
 const DefaultErrors: { [x: string]: ErrorDef } = {
@@ -114,13 +110,23 @@ function DefaultRequestLogProvider(parent: Logger, requestContext: RequestContex
 }
 
 export class Valory {
+	/** @hidden */
 	public static CompileLibOverride: {
 		generatedRoutes?: any;
 		compswag: ValidatorModule;
 	};
+	/**
+	 * Key used to retrieve validation result attachment. Generally only available to post middleware.
+	 */
 	public static ValidationResultKey: AttachmentKey<true | string[] | string>
 		= ApiRequest.createKey<true | string[] | string>();
+	/**
+	 * Key used to retrieve the request id attachment.
+	 */
 	public static RequestIDKey: AttachmentKey<string> = ApiRequest.createKey<string>();
+	/**
+	 * Key used to retrieve the current response. Only available to post middleware.
+	 */
 	public static ResponseKey: AttachmentKey<ApiResponse> = ApiRequest.createKey<ApiResponse>();
 
 	/**
@@ -145,6 +151,9 @@ export class Valory {
 
 	private static instance: Valory;
 	private static directInstantiation = true;
+	/**
+	 * The Pino logger in us by Valory
+	 */
 	public Logger: Logger;
 	private RequestLogger: Logger;
 	private COMPILERMODE = process.env.VALORYCOMPILER === "TRUE";
@@ -170,6 +179,7 @@ export class Valory {
 
 	/**
 	 * @deprecated use [[Valory.createInstance]] instead
+	 * @hidden
 	 */
 	private constructor(info: Swagger.Info, errors: { [x: string]: ErrorDef }, consumes: string[] = [],
 	                    produces: string[] = [], definitions: { [x: string]: Swagger.Schema }, tags: Swagger.Tag[],
@@ -270,6 +280,9 @@ export class Valory {
 		}
 	}
 
+	/**
+	 * Set the [[RequestLogProvider]].
+	 */
 	public setRequestLogProvider(requestLogProvider: RequestLogProvider) {
 		this.requestLogProvider = requestLogProvider;
 	}
@@ -310,7 +323,7 @@ export class Valory {
 	}
 
 	/**
-	 * Convenience method to build a return exchange when only body and/or header customization is required
+	 * Convenience method to build an [[ApiResponse]].
 	 */
 	public buildSuccess(body: any, headers: { [key: string]: any } = {}, statusCode = 200,
 	                    disableSerializer: boolean = false): ApiResponse {
@@ -400,7 +413,7 @@ export class Valory {
 	}
 
 	/**
-	 * Start server. Call once all endpoints are registered.
+	 * Start server. Call once all endpoints have been registered.
 	 */
 	public start(options: any): any {
 		if (this.registerGeneratedRoutes != null) {

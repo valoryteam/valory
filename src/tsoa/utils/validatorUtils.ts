@@ -73,7 +73,7 @@ export function getParameterValidators(parameter: ts.ParameterDeclaration, param
                 break;
             case "pattern":
                 if (typeof value !== "string") {
-                    throw new GenerateMetadataError(`${name} patameter use string.`);
+                    throw new GenerateMetadataError(`${name} parameter use string.`);
                 }
                 validateObj[name] = {
                     errorMsg: getErrorMsg(comment),

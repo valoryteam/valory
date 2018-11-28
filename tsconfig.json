@@ -20,7 +20,8 @@
 			]
 		},
 		"types": [
-			"bluebird-global"
+			"bluebird-global",
+			"node"
 		],
 		"alwaysStrict": true
 	},

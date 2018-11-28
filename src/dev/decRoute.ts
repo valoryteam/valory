@@ -1,15 +1,16 @@
 import {
-    ApiRequest,
-    Body,
-    Header,
-    Post,
-    Route,
-    Request,
-    Controller,
-    Logger,
-    Middleware,
-    ApiMiddleware,
-    Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization,
+	ApiRequest,
+	Body,
+	Header,
+	Post,
+	Route,
+	Request,
+	Controller,
+	Logger,
+	Middleware,
+	ApiMiddleware,
+	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization,
+	Response,
 } from "../main";
 
 export interface TestResponse<T> {
@@ -115,12 +116,11 @@ export interface NestedGeneric<T> {
 
 @Route("/")
 export class BurnRoutes extends Controller {
-
-    /**
+	/**
      *
-     * @param thing test
-     */
-    @Post("/other/{thing}/")
+	 * @return {ApiRes<string>} A success response
+	 */
+	@Post("/other/{thing}/")
     public test(@Path() thing: string, @Body() input: ParentType): ApiRes<string> {
         this.logger.info("A thing has happen");
         return {status_code: 1, response_data: ["yay2", 2]} as any;
