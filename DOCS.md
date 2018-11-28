@@ -293,3 +293,8 @@ export class SomeAdaptor implements ApiServer {
     }
 }
 ```
+
+## Response Serialization
+Valory has built in support for static response serialization, using compile time type information to generate fast serialization functions. This obviously has a speed advantage, but more importantly it enforces intentional choices about what is returned and helps prevent leaks.
+
+ 
