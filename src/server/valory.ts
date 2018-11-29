@@ -70,18 +70,54 @@ const DefaultErrorFormatterNoSerialization: ErrorFormatter = (error, message): A
 	};
 };
 
+/**
+ * Options for creating a [[Valory]] instance
+ */
 export interface ValoryOptions {
+	/**
+	 * Swagger info
+	 */
 	info: Swagger.Info;
+	/**
+	 * Server adaptor to use
+	 */
 	server: ApiServer;
+	/**
+	 * Error definitions, cannot be modified after creation
+	 */
 	errors?: { [x: string]: ErrorDef };
 	consumes?: string[];
 	produces?: string[];
+	/**
+	 * Swagger Parameters to include.
+	 * NOTE: Should not be used when using decorators
+	 */
 	parameters?: { [name: string]: Swagger.Parameter };
+	/**
+	 * Swagger Responses to include
+	 * NOTE: Should not be used when using decorators
+	 */
 	responses?: { [name: string]: Swagger.Response };
+	/**
+	 * Swagger definitions to include
+	 * NOTE: Should not be used when using decorators
+	 */
 	definitions?: { [x: string]: Swagger.Schema };
+	/**
+	 * Swagger Tags to include
+	 */
 	tags?: Swagger.Tag[];
+	/**
+	 * Base path for the api
+	 */
 	basePath?: string;
+	/**
+	 * Name for the request Id property included in logs and response headers
+	 */
 	requestIDName?: string;
+	/**
+	 * Base Pino logger
+	 */
 	baseLogger?: Logger;
 }
 
