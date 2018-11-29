@@ -1,6 +1,7 @@
 ## Contents
 * [Middleware](#middleware)
 * [Attachments](#attachments)
+* [Logging](#logging)
 * [Errors](#errors)
 * [Controlling Validation](#controlling-validation)
 * [Response Serialization](#response-serialization)
@@ -212,13 +213,18 @@ const app = Valory.createInstance({
 
 // You can also set a custom log provider
 app.setRequestLogProvider((parent, requestCtx) => {
+    // The logger returned here will be the parent for the loggers provided to the
+    // handler and middleware
     return parent.child({
-        
+        somekindofbinding: "a value",
+        id: requestCtx.requestId,
     })
 });
 ```
 
+### Audit Logs
 
+Valory can also log the full request/response to an external file by setting the environment variable REQUEST_AUDIT_LOG to the name of a file. This cannot be changed while running.
 
 ## Errors
 
