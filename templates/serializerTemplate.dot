@@ -3,6 +3,6 @@
 {{= func.replace(/\$main/g, it.hash).replace(/function ([^\s]+) \(([a-zA-Z]+?)\)/g, `const $1 = ($2) => `) }};
 {{~}}
 {{?}}
-{{? it.schema.type !== "object" }}
+{{? it.schema.type !== "object" && it.schema.type !== "array" }}
 const {{= it.hash}} = null;
 {{?}}

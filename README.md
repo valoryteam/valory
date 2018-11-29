@@ -6,8 +6,8 @@
 
 [![NPM](https://nodei.co/npm/valory.png)](https://nodei.co/npm/valory/)
 ## Contents
-* [Usage Guide](DOCS.md)
-* [API documentation](http://valory-docs.s3-website-us-east-1.amazonaws.com)
+* [Documentation](documentation/index.md)
+* [API Reference](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 * [Description](#description)
 * [Installation](#installation)
 * [Basic Usage](#basic-usage)
@@ -38,7 +38,10 @@ npm install valory-runtime valory-adaptor-fastify
 ```
 Next, install the cli
 ```bash
-npm install -g valory
+npm i -g valory
+
+# You can install it locally as well for build consistency
+npm i -D valory
 ```
 
 Lastly, you'll need to create a Valory project
@@ -151,6 +154,7 @@ These are the officially maintained adaptors and middleware available for Valory
 * [valory-middleware-jwt](https://www.npmjs.com/package/valory-middleware-jwt)
     * Simple JWT auth middleware
     
+
 **Related Projects**
 * [parcel-plugin-valory](https://www.npmjs.com/package/parcel-plugin-valory)
     * Plugin for parcel-bundler that adds valory support
@@ -165,6 +169,6 @@ PR's are welcome!
 **Roadmap**
 - [ ] More comprehensive tests
 - [ ] Additional adaptors
- 
+
 ## Acknowledgements
 - Shoutout to [TSOA](https://github.com/lukeautry/tsoa). Decorator support in Valory is based on that project, huge :thumbsup:
