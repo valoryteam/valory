@@ -167,9 +167,62 @@ Logging in Valory is accomplished using Pino, and makes extensive use of child l
 }
 ```
 
+**Bound Fields**
+
+* requestId
+  * The request ID associated with this request. The name of this property can be changed when creating the Valory instance.
+* endpoint
+  * The endpoint the request was received on.
+
+### Logging in Middleware
+
+```typescript
+export class SomeMiddleware implements ApiMiddleware {
+    public name = "SomeMiddleware";
+    public handler(req, logger, done) {
+        // The logger argument will contain the child logger for this middleware request
+        logger.info("a message");
+        done();
+    }
+}
+```
+
+**Bound Fields**
+
+* requestId
+  * The request ID associated with this request. The name of this property can be changed when creating the Valory instance.
+* endpoint
+  * Then endpoint the request was received on.
+* middleware
+  * The name of the middleware
+
+### Logging Customization
+
+The primary way to customize logging is by providing a custom base logger, but you can also provide a custom request log provider if you need to change the bound fields.
+
+```typescript
+import Pino = require("pino");
+
+const app = Valory.createInstance({
+    info: {title: "An api"},
+    server: new SomeAdaptor(),
+    // You can pass a custom Pino logger to be used as a base
+    baseLogger: Pino(),
+})
+
+// You can also set a custom log provider
+app.setRequestLogProvider((parent, requestCtx) => {
+    return parent.child({
+        
+    })
+});
+```
+
+
+
 ## Errors
 
-Valory provides a simple way to manage reusable error messages. Just pass a map of [[ErrorDef]] objects when creating the valory instance.
+Valory provides a simple way to manage reusable error messages. Just pass a map of [[ErrorDef]] objects when creating the Valory instance.
 
 **Creating Errors**
 ```typescript
