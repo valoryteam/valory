@@ -106,7 +106,7 @@ export function Body(): any {
 }
 
 /**
- *@Decorator
+ * @Decorator
  * Inject value of a property in the http body into an argument. Uses argument name by default.
  * @param {string} name The name of the body parameter
  */

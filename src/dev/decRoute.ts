@@ -117,7 +117,6 @@ export interface NestedGeneric<T> {
 @Route("/")
 export class BurnRoutes extends Controller {
 	/**
-     *
 	 * @return {ApiRes<string>} A success response
 	 */
 	@Post("/other/{thing}/")
