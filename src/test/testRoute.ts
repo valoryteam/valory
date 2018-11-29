@@ -135,9 +135,9 @@ export class MiddlewareTestRoute extends Controller {
     @Middleware(new ClassMiddleware())
     @Get("pre/class/success")
     @DisableSerialization()
-    public preClassSuccess(@Request() req: ApiRequest) {
+    public preClassSuccess(@Request() req: ApiRequest): any {
         const res =  {
-            attachments: cloneDeep((req as any).attachments),
+            attachments: (req as any).attachments,
             key: ClassMiddleware.ClassMiddlewareDataKey,
             data: cloneDeep(req.getAttachment(ClassMiddleware.ClassMiddlewareDataKey)),
         };
@@ -148,7 +148,7 @@ export class MiddlewareTestRoute extends Controller {
     @Middleware(ObjectMiddleware)
     @Get("pre/object/success")
     @DisableSerialization()
-    public preObjectSuccess(@Request() req: ApiRequest) {
+    public preObjectSuccess(@Request() req: ApiRequest): any {
         return {
             attachments: cloneDeep(req as any).attachments,
             key: ObjectMiddlewareDataKey,

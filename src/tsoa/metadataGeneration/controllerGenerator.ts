@@ -5,7 +5,6 @@ import {MethodGenerator} from "./methodGenerator";
 import {Tsoa} from "./tsoa";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Config} from "../../lib/config";
-import {resolve} from "path";
 
 export class ControllerGenerator {
 	private readonly path?: string;
