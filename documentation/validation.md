@@ -88,6 +88,12 @@ export enum SingleValue {
 	prop
 }
 
+// Union enums are a
+export interface SomeModel {
+	field: "enum" | "values";
+	other: boolean;
+}
+
 // NOTE: computed enums are not supported
 ```
 
