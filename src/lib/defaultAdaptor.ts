@@ -1,4 +1,5 @@
-import {ApiExchange, ApiResponse, ApiServer, HttpMethod, ValoryMetadata, ApiRequest} from "../main";
+import {ApiExchange, ApiResponse, ApiServer, HttpMethod, ValoryMetadata} from "../server/valoryheaders";
+import {ApiRequest} from "../server/request";
 import {FastifyInstance, HTTPMethod} from "fastify";
 import {IncomingMessage, ServerResponse, Server} from "http";
 import fastify = require("fastify");

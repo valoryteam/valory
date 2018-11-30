@@ -8,6 +8,7 @@
 	"include": [],
 	"files": [
 		"src/lib/cli.ts",
-		"src/compiler/compiler.ts"
+		"src/compiler/compiler.ts",
+		"src/lib/defaultAdaptor.ts"
 	]
 }

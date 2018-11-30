@@ -45,6 +45,11 @@ export type LiteralAlias = "test";
 export type LiteralEnum = "thing" | "otherthing";
 export type LiteralNum = 2;
 
+export const enum ComputedEnum {
+	test = "test",
+	other = "thing",
+}
+
 export class TestObj {
     /**
      * @example "nested example"
@@ -96,6 +101,7 @@ export interface ChildType {
      */
     thing: string;
     constant: "yay";
+    test: ComputedEnum;
 }
 
 export interface OtherChildType {

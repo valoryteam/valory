@@ -27,6 +27,70 @@ export class ItemWithDefaults {
 }
 ```
 
+### Discriminators
+Swagger has the concept of discriminators which provide polymorphic validation. For instance, say you require an Animal as an input,
+but don't really care whether that animal is a Cat, Dog, or a Tribble. Valory handles this with disciminated unions.
+```typescript
+// Create some models that you want to accept
+export interface Cat {
+	// all of the models must share a discriminating property with a constant
+	// value that matches their name exactly.
+	type: "Cat";
+	huntingAbility: number;
+}
+
+export interface Dog {
+	type: "Dog";
+	tailWagging: boolean;
+}
+
+export interface Tribble {
+	type: "Tribble";
+	fuzziness: number;
+}
+
+// Create a union of the models
+export type Animal = Cat | Dog | Tribble;
+
+@Route() export class SomeController extends Controller {
+	@Post() public submit(@Body() animal: Animal) {
+		// typescript has excellent support for discriminated unions, 
+		// so property access will be typesafe
+		switch (animal.type) {
+			case "Cat":
+				return animal.huntingAbility;
+            case "Dog":
+            	return animal.tailWagging;
+            case "Tribble":
+            	return animal.fuzziness;
+		}
+	}
+}
+```
+
+### Enums
+Enums are a good way to lock down a field to a discrete set of values.
+```typescript
+// The enum declaration is supported
+export enum SomeEnum {
+	// NOTE: the default value for enums is a number, which likely not what you want
+	Field = "value",
+	Other = "thing",
+}
+
+// Const enums are also supported
+export const enum Colors {
+	Red = "r", Blue = "b", Green = "g"
+}
+
+// Enums with a single property are collapsed into constants
+export enum SingleValue {
+	prop
+}
+
+// NOTE: computed enums are not supported
+```
+
 ### Reusable fields
 Say you have a "name" field used multiple places. You could redefine it multiple places, but that would be require effort and violate DRY.
 Type aliases to the rescue!
