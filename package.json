@@ -2,17 +2,16 @@
 	"name": "valory",
 	"version": "3.5.1",
 	"description": "A server agnostic web framework for creating bulletproof apis",
-	"typings": "dist/main.d.ts",
-	"main": "dist/main.js",
 	"scripts": {
-		"pretest": "(rm src/test/generatedRoutes.ts || true) && npm run build",
+		"pretest": "(rm src/test/generatedRoutes.ts || true) && npm run buildTest",
 		"test": "mocha dist/test/test.js",
-		"build": "tsc && npm run types && npm run runtime",
-		"types": "tsc -p tsconfig-defs.json",
+		"buildTest": "tsc && npm run build",
+		"build": "npm run compiler && npm run runtime",
+		"compiler": "tsc -p tsconfig-compiler.json",
 		"release": "semantic-release",
-		"runtime": "cp package-min.json pkg/package.json",
+		"runtime": "tsc -p tsconfig-runtime.json && cp package-min.json runtime/package.json",
 		"lint": "tslint --project .",
-		"clean": "rm -r dist pkg || true",
+		"clean": "rm -r dist compiler runtime || true",
 		"docgen": "typedoc --module commonjs --target ES6 --includes DOCS.md --excludeExternals --excludePrivate --out docs --excludeNotExported --ignoreCompilerErrors --mode file  src/server/"
 	},
 	"engines": {
@@ -23,7 +22,7 @@
 	"files": [
 		"package.json",
 		"README.md",
-		"dist",
+		"compiler",
 		"templates",
 		"tsconfig.json",
 		"tslint.json",
@@ -90,7 +89,7 @@
 	},
 	"preferGlobal": true,
 	"bin": {
-		"valory": "dist/lib/cli.js"
+		"valory": "compiler/lib/cli.js"
 	},
 	"repository": "https://github.com/jfrconley/valory.git",
 	"release": {
@@ -105,7 +104,7 @@
 			},
 			{
 				"path": "@semantic-release/npm",
-				"pkgRoot": "pkg"
+				"pkgRoot": "runtime"
 			}
 		],
 		"publish": [
@@ -117,7 +116,7 @@
 			},
 			{
 				"path": "@semantic-release/npm",
-				"pkgRoot": "pkg"
+				"pkgRoot": "runtime"
 			}
 		],
 		"prepare": [
@@ -126,7 +125,7 @@
 			},
 			{
 				"path": "@semantic-release/npm",
-				"pkgRoot": "pkg"
+				"pkgRoot": "runtime"
 			}
 		],
 		"success": [],

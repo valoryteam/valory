@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"outDir": "compiler",
+		"sourceMap": false,
+		"declaration": false
+	},
+	"include": [],
+	"files": [
+		"src/lib/cli.ts",
+		"src/compiler/compiler.ts"
+	]
+}

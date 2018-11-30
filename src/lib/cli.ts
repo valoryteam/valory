@@ -5,7 +5,7 @@ import {CLI_MODE_FLAG, COMPSWAG_VERION, Config, GENROUTES_VERSION, METADATA_VERS
 
 process.env[CLI_MODE_FLAG] = "true";
 
-import {VALORYLOGGERVAR, ValoryMetadata, VALORYMETAVAR, VALORYPRETTYLOGGERVAR} from "../main";
+import {VALORYLOGGERVAR, ValoryMetadata, VALORYMETAVAR, VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
 import {CompilationLevel} from "../compiler/compilerheaders";
 import {Swagger} from "../server/swagger";
 import {compileAndSave} from "../compiler/compileRunner";
