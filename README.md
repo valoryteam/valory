@@ -8,6 +8,7 @@
 ## Contents
 * [Documentation](documentation/index.md)
 * [API Reference](http://valory-docs.s3-website-us-east-1.amazonaws.com)
+* [Example Project](https://github.com/jfrconley/valory-example)
 * [Description](#description)
 * [Installation](#installation)
 * [Basic Usage](#basic-usage)

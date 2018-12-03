@@ -130,7 +130,7 @@ export class BurnRoutes extends Controller {
 	 * @return {ApiRes<string>} A success response
 	 */
 	@Post("/other/{thing}/")
-    public test(@Path() thing: string, @Body() input: ParentType): ApiRes<string> {
+    public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<string> {
         this.logger.info("A thing has happen");
         return {status_code: 1, response_data: ["yay2", 2]} as any;
     }
