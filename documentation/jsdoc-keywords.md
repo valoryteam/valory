@@ -58,3 +58,6 @@
 
 * Enforce a minimum date for a string
 * ISO_8601
+
+**@multipleOf [number]**
+* Require numeric property to be a multiple of a given value

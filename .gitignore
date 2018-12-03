@@ -16,4 +16,4 @@ shrinkwrap.yaml
 .cache
 pkg
 runtime
-compiler
+/compiler

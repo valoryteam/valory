@@ -102,6 +102,10 @@ export interface ChildType {
     thing: string;
     constant: "yay";
     test: ComputedEnum;
+	/**
+	 * @multipleOf 2
+	 */
+	num: number;
 }
 
 export interface OtherChildType {
