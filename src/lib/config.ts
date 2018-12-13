@@ -57,7 +57,7 @@ export namespace Config {
 						window.location.href = window.location.href.replace(/#.*$/, '#');
 					}
 				});
-				var path = window.location.pathname;
+				var path = window.location.origin + window.location.pathname;
 				if (path.endsWith("/")) {
 					path = path.substr(0, path.length - 1);
 				}

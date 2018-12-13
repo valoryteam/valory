@@ -116,7 +116,8 @@ async function compilerRunner(args: any) {
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
-	api.info.version = args.apiVersion;
+	console.log((Config.PackageJSON.version || "1.0.0"));
+	api.info.version = args.apiVersion || (api.info.version || (Config.PackageJSON.version || "1.0.0"));
 	const output = omitBy(api, isNil) as Swagger.Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
 	compileAndSave(output, Config.CompSwagPath, process.cwd(),
@@ -261,7 +262,6 @@ yargs
 				},
 				apiVersion: {
 					desc: "Api version string",
-					default: "1.0.0",
 					type: "string",
 				},
 				singleError: {

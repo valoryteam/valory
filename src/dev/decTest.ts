@@ -5,7 +5,6 @@ import Pino = require("pino");
 // Define basic info for the api
 const info: Swagger.Info = {
 	title: "CNP POC API",
-	version: "1",
 };
 const definitions: { [name: string]: Swagger.Schema } = {
 	W3IRD$_: {
