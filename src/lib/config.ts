@@ -44,7 +44,7 @@ export namespace Config {
 			}
 		</style>
 		<redoc></redoc>
-		<script src="https://rebilly.github.io/ReDoc/releases/latest/redoc.min.js">
+		<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js">
 		</script>
 		<script>
 			$(document).ready(function() {
