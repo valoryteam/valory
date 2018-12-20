@@ -2,8 +2,6 @@ import {each} from "lodash";
 import {ExtendedSchema, RequestFieldMap} from "./compilerheaders";
 import {Swagger} from "../server/swagger";
 
-const stringify = require("fast-json-stable-stringify");
-
 export interface MethodOutput {
 	schema: Swagger.Schema;
 	hash: string;
