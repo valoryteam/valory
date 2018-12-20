@@ -310,6 +310,7 @@ function refFinder(ref: any, schema: any, externalSchema: any) {
             code += `['${walk[i]}']`;
         }
     }
+    // tslint:disable-next-line:function-constructor
     return (new Function("schema", code))(schema);
 }
 
