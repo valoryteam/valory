@@ -195,6 +195,48 @@ describe("ValoryTest", () => {
     }
 
     @suite
+    class ContentTypeTest extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            name: "steven",
+            isCool: true,
+            simpleEnum: "thing",
+        };
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/test/submit",
+                headers: {
+                    "content-type": "application/json;charset=utf-8",
+                },
+                json: ContentTypeTest.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should not have property code"() {
+            expect(ContentTypeTest.parsed).to.not.have.property("code");
+        }
+
+        @test
+        public "Should have property name equal to input"() {
+            expect(ContentTypeTest.parsed).to.have.property("name").equal(ContentTypeTest.json.name);
+        }
+
+        @test
+        public "Should have property isCool equal to input"() {
+            expect(ContentTypeTest.parsed).to.have.property("isCool").equal(true);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(ContentTypeTest.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
     class RequestIdTest extends RequestTestBase {
         private static parsed: any;
 

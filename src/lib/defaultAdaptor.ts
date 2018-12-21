@@ -39,7 +39,8 @@ export class DefaultAdaptor implements ApiServer {
                     path: req.params,
                     route,
                 });
-                if (req.req.headers["content-type"].indexOf("application/json") !== -1 && req.body != null) {
+                const contentType = req.req.headers["content-type"];
+                if (contentType != null && contentType.indexOf("application/json") !== -1 && req.body != null) {
                     transRequest.body = req.body.parsed;
                     transRequest.rawBody = req.body.raw;
                 } else {
