@@ -90,10 +90,6 @@ async function compilerRunner(args: any) {
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
 	}
-	// const Logger = P({
-	// 	level: process.env[VALORYLOGGERVAR] || "info",
-	// 	prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true",
-	// });
 	if (Config.SourceRoutePath !== "") {
 		await routeBuild(Config.ConfigData.sourceEntrypoint);
 	}
@@ -116,7 +112,6 @@ async function compilerRunner(args: any) {
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;
-	console.log((Config.PackageJSON.version || "1.0.0"));
 	api.info.version = args.apiVersion || (api.info.version || (Config.PackageJSON.version || "1.0.0"));
 	const output = omitBy(api, isNil) as Swagger.Spec;
 	const compLevel = CompilationLevel[args.compilationLevel] as any;
