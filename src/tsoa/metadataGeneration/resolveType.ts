@@ -96,12 +96,56 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
         } as Tsoa.EnumerateType;
     }
 
+    if (typeNode.kind === ts.SyntaxKind.IndexedAccessType) {
+        const getIndexChain = (node: ts.Node): string[] => {
+            if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
+                return [];
+            } else {
+                const childPath = getIndexChain((node as any).objectType);
+                const path = ((node as ts.IndexedAccessTypeNode).indexType as ts.LiteralTypeNode).literal.getText().replace(/"/g, "");
+                childPath.push(path);
+                return childPath;
+            }
+        };
+        const getParentNode = (node: ts.TypeNode): (ts.TypeNode) => {
+            if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
+                return node;
+            } else {
+                return getParentNode((node as ts.IndexedAccessTypeNode).objectType);
+            }
+        };
+
+        const indexed = typeNode as ts.IndexedAccessTypeNode;
+        // resolve the parent
+        const parent = resolveType(getParentNode(indexed)) as Tsoa.ReferenceType;
+        const indexPath = getIndexChain(indexed);
+        const refName = indexPath.reduce((current, item) => {
+            return current += `["${item}"]`;
+        }, parent.refName);
+        let marker = parent as any;
+        for (const pathSeg of indexPath) {
+            if (marker.properties == null) {
+                throw new GenerateMetadataError("Invalid index access type: " + refName);
+            }
+            marker = marker.properties.find((prop: any) => {
+               return prop.name === pathSeg;
+            }).type;
+        }
+
+        const ref = {
+            dataType: "refAlias",
+            type: marker,
+            refName,
+        } as Tsoa.ReferenceAlias;
+        return ref;
+    }
+
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
         throw new GenerateMetadataError(`Unknown type: ${ts.SyntaxKind[typeNode.kind]}`);
     }
 
     const typeReference = typeNode as ts.TypeReferenceNode;
-    if (typeReference.typeName.kind === ts.SyntaxKind.Identifier) {
+    if (typeReference.typeName != null && typeReference.typeName.kind === ts.SyntaxKind.Identifier) {
         if (typeReference.typeName.text === "Date") {
             return getDateType(typeNode, parentNode);
         }

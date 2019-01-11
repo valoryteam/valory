@@ -415,6 +415,7 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForReferenceType(referenceType: Tsoa.ReferenceType): Swagger.BaseSchema {
-        return {$ref: `#/definitions/${referenceType.refName}`};
+        const formatted = referenceType.refName.replace(/\["([a-zA-Z0-9]+?)"]/g, "/properties/$1");
+        return {$ref: `#/definitions/${formatted}`};
     }
 }

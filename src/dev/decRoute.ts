@@ -65,6 +65,11 @@ export class TestObj {
         nestedObj: {
             num: number;
         };
+    } = {
+    	nestedObj: {
+    		num: 2,
+	    },
+	    nestedProp: "stuff",
     };
 }
 
@@ -106,6 +111,10 @@ export interface ChildType {
 	 * @multipleOf 2
 	 */
 	num: number;
+	/**
+	 * Override description
+	 */
+	indexed: TestObj["nested"];
 }
 
 export interface OtherChildType {
