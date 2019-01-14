@@ -2,12 +2,14 @@
 
 import {indexOf, intersection, map} from "lodash";
 import * as ts from "typescript";
+// import {unique} from "../../lib/helpers";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
 import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
 import {Swagger} from "../../server/swagger";
+const XXH = require("xxhashjs");
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -613,12 +615,11 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
         return getAnyTypeName(arrayType.elementType) + "Array";
     }
 
-    if (typeNode.kind === ts.SyntaxKind.UnionType) {
-        return "object";
-    }
-
-    if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
-        return "object";
+    if (typeNode.kind === ts.SyntaxKind.UnionType || typeNode.kind === ts.SyntaxKind.TypeLiteral) {
+        // Generate a hash based on source code
+        // FIXME
+        const source = typeNode.getText(typeNode.getSourceFile());
+        return XXH.h32(source, "literal").toString();
     }
 
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
