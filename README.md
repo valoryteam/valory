@@ -148,6 +148,8 @@ These are the officially maintained adaptors and middleware available for Valory
     * Adaptor that uses polka (Smallest size)
 * [valory-adaptor-fastify](https://www.npmjs.com/package/valory-adaptor-fastify)
     * Adaptor that uses fastify (High stability)
+* [valory-adaptor-alb](https://www.npmjs.com/package/valory-adaptor-alb)
+    * Adaptor for directly processing events from an AWS Application Load Balancer
 * [valory-adaptor-claudia](https://www.npmjs.com/package/valory-adaptor-claudia)
     * Adaptor for use with [Claudia](https://www.npmjs.com/package/claudia) and [claudia-api-builder](https://www.npmjs.com/package/claudia-api-builder). Allows valory to be deployed as a serverless application in AWS Lambda.
 
