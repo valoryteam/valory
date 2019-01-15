@@ -2,7 +2,6 @@
 
 import {indexOf, intersection, map} from "lodash";
 import * as ts from "typescript";
-import {getCircularReplacer} from "../../lib/helpers";
 // import {unique} from "../../lib/helpers";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
