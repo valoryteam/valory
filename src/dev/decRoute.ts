@@ -114,12 +114,13 @@ export interface ChildType {
 	/**
 	 * Override description
 	 */
-	indexed: TestObj["nested"];
+	// indexed: TestObj["nested"];
 }
 
 export interface OtherChildType {
     dtype: "OtherChildType";
     other: number;
+    // stuff: TestObj["nested"];
 }
 
 export interface ApiRes<T> {
@@ -133,6 +134,11 @@ export interface NestedGeneric<T> {
     data: ApiRes<T>;
 }
 
+export interface GenericType<T> {
+	common: string;
+	generic: T;
+}
+
 @Route("/")
 export class BurnRoutes extends Controller {
 	/**
@@ -142,6 +148,11 @@ export class BurnRoutes extends Controller {
 	public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<{stuff?: boolean}> {
 		this.logger.info("A thing has happen");
 		return {status_code: 1, response_data: {stuff: true}};
+	}
+
+	@Post("submit/generic/literal")
+	public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: TestObj["nested"]}}>, literal2: GenericType<{other: string}>}) {
+		return genericInput;
 	}
 }
 

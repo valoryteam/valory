@@ -195,6 +195,118 @@ describe("ValoryTest", () => {
     }
 
     @suite
+    class GenericPostTest extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            common: "com",
+            generic: {
+                name: "steven",
+                isCool: true,
+                simpleEnum: "thing",
+            },
+        };
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/test/submit/generic",
+                json: GenericPostTest.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should not have property code"() {
+            expect(GenericPostTest.parsed).to.not.have.property("code");
+        }
+
+        @test
+        public "Should match input"() {
+            expect(GenericPostTest.parsed).to.eql(GenericPostTest.json);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(GenericPostTest.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
+    class GenericLiteralPostTest extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            literal1: {
+                common: "stuff",
+                generic: {
+                    potato: true,
+                },
+            },
+            literal2: {
+                common: "other",
+                generic: {
+                    other: "string",
+                },
+            },
+        };
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/test/submit/generic/literal",
+                json: GenericLiteralPostTest.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should not have property code"() {
+            expect(GenericLiteralPostTest.parsed).to.not.have.property("code");
+        }
+
+        @test
+        public "Should match input"() {
+            expect(GenericLiteralPostTest.parsed).to.eql(GenericLiteralPostTest.json);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(GenericLiteralPostTest.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
+    class IndexedAccessPostTest extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            ref: "thing",
+        };
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/test/submit/indexed",
+                json: IndexedAccessPostTest.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should not have property code"() {
+            expect(IndexedAccessPostTest.parsed).to.not.have.property("code");
+        }
+
+        @test
+        public "Should match input"() {
+            expect(IndexedAccessPostTest.parsed).to.eql(IndexedAccessPostTest.json);
+        }
+
+        @test
+        public "Should have request-id header"() {
+            expect(IndexedAccessPostTest.response.headers).to.have.property("request-id").a("string");
+        }
+    }
+
+    @suite
     class ContentTypeTest extends RequestTestBase {
         private static parsed: any;
         private static json = {

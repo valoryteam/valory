@@ -2,6 +2,7 @@
 
 import {indexOf, intersection, map} from "lodash";
 import * as ts from "typescript";
+import {getCircularReplacer} from "../../lib/helpers";
 // import {unique} from "../../lib/helpers";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
@@ -44,7 +45,7 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
 
     if (typeNode.kind === ts.SyntaxKind.UnionType) {
         const unionType = typeNode as ts.UnionTypeNode;
-        const supportType = unionType.types.some((type) => type.kind === ts.SyntaxKind.LiteralType);
+        const supportType = unionType.types.every((type) => type.kind === ts.SyntaxKind.LiteralType);
         if (supportType) {
             return {
                 dataType: "enum",
@@ -62,7 +63,7 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
                 }),
             } as Tsoa.EnumerateType;
         } else {
-            return {dataType: "object"} as Tsoa.Type;
+            throw new GenerateMetadataError("Non literal type specified in union");
         }
     }
 
@@ -99,27 +100,9 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
     }
 
     if (typeNode.kind === ts.SyntaxKind.IndexedAccessType) {
-        const getIndexChain = (node: ts.Node): string[] => {
-            if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
-                return [];
-            } else {
-                const childPath = getIndexChain((node as any).objectType);
-                const path = ((node as ts.IndexedAccessTypeNode).indexType as ts.LiteralTypeNode).literal.getText().replace(/"/g, "");
-                childPath.push(path);
-                return childPath;
-            }
-        };
-        const getParentNode = (node: ts.TypeNode): (ts.TypeNode) => {
-            if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
-                return node;
-            } else {
-                return getParentNode((node as ts.IndexedAccessTypeNode).objectType);
-            }
-        };
-
         const indexed = typeNode as ts.IndexedAccessTypeNode;
         // resolve the parent
-        const parent = resolveType(getParentNode(indexed)) as Tsoa.ReferenceType;
+        const parent = resolveType(getIndexParentNode(indexed)) as Tsoa.ReferenceType;
         const indexPath = getIndexChain(indexed);
         const refName = indexPath.reduce((current, item) => {
             return current += `["${item}"]`;
@@ -200,6 +183,25 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
 
     MetadataGenerator.current.AddReferenceType(referenceType);
     return referenceType;
+}
+
+function getIndexParentNode(node: ts.TypeNode): (ts.TypeNode) {
+    if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
+        return node;
+    } else {
+        return getIndexParentNode((node as ts.IndexedAccessTypeNode).objectType);
+    }
+}
+
+function getIndexChain(node: ts.IndexedAccessTypeNode): string[] {
+    if (node.kind !== ts.SyntaxKind.IndexedAccessType) {
+        return [];
+    } else {
+        const childPath = getIndexChain((node as any).objectType);
+        const path = ((node as ts.IndexedAccessTypeNode).indexType as ts.LiteralTypeNode).literal.getText().replace(/"/g, "");
+        childPath.push(path);
+        return childPath;
+    }
 }
 
 export function getInitializerValue(initializer?: ts.Expression, type?: Tsoa.Type): any {
@@ -601,7 +603,11 @@ function getTypeName(typeName: string, genericTypes?: ts.NodeArray<ts.TypeNode>)
     if (!genericTypes || !genericTypes.length) {
         return typeName;
     }
-    return typeName + genericTypes.map((t) => getAnyTypeName(t)).join("");
+    let genericTypeNames = genericTypes.map((t) => getAnyTypeName(t)).join("");
+    if (genericTypeNames.length > 20) {
+        genericTypeNames = XXH.h32(genericTypeNames, "generic");
+    }
+    return typeName + genericTypeNames;
 }
 
 function getAnyTypeName(typeNode: ts.TypeNode): string {
@@ -610,16 +616,39 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
         return primitiveType;
     }
 
+    if (typeNode.kind === ts.SyntaxKind.LiteralType) {
+        const node = typeNode as ts.LiteralTypeNode;
+        return (node.literal as any).text;
+    }
+
     if (typeNode.kind === ts.SyntaxKind.ArrayType) {
         const arrayType = typeNode as ts.ArrayTypeNode;
         return getAnyTypeName(arrayType.elementType) + "Array";
     }
 
-    if (typeNode.kind === ts.SyntaxKind.UnionType || typeNode.kind === ts.SyntaxKind.TypeLiteral) {
-        // Generate a hash based on source code
-        // FIXME
-        const source = typeNode.getText(typeNode.getSourceFile());
-        return XXH.h32(source, "literal").toString();
+    if (typeNode.kind === ts.SyntaxKind.UnionType) {
+        const node = typeNode as ts.UnionTypeNode;
+        let name = "";
+        for (const type of node.types) {
+            name = `${name}|${getAnyTypeName(type)}`;
+        }
+        return name;
+    }
+
+    if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
+        const node  = typeNode as ts.TypeLiteralNode;
+        let name = "";
+        for (const member of node.members) {
+            name = `${name},${(member.name as any).escapedText}${member.questionToken ? "?" : ""}:${getAnyTypeName((member as any).type)}`;
+        }
+        return `{${name}}`;
+    }
+
+    if (typeNode.kind === ts.SyntaxKind.IndexedAccessType) {
+        const node = typeNode as ts.IndexedAccessTypeNode;
+        const chain = getIndexChain(node);
+        const parent = getIndexParentNode(node);
+        return `${(parent as any).typeName.escapedText}[${chain.join("][")}]`;
     }
 
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
@@ -651,7 +680,7 @@ function createCircularDependencyResolver(refName: string) {
         }
         referenceType.description = realReferenceType.description;
         referenceType.dataType = realReferenceType.dataType as any;
-        referenceType.refName = referenceType.refName;
+        referenceType.refName = realReferenceType.refName;
 
         if (referenceType.dataType === "refAlias" && realReferenceType.dataType === "refAlias") {
             referenceType.validators = realReferenceType.validators;
