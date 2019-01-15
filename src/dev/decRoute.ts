@@ -123,11 +123,6 @@ export interface OtherChildType {
     // stuff: TestObj["nested"];
 }
 
-export interface ApiRes<T> {
-    status_code: 1;
-    response_data: T;
-}
-
 export type ApiResAsync<T> = Promise<ApiRes<T>>;
 
 export interface NestedGeneric<T> {
@@ -139,19 +134,24 @@ export interface GenericType<T> {
 	generic: T;
 }
 
+export interface ApiRes<T> {
+    status_code: 1;
+    response_data: T;
+}
+
 @Route("/")
 export class BurnRoutes extends Controller {
 	/**
 	 * @return {ApiRes<string>} A success response
 	 */
 	@Post("/other/{thing}/")
-	public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<{stuff?: boolean}> {
+	public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
 		this.logger.info("A thing has happen");
-		return {status_code: 1, response_data: {stuff: true}};
+		return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
 	}
 
 	@Post("submit/generic/literal")
-	public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: TestObj["nested"]}}>, literal2: GenericType<{other: string}>}) {
+	public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: string}}>, literal2: GenericType<{other: string}>}) {
 		return genericInput;
 	}
 }

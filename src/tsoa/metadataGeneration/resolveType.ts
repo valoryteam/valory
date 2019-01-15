@@ -26,9 +26,6 @@ type UsableDeclaration = ts.InterfaceDeclaration
     | ts.TypeAliasDeclaration
     | ts.ObjectTypeDeclaration;
 
-// TODO: Support nested Generics
-// TODO: Unique identifier for generic literals
-
 export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extractEnum = true): Tsoa.Type {
     const primitiveType = getPrimitiveType(typeNode, parentNode);
     if (primitiveType) {
@@ -656,7 +653,11 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
 
     const typeReference = typeNode as ts.TypeReferenceNode;
     try {
-        return (typeReference.typeName as ts.Identifier).text;
+        const name =  (typeReference.typeName as ts.Identifier).text;
+        if (typeReference.typeArguments && typeReference.typeArguments.length > 0) {
+            return getTypeName(name, typeReference.typeArguments);
+        }
+        return name;
     } catch (e) {
         // idk what would hit this? probably needs more testing
         // tslint:disable-next-line:no-console
