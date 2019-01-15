@@ -139,16 +139,17 @@ export class BurnRoutes extends Controller {
 	 * @return {ApiRes<string>} A success response
 	 */
 	@Post("/other/{thing}/")
-    public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<{stuff: boolean}> {
-        this.logger.info("A thing has happen");
-        return {status_code: 1, response_data: {stuff: true}};
-    }
+	public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<{stuff: boolean}> {
+		this.logger.info("A thing has happen");
+		return {status_code: 1, response_data: {stuff: true}};
+	}
 }
 
 @Route("thing")
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
     @Get()
+	@Response(400, "Explosion")
     public yay(): {thing: "yay"} {
         this.logger.info("yay");
         return this.buildError("AccessDenied");
