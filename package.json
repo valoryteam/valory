@@ -92,9 +92,9 @@
 	"bin": {
 		"valory": "compiler/lib/cli.js"
 	},
-	"repository": "https://github.com/jfrconley/valory.git",
+	"repository": "https://github.com/valoryteam/valory.git",
 	"release": {
-		"repositoryUrl": "https://github.com/jfrconley/valory.git",
+		"repositoryUrl": "https://github.com/valoryteam/valory.git",
 		"branch": "master",
 		"verifyConditions": [
 			{
