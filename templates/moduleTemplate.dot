@@ -22,7 +22,13 @@ function validate(path, method, data) {
     };
 }
 
-const noop = data => data;
+function noopBool() {
+  return true;
+}
+
+function noop(data) {
+  return data;
+}
 
 function ucs2length(str) {
   var length = 0

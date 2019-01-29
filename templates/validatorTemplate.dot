@@ -12,6 +12,7 @@ var {{= it.hash }} =
       const dataObjCheckTail = /}  else \{  var err =  \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } ;  vErrors.push\(err\); errors\+\+;  }/g;
 
       const discrimArr = [];
+      let noop = false;
 
       function generateUID() {
           var firstPart = (Math.random() * 46656) | 0;
@@ -152,22 +153,32 @@ var {{= it.hash }} =
       code = code.replace(dataObjCheckHead, "");
       code = code.replace(dataObjCheckTail, "");
 
+      /* Check for empty validation */
+      if (it.lodash.isEqual(it.schema, {"properties": {}, "required": [], "type": "object"})){
+          noop = true
+      }
+
       /* Get ready to stick it back together */
       let functionHeader = code.substring(0, code.indexOf("{"));
       let functionBody = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
     }}
-    {{= functionHeader}} {
-    let validationErrors = {{=(it.singleError) ? "null" : "[]"}};
-    {{~ it.validate.source.defaults:d:i }}
-      {{= "\/**@const*\/"}} const default{{=i}} = {{=JSON.stringify(d)}};
-    {{~}}
-    {{= "\/**@const*\/"}} const schema = {{= JSON.stringify(it.schema )}};
-    {{
-      let patterns = it.validate.source.patterns.map(function(pattern, id){
-        pattern = pattern.replace(/\\/g,'\\\\');
-        return ("\/**@const*\/ const pattern" + id + " = new RegExp(\"" + pattern + "\");");
-      });
-    }}
-    {{= patterns.join("") }}
-    {{= functionBody}}
-};
+    {{?!noop}}
+        {{= functionHeader}} {
+        let validationErrors = {{=(it.singleError) ? "null" : "[]"}};
+        {{~ it.validate.source.defaults:d:i }}
+          {{= "\/**@const*\/"}} const default{{=i}} = {{=JSON.stringify(d)}};
+        {{~}}
+        {{= "\/**@const*\/"}} const schema = {{= JSON.stringify(it.schema )}};
+        {{
+          let patterns = it.validate.source.patterns.map(function(pattern, id){
+            pattern = pattern.replace(/\\/g,'\\\\');
+            return ("\/**@const*\/ const pattern" + id + " = new RegExp(\"" + pattern + "\");");
+          });
+        }}
+        {{= patterns.join("") }}
+        {{= functionBody}}
+        };
+    {{?}}
+    {{?noop}}
+        noopBool;
+    {{?}}
