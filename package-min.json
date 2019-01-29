@@ -11,17 +11,17 @@
 	"author": "John Conley",
 	"dependencies": {
 		"@types/pino": "^5.20.0",
-		"hyperid": "^1.4.1",
+		"hyperid": "^2.0.2",
 		"lodash": "^4.17.11",
-		"pino": "^5.8.0",
+		"pino": "^5.11.1",
 		"steed": "^1.1.3",
 		"xxhashjs": "^0.2.2",
-		"bluebird": "^3.5.2",
-		"flatstr": "^1.0.8"
+		"bluebird": "^3.5.3",
+		"flatstr": "^1.0.9"
 	},
 	"license": "ISC",
 	"release": {
-		"repositoryUrl": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Valory2",
+		"repositoryUrl": "https://github.com/valoryteam/valory.git",
 		"branch": "master",
 		"verifyConditions": [
 			"@semantic-release/npm"

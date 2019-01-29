@@ -31,7 +31,7 @@ Valory is small framework designed to standardize the process of writing well do
 * Make you write your code and docs separately
 
 ## Installation
-First, go and get yourself a jre/jdk (at least version 7) and make sure the path is correctly configured.
+If you are on windows, you will want to install Java 1.7+. Closure compiler will work without it, but will be slow.
 
 Next, you'll need to add the Valory runtime to your project along with a server adaptor
 ```bash

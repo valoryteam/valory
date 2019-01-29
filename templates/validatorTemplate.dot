@@ -8,6 +8,8 @@ var {{= it.hash }} =
       const errorArrayPushSimplification = /if \(vErrors === null\) vErrors = \[([a-zA-Z0-9_$]+?)\]; else vErrors.push\(\1\);/g;
       const vErrorDec = /vErrors = null;/g;
       const reverseEscapeDiscRequired = /:CSID:([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):([a-zA-Z0-9_$]*):[\s\S]*?'ytreporp deriuqer a si \1.ydob.tseuqer :\]deriuqer\[rorrEnoitadilaV' = rre rav/g;
+      const dataObjCheckHead = /if \(\(data && typeof data === "object" && !Array.isArray\(data\)\)\) \{/g;
+      const dataObjCheckTail = /}  else \{  var err =  \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } ;  vErrors.push\(err\); errors\+\+;  }/g;
 
       const discrimArr = [];
 
@@ -146,6 +148,11 @@ var {{= it.hash }} =
           }).split("").reverse().join("");
       }
 
+      /* Remove redundant check on root object */
+      code = code.replace(dataObjCheckHead, "");
+      code = code.replace(dataObjCheckTail, "");
+
+      /* Get ready to stick it back together */
       let functionHeader = code.substring(0, code.indexOf("{"));
       let functionBody = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
     }}
