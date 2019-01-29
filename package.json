@@ -67,7 +67,7 @@
 		"dot": "^1.1.2",
 		"fastify": "^1.12.1",
 		"flatstr": "^1.0.8",
-		"google-closure-compiler": "^20181008.0.0",
+		"google-closure-compiler": "^20190121.0.0",
 		"hyperid": "^1.4.1",
 		"inquirer": "^6.2.0",
 		"json-schema-merge-allof": "^0.6.0",

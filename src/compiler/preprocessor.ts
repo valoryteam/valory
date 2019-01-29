@@ -156,7 +156,7 @@ export function resolve(resolveQueue: PriorityQueue<OneOfMarker>) {
 export function mangleKeys(schema: ExtendedSchema): {schema: ExtendedSchema, mangledKeys: MangledKey[]} {
 	const mangledKeys: MangledKey[] = [];
 	const mangledSchema = mapKeysDeep(schema, (value, key) => {
-		if (key === "enum") {
+		if (key === "enum" && Array.isArray(value)) {
 			return "api_enum";
 		}
 		// if (!safeKey.test(key) && mangledKeys.filter((item) => item.original === key).length === 0) {

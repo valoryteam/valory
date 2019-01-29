@@ -20,29 +20,31 @@ import {ThreadSpinner} from "thread-spin";
 import {convertTime} from "./helpers";
 import chalk from "chalk";
 import {Spinner, spinnerFail} from "./spinner";
-import {coerce, gt} from "semver";
+import {coerce, gte} from "semver";
 import {spawnSync} from "child_process";
 
 async function checkRequirements() {
 	const versionRegex = /version \"([A-Za-z0-9\_\.]*?)\"/g;
 	console.log(chalk.bold("Requirements"));
 	await Spinner.start("Node 8+");
-	if (!gt(coerce(process.version), "8.0.0")) {
+	if (!gte(coerce(process.version), "8.0.0")) {
 		await spinnerFail("Node version too low", null);
 	}
 	await Spinner.succeed(chalk.green(`Node ${process.version}`));
-	await Spinner.start("Java 1.7+");
-	try {
-		const javaOutput = spawnSync("java", ["-version"]).stderr;
-		// console.log(javaOutput);
-		// console.log( versionRegex.exec(javaOutput.toString()));
-		const javaVersion = versionRegex.exec(javaOutput.toString())[1];
-		if (!gt(coerce(javaVersion), coerce("1.7"))) {
-			await spinnerFail("Java version too low", null);
+	if (process.platform !== "darwin" && process.platform !== "linux") {
+		await Spinner.start("Java 1.7+");
+		try {
+			const javaOutput = spawnSync("java", ["-version"]).stderr;
+			// console.log(javaOutput);
+			// console.log( versionRegex.exec(javaOutput.toString()));
+			const javaVersion = versionRegex.exec(javaOutput.toString())[1];
+			if (!gte(coerce(javaVersion), coerce("1.7"))) {
+				await spinnerFail("Java version too low", null);
+			}
+			await Spinner.succeed(chalk.green(`Java ${javaVersion}`));
+		} catch (e) {
+			await spinnerFail("Java installation missing or broken", e);
 		}
-		await Spinner.succeed(chalk.green(`Java ${javaVersion}`));
-	} catch (e) {
-		await spinnerFail("Java installation missing or broken", e);
 	}
 	await Spinner.start("valory-runtime");
 	const pkg = Config.PackageJSON;

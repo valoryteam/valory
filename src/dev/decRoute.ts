@@ -120,6 +120,7 @@ export interface ChildType {
 export interface OtherChildType {
     dtype: "OtherChildType";
     other: number;
+    enum: ComputedEnum;
     // stuff: TestObj["nested"];
 }
 
