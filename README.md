@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/valory.svg)]()
-![build](https://teamcity.modoapi.com/app/rest/builds/buildType:(id:Valory2_Build)/statusIcon)
+[![Codeship Status for valoryteam/valory](https://app.codeship.com/projects/b6f4f1f0-fd8c-0136-c8d1-16d62b820b2a/status?branch=master)](https://app.codeship.com/projects/322569)
 # Valory
 *A server agnostic web framework for creating bulletproof apis*
 
