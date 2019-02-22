@@ -2,6 +2,7 @@ import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
+import {ClosureCompiler} from "../lib/closureCompiler";
 
 const Ajv = require("ajv");
 import * as fs from "fs";
@@ -22,7 +23,6 @@ import chalk from "chalk";
 import {Spinner, spinnerFail} from "../lib/spinner";
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
-const ClosureCompiler = require("google-closure-compiler").compiler;
 const tmp = require("tmp");
 const dotJs = require("dot");
 dotJs.log = false;

@@ -1,4 +1,5 @@
 import {expect} from "chai";
+import {platform} from "os";
 import * as path from "path";
 import * as fs from "fs";
 import {Options, OptionsWithUrl} from "request-promise";
@@ -81,7 +82,9 @@ describe("ValoryTest", () => {
         if (fs.existsSync(valoryConfig)) {
             fs.writeFileSync(valoryConfig, ValoryTest.currentConfig);
         }
-        process.kill(ValoryTest.serverProc.pid + 1, "SIGTERM");
+        let pid = ValoryTest.serverProc.pid;
+        if (platform() !== "darwin") { pid++; }
+        process.kill(pid, "SIGTERM");
     });
 
     @suite
