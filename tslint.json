@@ -21,7 +21,8 @@
 		"only-arrow-functions": false,
 		"member-ordering": false,
 		"max-line-length": false,
-		"forin": false
+		"forin": false,
+		"prefer-for-of": false
 	},
 	"rulesDirectory": []
 }
