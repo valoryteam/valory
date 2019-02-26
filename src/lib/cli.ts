@@ -84,10 +84,7 @@ async function compilerRunner(args: any) {
 	await checkRequirements();
 	const start = process.hrtime();
 	require("ts-node").register({
-		project: join(__dirname, "../../tsconfig.json"),
-		compilerOptions: {
-			types: ["node"],
-		},
+		project: Config.TSConfigPath,
 	});
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
