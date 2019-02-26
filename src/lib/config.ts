@@ -1,3 +1,4 @@
+import {join} from "path";
 import * as path from "path";
 import {readFileSync, existsSync} from "fs";
 import {IPackageJSON} from "./package";
@@ -86,6 +87,7 @@ export namespace Config {
 	export let GeneratedRoutePath = "";
 	export let SourceRoutePath = "";
 	export let PackageJSONPath = "";
+	export let TSConfigPath = "";
 
 	export function load(loadConfig: boolean = true, root?: string) {
 		if (Loaded) {
@@ -101,6 +103,7 @@ export namespace Config {
 		SwaggerPath = `${RootPath}/${SWAGGER_FILE}`;
 		CompSwagPath = `${RootPath}/${COMPILED_SWAGGER_FILE}`;
 		PackageJSONPath = `${RootPath}/package.json`;
+		TSConfigPath = (existsSync(`${RootPath}/tsconfig.json`)) ? `${RootPath}/tsconfig.json` : join(__dirname, "../../tsconfig.json");
 		if (CompilerMode) {
 			PackageJSON = require(PackageJSONPath);
 			if (Object.keys(PackageJSON.dependencies).includes("valory-runtime")) {
