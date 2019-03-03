@@ -289,6 +289,7 @@ export class SpecGenerator {
             swaggerType.description = property.description;
             swaggerType.example = property.example;
             swaggerType.format = format || swaggerType.format;
+            if (property.readOnly) {swaggerType.readOnly = property.readOnly; }
 
             if (property.type.dataType === "object") {
                 const resolved = this.buildLiteralObject(property.type as Tsoa.ObjectType);

@@ -379,6 +379,12 @@ function getEnumerateType(typeName: ts.EntityName, extractEnum = true): Tsoa.Typ
     }
 }
 
+function getNodeReadOnly(node: ts.PropertyDeclaration | ts.ParameterDeclaration): boolean {
+    return isExistJSDocTag(node, (tag) => {
+        return tag.tagName.text === "readonly";
+    });
+}
+
 function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration |
     ts.ParameterDeclaration | ts.EnumDeclaration) {
     const example = getJSDocComment(node, "example");
@@ -867,6 +873,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
                     format: getNodeFormat(propertyDeclaration),
                     example: getNodeExample(propertyDeclaration),
                     name: identifier.text,
+                    readOnly: getNodeReadOnly(propertyDeclaration),
                     required: !propertyDeclaration.questionToken,
                     type: resolveType(aType, aType.parent),
                     validators: getPropertyValidators(propertyDeclaration),
@@ -948,7 +955,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
             if (typeNode.kind === ts.SyntaxKind.TypeReference && genericTypes && genericTypes.length
                 && (node as ts.ClassDeclaration).typeParameters) {
 
-                // The type definitions are conviently located on the object which allow us to map -> to the genericTypes
+                // The type definitions are conveniently located on the object which allow us to map -> to the genericTypes
                 const typeParams = map((node as ts.ClassDeclaration).typeParameters,
                     (typeParam: ts.TypeParameterDeclaration) => {
                         return typeParam.name.text;
@@ -979,6 +986,7 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
                 default: getInitializerValue(property.initializer, type),
                 description: getNodeDescription(property),
                 format: getNodeFormat(property),
+                readOnly: getNodeReadOnly(property),
                 example: getNodeExample(property),
                 name: identifier.text,
                 required: !property.questionToken && !property.initializer,
