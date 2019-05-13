@@ -1,6 +1,7 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
+		"incremental": true,
 		"esModuleInterop": false,
 		"experimentalDecorators": true,
 		"pretty": false,

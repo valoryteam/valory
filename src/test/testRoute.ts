@@ -89,6 +89,8 @@ export interface GenericType<T> {
 }
 
 export interface Item {
+	/** @readonly */
+	id: string;
 	name: string;
 	isCool: boolean;
 	simpleEnum: "thing" | "other";
@@ -111,6 +113,7 @@ export class TestRoute extends Controller {
 
 	@Post("submit")
 	public submit(@Body() item: Item) {
+		item.id = "stuff";
 		return item;
 	}
 
@@ -132,6 +135,7 @@ export class TestRoute extends Controller {
 
 	@Post("submit/generic")
 	public submitGeneric(@Body() input: GenericType<Item>) {
+		input.generic.id = "stuff";
 		return input;
 	}
 

@@ -93,8 +93,20 @@ export function schemaPreprocess(schema: ExtendedSchema):
 	const anyOfQueue = new PriorityQueue<OneOfMarker>((a, b): boolean => (a.depth > b.depth));
 
 	const deepScan = (scanSchema: ExtendedSchema, depth: number = 0) => {
+		if (scanSchema.required) {
+			scanSchema.required = scanSchema.required.filter((item) => {
+				if (scanSchema.properties[item].readOnly) {
+					CompileLog.debug(`Unmarking readonly property "${item}" marked as required`);
+					return false;
+				}
+				return true;
+			});
+		}
+
 		if (scanSchema.properties) {
-			forEach(scanSchema.properties, (schemaChild) => {deepScan(schemaChild, depth + 1); });
+			forEach(scanSchema.properties, (schemaChild) => {
+				deepScan(schemaChild, depth + 1);
+			});
 		}
 
 		if (scanSchema.anyOf) {
@@ -122,6 +134,10 @@ export function schemaPreprocess(schema: ExtendedSchema):
 
 		if (scanSchema.additionalProperties) {
 			deepScan(scanSchema.additionalProperties as any, depth + 1);
+		}
+
+		if (scanSchema.readOnly) {
+			(scanSchema as any).not = {};
 		}
 
 		if (scanSchema.enum && scanSchema.enum.length === 1) {
