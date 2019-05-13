@@ -42,6 +42,7 @@ export type ArrayAlias = number[];
  * alias to a string
  * @example a string
  * @minLength 3
+ * @pattern [abc].*z
  */
 export type StringAlias = string;
 export type AliasAlias = StringAlias;
@@ -174,8 +175,8 @@ export class ThingRoutes extends Controller {
         };
     }
 
-    @Post("other")
-    public test(@Body() input: Burn): ApiRes<string[]> {
+    @Post("other/{test}")
+    public test(@Path() test: StringAlias, @Body() input: Burn): ApiRes<string[]> {
         return {status_code: 1, response_data: ["yay"]};
     }
 }

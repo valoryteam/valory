@@ -71,7 +71,7 @@ function logProvider(parent: Pino.Logger, requestCtx: RequestContext) {
 	});
 }
 
-api.setRequestLogProvider(logProvider);
+// api.setRequestLogProvider(logProvider);
 
 api.post("/v1/w3ut", {
 	summary: "/v1/transactions ",

@@ -39,19 +39,20 @@ const flatStr = require("flatstr");
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
 
+const QUOTE_REGEX = /"/g;
 const DefaultErrorFormatter: ErrorFormatter = (error, message): ApiResponse => {
 	let finalMessage = (message != null) ? message : error.defaultMessage;
 	if (typeof finalMessage !== "string") {
 		finalMessage = "[";
 		for (let i = 0; i < message.length; i++) {
-			finalMessage += `"${message[i]}"`;
+			finalMessage += `"${message[i].replace(QUOTE_REGEX, '\\"')}"`;
 			if (i + 1 !== message.length) {
 				finalMessage += ",";
 			}
 		}
 		finalMessage += "]";
 	} else {
-		finalMessage = `"${finalMessage}"`;
+		finalMessage = `"${finalMessage.replace(QUOTE_REGEX, '\\"')}"`;
 	}
 	return {
 		statusCode: error.statusCode,
