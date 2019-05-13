@@ -84,7 +84,7 @@
 		"tmp": "^0.0.33",
 		"ts-node": "^8.0.2",
 		"tstl": "^2.1.1",
-		"typescript": "^3.2.4",
+		"typescript": "^3.4.5",
 		"xxhashjs": "^0.2.2",
 		"yargs": "^12.0.5"
 	},

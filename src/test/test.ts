@@ -198,11 +198,52 @@ describe("ValoryTest", () => {
     }
 
     @suite
+    class DisallowReadonly extends RequestTestBase {
+        private static parsed: any;
+        private static json = {
+            name: "steven",
+            isCool: true,
+            simpleEnum: "thing",
+            id: "some id",
+        };
+
+        public static async before() {
+            await super.before({
+                method: "POST",
+                url: "/test/submit",
+                json: DisallowReadonly.json,
+            });
+            this.parsed = this.response.body;
+        }
+
+        @test
+        public "Should have property code"() {
+            expect(DisallowReadonly.parsed).to.have.property("code");
+        }
+
+        @test
+        public "Should have invalid property error"() {
+            expect(DisallowReadonly.parsed).to.have.property("message")
+                .contains("ValidationError[not]: request.body.id should NOT be valid");
+        }
+    }
+
+    @suite
     class GenericPostTest extends RequestTestBase {
         private static parsed: any;
         private static json = {
             common: "com",
             generic: {
+                name: "steven",
+                isCool: true,
+                simpleEnum: "thing",
+            },
+        };
+
+        private static jsonResponse = {
+            common: "com",
+            generic: {
+                id: "stuff",
                 name: "steven",
                 isCool: true,
                 simpleEnum: "thing",
@@ -225,7 +266,7 @@ describe("ValoryTest", () => {
 
         @test
         public "Should match input"() {
-            expect(GenericPostTest.parsed).to.eql(GenericPostTest.json);
+            expect(GenericPostTest.parsed).to.eql(GenericPostTest.jsonResponse);
         }
 
         @test

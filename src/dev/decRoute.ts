@@ -30,6 +30,10 @@ export class Burn {
     public literalEnum: LiteralEnum;
     public literal: LiteralAlias;
     public literalNum: LiteralNum;
+	/**
+	 * @readonly
+	 */
+	public id: string;
 }
 
 export type ArrayAlias = number[];

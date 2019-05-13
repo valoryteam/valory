@@ -68,6 +68,7 @@ export namespace Tsoa {
 		type: Type;
 		required: boolean;
 		validators: Validators;
+		readOnly: boolean;
 	}
 
 	export interface Type {

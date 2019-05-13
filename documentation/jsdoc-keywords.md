@@ -61,3 +61,7 @@
 
 **@multipleOf [number]**
 * Require numeric property to be a multiple of a given value
+
+**@readonly**
+* Marks a property as readonly, meaning it cannot be sent in a request.
+This will mark the property as optional for requests.
