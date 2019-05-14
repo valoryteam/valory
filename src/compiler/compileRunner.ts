@@ -1,4 +1,5 @@
 import P = require("pino");
+import {Spinner} from "../lib/spinner";
 import {Swagger} from "../server/swagger";
 import {CompilerOutput, ICompilerOptions} from "./compilerheaders";
 import {VALORYLOGGERVAR, VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
@@ -22,7 +23,7 @@ export async function compileAndSave(swagger: Swagger.Spec, compilePath: string,
         }
         const id = Buffer.from(hyperid()()).toString("base64");
         mkdirSync(path.join(debugPath, id));
-        Logger.info("Placing additional debug artifacts in:", path.join(debugPath, id));
+        await Spinner.info(`Placing additional debug artifacts in: ${path.join(debugPath, id)}`);
         for (const name of Object.keys(compiled.debugArtifacts)) {
             const item = compiled.debugArtifacts[name];
             const out = processDebugArtifact(item, (name as keyof CompilerOutput["debugArtifacts"]));

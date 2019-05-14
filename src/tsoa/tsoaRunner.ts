@@ -20,14 +20,14 @@ export async function routeBuild(entryPoint: string) {
 	} catch (e) {
 		await spinnerFail("Metadata Failure", e);
 	}
-	await Spinner.succeed();
+	await Spinner.succeed(`Generating route controller metadata`);
 	await Spinner.start("Building swagger content from metadata");
 	const swaggerContent = new SpecGenerator(metadata).GetSpec();
 	metadata.controllers.forEach((con) => {
 		const relativePath = relative(dirname(entryPoint), con.location);
 		con.location = "./" + relativePath.replace(extname(relativePath), "");
 	});
-	await Spinner.succeed();
+	await Spinner.succeed(`Building swagger content from metadata`);
 	try {
 		await Spinner.start("Generating routes");
 		// const resolved = await dereference(cloneDeep(swaggerContent as any));
@@ -42,7 +42,7 @@ export async function routeBuild(entryPoint: string) {
 		const generatedPath = Config.SourceRoutePath;
 
 		writeFileSync(generatedPath, generatedRoutes);
-		await Spinner.succeed();
+		await Spinner.succeed(`Generating routes`);
 	} catch (e) {
 		await spinnerFail("Route Generation Failure", e);
 	}

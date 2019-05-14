@@ -28,9 +28,9 @@ async function checkRequirements() {
 	console.log(chalk.bold("Requirements"));
 	await Spinner.start("Node 8+");
 	if (!gte(coerce(process.version), "8.0.0")) {
-		await spinnerFail("Node version too low", null);
+		await spinnerFail("Node version too low", null, false);
 	}
-	await Spinner.succeed(chalk.green(`Node ${process.version}`));
+	await Spinner.succeed(chalk.green(`Node ${process.version}`), false);
 	if (process.platform !== "darwin" && process.platform !== "linux") {
 		await Spinner.start("Java 1.7+");
 		try {
@@ -39,26 +39,26 @@ async function checkRequirements() {
 			// console.log( versionRegex.exec(javaOutput.toString()));
 			const javaVersion = versionRegex.exec(javaOutput.toString())[1];
 			if (!gte(coerce(javaVersion), coerce("1.7"))) {
-				await spinnerFail("Java version too low", null);
+				await spinnerFail("Java version too low", null, false);
 			}
 			await Spinner.succeed(chalk.green(`Java ${javaVersion}`));
 		} catch (e) {
-			await spinnerFail("Java installation missing or broken", e);
+			await spinnerFail("Java installation missing or broken", e, false);
 		}
 	}
 	await Spinner.start("valory-runtime");
 	const pkg = Config.PackageJSON;
 	if (process.env.NODE_ENV === "test" || pkg.dependencies["valory-runtime"]) {
-		await Spinner.succeed(chalk.green(`valory-runtime ${pkg.dependencies["valory-runtime"]}`));
+		await Spinner.succeed(chalk.green(`valory-runtime ${pkg.dependencies["valory-runtime"]}`), false);
 	} else {
-		await spinnerFail("valory-runtime must be a dependency", null);
+		await spinnerFail("valory-runtime must be a dependency", null, false);
 	}
 	await Spinner.start("Config");
     try {
 		Config.checkPaths();
-		await Spinner.succeed(chalk.green("Config OK"));
+		await Spinner.succeed(chalk.green("Config OK"), false);
 	} catch (e) {
-		await spinnerFail(e.message, e, true);
+		await spinnerFail(e.message, e, true, false);
     }
     console.log("");
 }
@@ -85,6 +85,9 @@ async function compilerRunner(args: any) {
 	const start = process.hrtime();
 	require("ts-node").register({
 		project: Config.TSConfigPath,
+		pretty: false,
+		typeCheck: false,
+		transpileOnly: true,
 	});
 	if (args.prettylog) {
 		process.env.PRETTYLOG = "true";
@@ -107,7 +110,7 @@ async function compilerRunner(args: any) {
 		await spinnerFail(
 			`Compiler metadata version ${METADATA_VERSION} incompatible with version ${valExport.valory.metadataVersion}`, "");
 	}
-	Spinner.succeed();
+	await Spinner.succeed(`Registering routes`);
 	const api = valExport.valory.swagger;
 	api.schemes = args.schemes;
 	api.host = args.host;

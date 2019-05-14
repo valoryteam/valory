@@ -120,21 +120,16 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
     console.log(chalk.bold("Build Endpoints"));
     for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
         for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
-            await Spinner.start("Building method schema");
+            await Spinner.start("Building endpoint");
             const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
             const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
             // endpointLogger.info("Building method schema");
             const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)
                 [method], method, path, options.requestFieldMapping);
-            Spinner.text = "Preprocessing schema";
             const schemaProcessed = schemaPreprocess(schema);
-            Spinner.text = "Compiling schema validator";
             const initialCompile = ajv.compile(schemaProcessed.schema);
-            Spinner.text = "Objectifying anyOf's";
             resolve(schemaProcessed.resQueue);
-            Spinner.text = "Mangling keys";
             const mangled = mangleKeys(schemaProcessed.schema);
-            Spinner.text = "Compiling intermediate validator function";
             const templated = templates.validatorTemplate({
                 validate: initialCompile,
                 funcName: path,
@@ -151,7 +146,6 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
             if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
                 (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
                 (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
-                Spinner.text = "Compiling serializer function";
                 const serializerHash = hash + SERIALIZER_SUFFIX;
                 const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
                     [method].responses["200"].schema, true);
@@ -190,7 +184,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 
     const compilerFlags = {
         js: intermediateTemp.name,
-        rewrite_polyfills: false,
+        // rewrite_polyfills: false,
         compilation_level: CompilationLevel[options.compilationLevel],
         use_types_for_optimization: true,
         preserve_type_annotations: true,
@@ -221,7 +215,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         await spinnerFail("Closure Compiler Failure", e, false);
         return output;
     }
-    await Spinner.succeed();
+    await Spinner.succeed(`Running Closure Compiler: ${CompilationLevel[options.compilationLevel]}` );
     await Spinner.start("Final post process");
     output.module = finalProcess(output.debugArtifacts.postCompileModule);
     await Spinner.succeed();
