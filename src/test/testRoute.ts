@@ -90,7 +90,7 @@ export interface GenericType<T> {
 
 export interface Item {
 	/** @readonly */
-	id: string;
+	id?: string;
 	name: string;
 	isCool: boolean;
 	simpleEnum: "thing" | "other";

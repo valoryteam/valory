@@ -3,8 +3,6 @@ import {dereference, validate} from "swagger-parser";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import {ClosureCompiler} from "../lib/closureCompiler";
-
-const Ajv = require("ajv");
 import * as fs from "fs";
 import {
     CompilationLevel,
@@ -21,6 +19,7 @@ import {Swagger} from "../server/swagger";
 import {COMPSWAG_VERION, Config} from "../lib/config";
 import chalk from "chalk";
 import {Spinner, spinnerFail} from "../lib/spinner";
+const Ajv = require("ajv");
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
 const tmp = require("tmp");
@@ -121,49 +120,54 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
     for (const path of Object.keys(output.debugArtifacts.derefSwagger.paths)) {
         for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
             await Spinner.start("Building endpoint");
-            const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
-            const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
-            // endpointLogger.info("Building method schema");
-            const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)
-                [method], method, path, options.requestFieldMapping);
-            const schemaProcessed = schemaPreprocess(schema);
-            const initialCompile = ajv.compile(schemaProcessed.schema);
-            resolve(schemaProcessed.resQueue);
-            const mangled = mangleKeys(schemaProcessed.schema);
-            const templated = templates.validatorTemplate({
-                validate: initialCompile,
-                funcName: path,
-                localConsumes: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].consumes,
-                hash,
-                format: (ajv as any)._opts.format,
-                mangledKeys: mangled.mangledKeys,
-                schema: mangled.schema,
-                singleError: options.singleError,
-                discriminators: output.debugArtifacts.preSwagger.discriminators,
-                discrimFastFail: options.discrimFastFail,
-                lodash: require("lodash"),
-            });
-            if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
-                (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
-                (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
-                const serializerHash = hash + SERIALIZER_SUFFIX;
-                const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
-                    [method].responses["200"].schema, true);
-                const serializer = templates.serializerTemplate({
-                    hash: serializerHash,
-                    serializer: generatedSerializer,
-                    schema: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema,
+            try {
+                const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
+                const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
+                // endpointLogger.info("Building method schema");
+                const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)
+                    [method], method, path, options.requestFieldMapping);
+                const schemaProcessed = schemaPreprocess(schema);
+                const initialCompile = ajv.compile(schemaProcessed.schema);
+                resolve(schemaProcessed.resQueue);
+                const mangled = mangleKeys(schemaProcessed.schema);
+                const templated = templates.validatorTemplate({
+                    validate: initialCompile,
+                    funcName: path,
+                    localConsumes: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].consumes,
+                    hash,
+                    format: (ajv as any)._opts.format,
+                    mangledKeys: mangled.mangledKeys,
+                    schema: mangled.schema,
+                    singleError: options.singleError,
+                    discriminators: output.debugArtifacts.preSwagger.discriminators,
+                    discrimFastFail: options.discrimFastFail,
+                    lodash: require("lodash"),
                 });
-                output.debugArtifacts.serializerHashes.push(serializerHash);
-                output.debugArtifacts.serializers.push(serializer);
+                if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
+                    (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
+                    (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
+                    const serializerHash = hash + SERIALIZER_SUFFIX;
+                    const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
+                        [method].responses["200"].schema, true);
+                    const serializer = templates.serializerTemplate({
+                        hash: serializerHash,
+                        serializer: generatedSerializer,
+                        schema: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema,
+                    });
+                    output.debugArtifacts.serializerHashes.push(serializerHash);
+                    output.debugArtifacts.serializers.push(serializer);
+                }
+                output.debugArtifacts.hashes.push(hash);
+                output.debugArtifacts.initialSchema.push(schema);
+                output.debugArtifacts.intermediateFunctions.push(templated);
+                output.debugArtifacts.processedSchema.push(schemaProcessed.schema);
+                output.debugArtifacts.initialCompiles.push(initialCompile);
+                output.debugArtifacts.mangledSchema.push(mangled);
+                await Spinner.succeed(`${path}:${method}`);
+            } catch (err) {
+                await spinnerFail(`Failed to build ${path}:${method}`, err, true);
+                return output;
             }
-            output.debugArtifacts.hashes.push(hash);
-            output.debugArtifacts.initialSchema.push(schema);
-            output.debugArtifacts.intermediateFunctions.push(templated);
-            output.debugArtifacts.processedSchema.push(schemaProcessed.schema);
-            output.debugArtifacts.initialCompiles.push(initialCompile);
-            output.debugArtifacts.mangledSchema.push(mangled);
-            await Spinner.succeed(`${path}:${method}`);
         }
     }
     console.log(chalk.bold("Compile"));

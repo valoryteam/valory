@@ -95,12 +95,10 @@ export function schemaPreprocess(schema: ExtendedSchema):
 
 	const deepScan = (scanSchema: ExtendedSchema, depth: number = 0) => {
 		if (scanSchema.required) {
-			scanSchema.required = scanSchema.required.filter((item) => {
+			scanSchema.required.forEach((item) => {
 				if (scanSchema.properties[item].readOnly) {
-					CompileLog.debug(`Unmarking readonly property "${item}" marked as required`);
-					return false;
+					throw Error(`Readonly property "${item}" marked as required`);
 				}
-				return true;
 			});
 		}
 
