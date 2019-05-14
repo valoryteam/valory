@@ -184,7 +184,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
 
     const compilerFlags = {
         js: intermediateTemp.name,
-        // rewrite_polyfills: false,
+        rewrite_polyfills: false,
         compilation_level: CompilationLevel[options.compilationLevel],
         use_types_for_optimization: true,
         preserve_type_annotations: true,

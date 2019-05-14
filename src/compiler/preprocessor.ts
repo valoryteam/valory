@@ -1,4 +1,5 @@
 import {cloneDeep, forEach, get, map, set, unset, isArray} from "lodash";
+import {scan} from "rxjs/internal/operators";
 import {CompileLog, DisallowedFormats} from "./compiler";
 import {DiscriminatorMap, ExtendedSchema, HASH_SEED, MangledKey} from "./compilerheaders";
 import {PriorityQueue} from "tstl";
@@ -137,6 +138,10 @@ export function schemaPreprocess(schema: ExtendedSchema):
 		}
 
 		if (scanSchema.readOnly) {
+			// Wipeout all existing data, property is not allowed anyways
+			for (const key in scanSchema) {
+				delete (scanSchema as any)[key];
+			}
 			(scanSchema as any).not = {};
 		}
 
