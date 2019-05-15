@@ -1,6 +1,7 @@
 // tslint:disable:max-line-length
 
 import {indexOf, intersection, map} from "lodash";
+import {ModifierFlags} from "typescript";
 import * as ts from "typescript";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
@@ -379,9 +380,10 @@ function getEnumerateType(typeName: ts.EntityName, extractEnum = true): Tsoa.Typ
 }
 
 function getNodeReadOnly(node: ts.PropertyDeclaration | ts.ParameterDeclaration): boolean {
-    return isExistJSDocTag(node, (tag) => {
-        return tag.tagName.text === "readonly";
-    });
+    return (ts.getCombinedModifierFlags(node) & ModifierFlags.Readonly) > 0;
+    // return isExistJSDocTag(node, (tag) => {
+    //     return tag.tagName.text === "readonly";
+    // });
 }
 
 function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration |

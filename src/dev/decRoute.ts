@@ -22,7 +22,7 @@ export interface TestResponse<T> {
 export class Burn {
     /** @minLength 3 */
     public name: string = "steven";
-    public "🖕" = "😨";
+    public "🖕" ? = "😨";
     public powerlevel?: number;
     public array: ArrayAlias;
     public string: StringAlias;
@@ -30,29 +30,7 @@ export class Burn {
     public literalEnum: LiteralEnum;
     public literal: LiteralAlias;
     public literalNum: LiteralNum;
-	/**
-	 * @readonly
-	 */
-	public id: string;
-}
-
-export type ArrayAlias = number[];
-// export type TupleAlias = [number, number];
-/**
- * alias to a string
- * @example a string
- * @minLength 3
- * @pattern [abc].*z
- */
-export type StringAlias = string;
-export type AliasAlias = StringAlias;
-export type LiteralAlias = "test";
-export type LiteralEnum = "thing" | "otherthing";
-export type LiteralNum = 2;
-
-export const enum ComputedEnum {
-	test = "test",
-	other = "thing",
+	public readonly id: string;
 }
 
 export class TestObj {
@@ -76,6 +54,29 @@ export class TestObj {
 	    },
 	    nestedProp: "stuff",
     };
+}
+
+export class ExtTest extends TestObj {
+	public extProp: string;
+}
+
+export type ArrayAlias = number[];
+// export type TupleAlias = [number, number];
+/**
+ * alias to a string
+ * @example a string
+ * @minLength 3
+ * @pattern [abc].*z
+ */
+export type StringAlias = string;
+export type AliasAlias = StringAlias;
+export type LiteralAlias = "test";
+export type LiteralEnum = "thing" | "otherthing";
+export type LiteralNum = 2;
+
+export const enum ComputedEnum {
+	test = "test",
+	other = "thing",
 }
 
 export interface SimpleExampleTest {
@@ -176,8 +177,8 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other/{test}")
-    public test(@Path() test: StringAlias, @Body() input: Burn): ApiRes<string[]> {
-        return {status_code: 1, response_data: ["yay"]};
+    public test(@Path() test: StringAlias, @Body() input: ExtTest): ApiRes<Burn> {
+        return {status_code: 1, response_data: {alias: "stuff", array: [], string: "", literal: "test", literalEnum: "otherthing", id: "id", powerlevel: 20, literalNum: 2, name: ""}};
     }
 }
 
