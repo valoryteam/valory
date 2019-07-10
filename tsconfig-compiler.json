@@ -9,6 +9,7 @@
 	"files": [
 		"src/lib/cli.ts",
 		"src/compiler/compiler.ts",
-		"src/lib/defaultAdaptor.ts"
+		"src/lib/defaultAdaptor.ts",
+		"src/types/aigle-global.d.ts"
 	]
 }

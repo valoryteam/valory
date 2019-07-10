@@ -6,6 +6,7 @@
   },
   "include": [],
   "files": [
-    "src/main.ts"
+    "src/main.ts",
+    "src/types/aigle-global.d.ts"
   ]
 }

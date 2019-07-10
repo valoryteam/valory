@@ -519,34 +519,37 @@ describe("ValoryTest", () => {
         }
     }
 
-    @suite
-    class ErrorApiException extends RequestTestBase {
-        private static parsed: any;
-
-        public static async before() {
-            await super.before({
-                method: "GET",
-                url: "/error/apiexception",
-                json: true,
-            });
-            this.parsed = this.response.body;
-        }
-
-        @test
-        public "Should have property code 1331"() {
-            expect(ErrorApiException.parsed).to.have.property("code").equal(1331);
-        }
-
-        @test
-        public "Should have message 'Test ApiError'"() {
-            expect(ErrorApiException.parsed).to.have.property("message").equal("Test ApiError");
-        }
-
-        @test
-        public "Should have request-id header"() {
-            expect(ErrorApiException.response.headers).to.have.property("request-id").a("string");
-        }
-    }
+    /**
+     * FIXME: This section has been removed while ApiError is rethought
+     */
+    // @suite
+    // class ErrorApiException extends RequestTestBase {
+    //     private static parsed: any;
+    //
+    //     public static async before() {
+    //         await super.before({
+    //             method: "GET",
+    //             url: "/error/apiexception",
+    //             json: true,
+    //         });
+    //         this.parsed = this.response.body;
+    //     }
+    //
+    //     @test
+    //     public "Should have property code 1331"() {
+    //         expect(ErrorApiException.parsed).to.have.property("code").equal(1331);
+    //     }
+    //
+    //     @test
+    //     public "Should have message 'Test ApiError'"() {
+    //         expect(ErrorApiException.parsed).to.have.property("message").equal("Test ApiError");
+    //     }
+    //
+    //     @test
+    //     public "Should have request-id header"() {
+    //         expect(ErrorApiException.response.headers).to.have.property("request-id").a("string");
+    //     }
+    // }
 
     @suite
     class ErrorObject extends RequestTestBase {

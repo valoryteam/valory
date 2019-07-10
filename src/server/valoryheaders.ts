@@ -58,7 +58,6 @@ export interface ApiMiddleware {
 	 */
 	name: string;
 	handler: ApiMiddlewareHandler;
-	[x: string]: unknown;
 }
 
 /**
@@ -81,6 +80,7 @@ export interface ErrorDef {
 
 /**
  * Contains basic contextual information for a request. Mostly used by the [[RequestLogProvider]].
+ * @Deprecated
  */
 export interface RequestContext {
 	requestId: string;
@@ -91,7 +91,7 @@ export interface RequestContext {
 /**
  * The general request handler. This format only applies to the functional interface.
  */
-export type ApiHandler = (request: ApiRequest, logger: Logger, requestContext: RequestContext)
+export type ApiHandler = (request: ApiRequest, logger: Logger)
 	=> Promise<ApiResponse> | ApiResponse;
 
 /**
@@ -104,6 +104,7 @@ export enum HttpMethod {
 	DELETE,
 	HEAD,
 	PATCH,
+	OPTIONS,
 }
 
 /**

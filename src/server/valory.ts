@@ -1,9 +1,10 @@
-global.Promise = require("bluebird");
+global.Promise = require("aigle").Aigle;
 
-import {ValidatorModule} from "../compiler/compilerheaders";
+import {Serializer, ValidatorModule} from "../compiler/compilerheaders";
+import {RequestLoggerMiddleware, RequestSerializerMiddleware} from "./internalMiddleware";
+import {buildHandlerChain, RequestProcessingContextConstants} from "./processingChain";
 import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
-import {Steed} from "steed";
 import {Logger} from "pino";
 import {openSync} from "fs";
 import {resolve as resolvePath} from "path";
@@ -31,8 +32,6 @@ import uniq = require("lodash/uniq");
 
 import P = require("pino");
 
-const steed: Steed = require("steed")();
-const uuid = require("hyperid")();
 const flatStr = require("flatstr");
 // const steedSeries = (Promise as any).promisify(steed.eachSeries, {context: steed, multiArgs: true});
 
@@ -70,6 +69,9 @@ const DefaultErrorFormatterNoSerialization: ErrorFormatter = (error, message): A
 		disableSerializer: true,
 	};
 };
+
+/** @hidden */
+const DefaultResponse: ApiResponse = {statusCode: 200, disableSerializer: true, headers: {}, body: {}};
 
 /**
  * Options for creating a [[Valory]] instance
@@ -167,6 +169,11 @@ export class Valory {
 	public static ResponseKey: AttachmentKey<ApiResponse> = ApiRequest.createKey<ApiResponse>();
 
 	/**
+	 * Key used to check if the primary request handler responded
+	 */
+	public static HandlerResponded = ApiRequest.createKey<boolean>();
+
+	/**
 	 * Create the Valory instance
 	 */
 	public static createInstance(options: ValoryOptions): Valory {
@@ -202,6 +209,7 @@ export class Valory {
 	private apiDef: Swagger.Spec;
 	private validatorModule: ValidatorModule;
 	private errors = DefaultErrors;
+	private optionsTable: {} = {};
 	private registerGeneratedRoutes: (app: Valory) => void;
 	private metadata: ValoryMetadata = {
 		metadataVersion: METADATA_VERSION,
@@ -211,7 +219,8 @@ export class Valory {
 		swagger: null,
 		disableSerialization: [],
 	};
-	private logRequest: (req: ApiRequest, res: ApiResponse, id: string) => void = () => null;
+	// private logRequest: (req: ApiRequest, res: ApiResponse, id: string) => void = () => null;
+	private requestLoggerMiddleware = new RequestLoggerMiddleware(this, () => null);
 	private requestLogProvider: RequestLogProvider = DefaultRequestLogProvider;
 
 	/**
@@ -264,7 +273,7 @@ export class Valory {
 				try {
 					const stream = openSync(process.env.REQUEST_AUDIT_LOG, "w");
 					this.RequestLogger = P((P as any).extreme(stream));
-					this.logRequest = (req, res, id) => {
+					this.requestLoggerMiddleware.logRequest = (req, res, id) => {
 						this.RequestLogger.info({request: req, response: res, id});
 					};
 					this.Logger.info(`Request logging enabled: ${resolvePath(process.env.REQUEST_AUDIT_LOG)}`);
@@ -507,6 +516,15 @@ export class Valory {
 		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
 	}
 
+	private buildPostMiddlewareSet(postMiddleware: ApiMiddleware[], serializer: Serializer, disableSerializer: boolean): ApiMiddleware[] {
+		const middlewareSet = [...this.globalPostMiddleware, ...postMiddleware, this.requestLoggerMiddleware];
+		if (!disableSerializer) {
+			const serializerMiddleware = new RequestSerializerMiddleware(this, serializer);
+			middlewareSet.push(serializerMiddleware);
+		}
+		return middlewareSet;
+	}
+
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Swagger.Operation,
 	                    handler: ApiHandler, stringMethod: string, middleware: ApiMiddleware[] = [],
 	                    documented: boolean = true, postMiddleware: ApiMiddleware[] = [],
@@ -519,9 +537,6 @@ export class Valory {
 			requestId: "",
 			route,
 		};
-		// if (this.server.disableSerialization) {
-		// 	validator.serializer = (a: any) => a;
-		// }
 		if (this.apiDef.basePath != null) {
 			path = this.apiDef.basePath + path;
 		}
@@ -530,67 +545,18 @@ export class Valory {
 		}
 		const childLogger = this.Logger.child({endpoint: route});
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware);
-		const postMiddlewares = this.globalPostMiddleware.concat(postMiddleware);
-		const middlewareProcessor = (middlewares.length > 0) ? processMiddleware : noopPromise;
-		const postMiddlewareProcessor = (postMiddlewares.length > 0) ? processMiddleware : noopPromise;
-		const logRequest = this.logRequest;
-		const logProvider = this.requestLogProvider;
-		const wrapper = (req: ApiRequest): Promise<ApiResponse> => {
-			const requestId = uuid();
-			req.putAttachment(Valory.RequestIDKey, requestId);
-			requestContext.requestId = requestId;
-			const requestLogger = logProvider(childLogger, requestContext);
-			requestLogger.debug("Received request");
-			let initialResponse: ApiResponse = null;
-			let handlerResponded = false;
-			return middlewareProcessor(middlewares, req, requestLogger).then((middlewareResp) => {
-				if (middlewareResp != null) {
-					return Promise.resolve(middlewareResp);
-				}
-				const result = validator.validator(req);
-				req.putAttachment(Valory.ValidationResultKey, result);
-				if (result !== true) {
-					return Promise.resolve(this.buildError("ValidationError", result as string[]));
-				} else {
-					handlerResponded = true;
-					return Promise.resolve(handler(req, requestLogger, requestContext));
-				}
-			}).catch((error) => {
-				handlerResponded = false;
-				if (error.name === "ValoryEndpointError") {
-					return this.buildError(error.valoryErrorCode, error.message || undefined);
-				}
-				requestLogger.error("Internal exception occurred while processing request");
-				requestLogger.error(error);
-				return Promise.resolve(this.buildError("InternalError"));
-			}).then((response: ApiResponse) => {
-				req.putAttachment(Valory.ResponseKey, response);
-				initialResponse = response;
-				return postMiddlewareProcessor(postMiddlewares, req, requestLogger);
-			}).then((response) => {
-				logRequest(req, response || initialResponse, requestId);
-				if (response != null) {
-					return (response as ApiResponse);
-				}
-				if (handlerResponded && !initialResponse.disableSerializer) {
-					try {
-						initialResponse.body = flatStr(validator.serializer(initialResponse.body));
-					} catch (e) {
-						requestLogger.error(e, "Failed to serialize response");
-						return this.buildError("InternalError");
-					}
-				}
-				return initialResponse;
-			}).catch((error) => {
-				requestLogger.error("Internal exception occurred while processing request");
-				requestLogger.error(error);
-				return this.buildError("InternalError");
-			}).then((res: ApiResponse) => {
-				res.headers[requestIdName] = requestId;
-				return res;
-			});
+		const postMiddlewares = this.buildPostMiddlewareSet(postMiddleware, validator.serializer, disableSerializer);
+		const requestProcessorConstants: RequestProcessingContextConstants = {
+			route,
+			valory: this,
+			parentLogger: childLogger,
+			logProvider: this.requestLogProvider,
+			handler,
+			middleware: middlewares,
+			postMiddleware: postMiddlewares,
+			validator: validator.validator,
 		};
-		this.server.register(path, method, wrapper);
+		this.server.register(path, method, buildHandlerChain(requestProcessorConstants));
 	}
 
 	private registerDocSite() {
@@ -620,32 +586,6 @@ export class Valory {
 			});
 		});
 	}
-}
-
-function noopPromise(...args: any[]) {
-	return Promise.resolve();
-}
-
-function processMiddleware(middlewares: ApiMiddleware[],
-                           req: ApiRequest, logger: Logger): Promise<void | ApiResponse> {
-	return new Promise<void | ApiResponse>((resolve) => {
-		let err: ApiExchange = null;
-		steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
-			const handlerLogger = logger.child({middleware: handler.name});
-			handlerLogger.debug("Running Middleware");
-			handler.handler(req, handlerLogger, (error) => {
-				if (error != null) {
-					err = error;
-					done(error);
-					return;
-				}
-
-				done();
-			});
-		}, (error) => {
-			resolve(err as ApiResponse);
-		});
-	});
 }
 
 function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {

@@ -22,6 +22,7 @@
 		"member-ordering": false,
 		"max-line-length": false,
 		"forin": false,
+		"one-variable-per-declaration": false,
 		"prefer-for-of": false
 	},
 	"rulesDirectory": []

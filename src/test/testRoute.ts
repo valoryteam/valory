@@ -150,10 +150,10 @@ export class TestRoute extends Controller {
 
 @Route("error")
 export class ErrorTestRoute extends Controller {
-	@Get("apiexception")
-	public errorApiException() {
-		throw ApiError("TestError");
-	}
+	// @Get("apiexception")
+	// public errorApiException() {
+	// 	throw ApiError("TestError");
+	// }
 
 	@Get("exception")
 	public errorException() {

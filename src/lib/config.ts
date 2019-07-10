@@ -1,7 +1,7 @@
 import {join} from "path";
 import * as path from "path";
 import {readFileSync, existsSync} from "fs";
-import {IPackageJSON} from "./package";
+import {IPackageJSON} from "package";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
 export const VALORY_ROOT = "VALORY_ROOT";
