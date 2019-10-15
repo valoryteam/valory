@@ -8,7 +8,7 @@ import {getInitializerValue, resolveType} from "./resolveType";
 import {Tsoa} from "./tsoa";
 
 export class MethodGenerator {
-	private method: "get" | "post" | "put" | "patch" | "delete";
+	private method: "get" | "post" | "put" | "patch" | "delete" | "options";
 	private path: string;
 
 	constructor(
@@ -210,7 +210,7 @@ export class MethodGenerator {
 	}
 
 	private supportsPathMethod(method: string) {
-		return ["get", "post", "put", "patch", "delete"].some((m) => m === method.toLowerCase());
+		return ["get", "post", "put", "patch", "delete", "options"].some((m) => m === method.toLowerCase());
 	}
 
 	private getExamplesValue(argument: any) {

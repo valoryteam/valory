@@ -9,7 +9,7 @@ import {
 	Logger,
 	Middleware,
 	ApiMiddleware,
-	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization,
+	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization, Options,
 	Response,
 } from "../main";
 
@@ -177,8 +177,13 @@ export class ThingRoutes extends Controller {
     }
 
     @Post("other/{test}")
-    public test(@Path() test: StringAlias, @Body() input: ExtTest): ApiRes<Burn> {
+    public test(@Path() test: StringAlias, @Body() input: ExtTest): ApiRes<Burn> | {} {
         return {status_code: 1, response_data: {alias: "stuff", array: [], string: "", literal: "test", literalEnum: "otherthing", id: "id", powerlevel: 20, literalNum: 2, name: ""}};
+    }
+
+    @Options("*")
+	public cors() {
+    	this.setHeader("access-control-allow-origin", "*");
     }
 }
 

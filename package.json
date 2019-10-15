@@ -37,7 +37,7 @@
 		"@types/json-schema": "^7.0.3",
 		"@types/lodash": "^4.14.126",
 		"@types/minimatch": "^3.0.3",
-		"@types/node": "^12.0.1",
+		"@types/node": "^10.14.21",
 		"@types/pino": "^5.20.0",
 		"@types/request": "^2.48.1",
 		"@types/request-promise": "^4.1.43",
@@ -62,7 +62,6 @@
 	},
 	"dependencies": {
 		"ajv": "^6.10.0",
-		"bluebird": "^3.5.4",
 		"chalk": "^2.4.2",
 		"dot": "^1.1.2",
 		"fastify": "^2.3.0",

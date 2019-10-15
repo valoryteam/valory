@@ -28,6 +28,7 @@ export {
 	BodyProp,
 	Delete,
 	// Example,
+	Options,
 	Get,
 	Header,
 	Hidden,

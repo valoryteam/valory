@@ -58,7 +58,6 @@ export interface ApiMiddleware {
 	 */
 	name: string;
 	handler: ApiMiddlewareHandler;
-	[x: string]: unknown;
 }
 
 /**
@@ -104,6 +103,7 @@ export enum HttpMethod {
 	DELETE,
 	HEAD,
 	PATCH,
+	OPTIONS,
 }
 
 /**

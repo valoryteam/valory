@@ -8,7 +8,7 @@ import {
 	Controller, DisableSerialization,
 	Get,
 	Header,
-	Middleware,
+	Middleware, Options,
 	Post, PostMiddleware,
 	Request,
 	Route, Valory,
@@ -97,6 +97,14 @@ export interface Item {
 
 export interface ItemRef {
 	ref: Item["simpleEnum"];
+}
+
+@Route()
+export class RootRoute extends Controller {
+	@Options("*")
+	public cors() {
+		this.setHeader("Access-Control-Allow-Origin", "*");
+	}
 }
 
 @Route("test")

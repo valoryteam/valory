@@ -45,6 +45,12 @@ export function Patch(name?: string): any {
 	};
 }
 
+export function Options(name?: string): any {
+	return () => {
+		return;
+	};
+}
+
 /**
  * Register a DELETE endpoint
  * @Decorator

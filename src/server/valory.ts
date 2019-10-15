@@ -1,5 +1,3 @@
-global.Promise = require("bluebird");
-
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
@@ -430,6 +428,15 @@ export class Valory {
 	public put(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
 	           documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = true) {
 		this.endpoint(path, HttpMethod.PUT, swaggerDef, handler, middleware, documented, postMiddleware,
+			disableSerializer);
+	}
+
+	/**
+	 * Register PUT endpoint
+	 */
+	public options(path: string, swaggerDef: Swagger.Operation, handler: ApiHandler, middleware: ApiMiddleware[] = [],
+	           documented: boolean = true, postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = true) {
+		this.endpoint(path, HttpMethod.OPTIONS, swaggerDef, handler, middleware, documented, postMiddleware,
 			disableSerializer);
 	}
 

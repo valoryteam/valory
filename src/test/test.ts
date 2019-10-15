@@ -125,6 +125,26 @@ describe("ValoryTest", () => {
     }
 
     @suite
+    class SimpleCORSTest extends RequestTestBase {
+        private static authBytes = randomBytes(10).toString("base64");
+
+        public static async before() {
+            await super.before({
+                method: "OPTIONS",
+                url: `/${randomBytes(10).toString("base64")}`,
+                headers: {
+                    Authorization: this.authBytes,
+                },
+            });
+        }
+
+        @test
+        public "Should include CORS headers"() {
+            expect(SimpleCORSTest.response.headers).to.have.property("Access-Control-Allow-Origin").eq("*");
+        }
+    }
+
+    @suite
     class SimpleGetTestFail extends RequestTestBase {
         private static parsed: any;
         private static headerError = "ValidationError[required]: request.headers.authorization is a required property";
