@@ -140,7 +140,7 @@ describe("ValoryTest", () => {
 
         @test
         public "Should include CORS headers"() {
-            expect(SimpleCORSTest.response.headers).to.have.property("Access-Control-Allow-Origin").eq("*");
+            expect(SimpleCORSTest.response.headers).to.have.property("access-control-allow-origin").eq("*");
         }
     }
 
