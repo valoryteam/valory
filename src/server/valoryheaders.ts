@@ -97,13 +97,13 @@ export type ApiHandler = (request: ApiRequest, logger: Logger, requestContext: R
  * HTTP methods supported by Valory.
  */
 export enum HttpMethod {
-	POST,
-	PUT,
-	GET,
-	DELETE,
-	HEAD,
-	PATCH,
-	OPTIONS,
+	POST = "POST",
+	PUT = "PUT",
+	GET = "GET",
+	DELETE = "DELETE",
+	HEAD = "HEAD",
+	PATCH = "PATCH",
+	OPTIONS = "OPTIONS",
 }
 
 /**

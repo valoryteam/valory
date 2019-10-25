@@ -5,7 +5,7 @@ import {IPackageJSON} from "./package";
 
 export const CLI_MODE_FLAG = "VALORY_CLI";
 export const VALORY_ROOT = "VALORY_ROOT";
-export const COMPSWAG_VERION = 1.1;
+export const COMPSWAG_VERION = 1.2;
 export const METADATA_VERSION = 1;
 export const GENROUTES_VERSION = 1.1;
 
@@ -17,58 +17,11 @@ export interface ValoryConfig {
 }
 
 export namespace Config {
-	export const DOC_HTML = `<!DOCTYPE html>
-		<meta charset="UTF-8">
-		<html>
-		<head>
-			<title>APP_NAME</title>
-			<meta name="viewport" content="width=device-width, initial-scale=1">
-			<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-			<style>
-				body {
-					margin: 0;
-					padding: 0;
-				}
-				.powered-by-badge{
-					display:none;
-				},
-				.api-info-header + p{
-					display: none !important;
-				}
-			</style>
-		</head>
-		<body>
-		<style>
-			header{
-				text-align: right;
-				padding-right: 20px;
-			}
-		</style>
+	export const DOC_HTML = `<!DOCTYPE html><meta charset="UTF-8"><html><head><title>APP_NAME</title><meta name="viewport" content="width=device-width, initial-scale=1"><script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script><style>body{margin:0;padding:0}.powered-by-badge{display:none}.api-info-header+p{display:none!important}header{text-align:right;padding-right:20px}</style></head><body>
 		<redoc></redoc>
-		<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js">
-		</script>
-		<script>
-			$(document).ready(function() {
-		
-				$(".api-info-header + p").hide();
-				$(document).on("click", function(e) {
-					if ( window.history && window.history.pushState ) {
-						window.history.pushState('', '', window.location.pathname)
-					} else {
-						window.location.href = window.location.href.replace(/#.*$/, '#');
-					}
-				});
-				var path = window.location.origin + window.location.pathname;
-				if (path.endsWith("/")) {
-					path = path.substr(0, path.length - 1);
-				}
-				Redoc.init(path+"/swagger.json",{
-				});
-		
-			});
-		</script>
-		</body>
-		</html>`;
+		<script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+		<script>$(document).ready(function(){$(".api-info-header + p").hide(),$(document).on("click",function(o){window.history&&window.history.pushState?window.history.pushState("","",window.location.pathname):window.location.href=window.location.href.replace(/#.*$/,"#")});var o=window.location.origin+window.location.pathname;o.endsWith("/")&&(o=o.substr(0,o.length-1)),Redoc.init(o+"/swagger.json",{})});</script>
+		</body></html>`;
 	export let DOC_HTML_PROCESSED: string = null;
 	export const CONFIG_FILE = "valory.json";
 	export const SWAGGER_FILE = "swagger.json";

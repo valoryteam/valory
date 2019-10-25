@@ -1,4 +1,5 @@
 import P = require("pino");
+import {fastUUID} from "../lib/helpers";
 import {Spinner} from "../lib/spinner";
 import {Swagger} from "../server/swagger";
 import {CompilerOutput, ICompilerOptions} from "./compilerheaders";
@@ -7,8 +8,6 @@ import {existsSync, mkdirSync, writeFileSync} from "fs";
 import {cloneDeep, omit} from "lodash";
 import * as path from "path";
 import {Config} from "../lib/config";
-
-const hyperid = require("hyperid");
 
 export async function compileAndSave(swagger: Swagger.Spec, compilePath: string, additionalPath: string
     , undocumentedPaths: string[], compilerOptions: ICompilerOptions, debugPath?: string) {
@@ -21,7 +20,7 @@ export async function compileAndSave(swagger: Swagger.Spec, compilePath: string,
         if (!existsSync(debugPath)) {
             mkdirSync(debugPath);
         }
-        const id = Buffer.from(hyperid()()).toString("base64");
+        const id = Buffer.from(fastUUID()).toString("base64");
         mkdirSync(path.join(debugPath, id));
         await Spinner.info(`Placing additional debug artifacts in: ${path.join(debugPath, id)}`);
         for (const name of Object.keys(compiled.debugArtifacts)) {

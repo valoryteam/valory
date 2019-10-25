@@ -1,5 +1,6 @@
 import {cloneDeep, merge} from "lodash";
 import {dereference, validate} from "swagger-parser";
+import {sha1String} from "../lib/helpers";
 import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
 import {compileMethodSchema} from "./method";
 import {ClosureCompiler} from "../lib/closureCompiler";
@@ -27,7 +28,6 @@ const dotJs = require("dot");
 dotJs.log = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const errorSup = "undefinedVars";
-const XXH = require("xxhashjs");
 import {build as fastJson, preamble} from "../lib/fastStringify";
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
@@ -121,7 +121,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
             await Spinner.start("Building endpoint");
             try {
-                const hash = FUNCTION_PREFIX + XXH.h32(`${path}:${method}`, HASH_SEED).toString();
+                const hash = FUNCTION_PREFIX + sha1String(`${path}:${method.toUpperCase()}`);
                 const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
                 // endpointLogger.info("Building method schema");
                 const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)
@@ -174,7 +174,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
     await Spinner.start("Building intermediate module");
     output.debugArtifacts.intermediateModule = templates.moduleTemplate({
         validatorLib: output.debugArtifacts.intermediateFunctions.concat(output.debugArtifacts.serializers),
-        defHash: XXH.h32(JSON.stringify(spec.definitions), HASH_SEED).toString(),
+        defHash: sha1String(JSON.stringify(spec.definitions)),
         exportHashes: output.debugArtifacts.hashes.concat(output.debugArtifacts.serializerHashes),
         swagger: spec,
         preamble,

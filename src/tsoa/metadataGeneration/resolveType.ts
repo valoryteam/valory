@@ -3,13 +3,13 @@
 import {indexOf, intersection, map} from "lodash";
 import {ModifierFlags} from "typescript";
 import * as ts from "typescript";
+import {sha1String} from "../../lib/helpers";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
 import {getPropertyValidators} from "../utils/validatorUtils";
 import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
 import {Swagger} from "../../server/swagger";
-const XXH = require("xxhashjs");
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -608,7 +608,7 @@ function getTypeName(typeName: string, genericTypes?: ts.NodeArray<ts.TypeNode>)
     }
     let genericTypeNames = genericTypes.map((t) => getAnyTypeName(t)).join("");
     if (genericTypeNames.length > 20) {
-        genericTypeNames = XXH.h32(genericTypeNames, "generic");
+        genericTypeNames = sha1String(genericTypeNames);
     }
     return typeName + genericTypeNames;
 }

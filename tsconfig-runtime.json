@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "removeComments": true,
+
     "outDir": "runtime/dist",
     "sourceMap": false,
   },

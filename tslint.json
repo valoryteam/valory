@@ -17,6 +17,7 @@
 		"no-trailing-whitespace": false,
 		"max-classes-per-file": false,
 		"no-namespace": false,
+		"whitespace": false,
 		"no-bitwise": false,
 		"only-arrow-functions": false,
 		"member-ordering": false,

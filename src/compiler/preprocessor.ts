@@ -9,7 +9,6 @@ const mergeAllOf = require("json-schema-merge-allof");
 const mapKeysDeep: <T>(obj: T, callback: (value: any, key: string) => string) => T = require("map-keys-deep-lodash");
 
 const deep: Deep = require("lodash-deep");
-const XXH = require("xxhashjs");
 
 const MANGLED_PREFIX = "p";
 const periodRegex = /[.]+?/g;

@@ -1,7 +1,7 @@
 import {ValidatorModule} from "../compiler/compilerheaders";
+import {eachSeries, fastOmit, fastUUID} from "../lib/helpers";
 import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
-import {Steed} from "steed";
 import {Logger} from "pino";
 import {openSync} from "fs";
 import {resolve as resolvePath} from "path";
@@ -21,18 +21,10 @@ import {
 	VALORYMETAVAR,
 	VALORYPRETTYLOGGERVAR,
 } from "./valoryheaders";
-import isNil = require("lodash/isNil");
-import omitBy = require("lodash/omitBy");
-import omit = require("lodash/omit");
-import set = require("lodash/set");
-import uniq = require("lodash/uniq");
 
 import P = require("pino");
 
-const steed: Steed = require("steed")();
-const uuid = require("hyperid")();
 const flatStr = require("flatstr");
-// const steedSeries = (Promise as any).promisify(steed.eachSeries, {context: steed, multiArgs: true});
 
 const ERRORTABLEHEADER = "|Status Code|Name|Description|\n|-|-|--|\n";
 const REDOCPATH = "../../html/index.html";
@@ -328,13 +320,12 @@ export class Valory {
 	public endpoint(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
 	                middleware: ApiMiddleware[] = [], documented: boolean = true, postMiddleware: ApiMiddleware[] = [],
 	                disableSerializer: boolean = true) {
-		const stringMethod = HttpMethod[method].toLowerCase();
-		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${stringMethod}`);
+		this.Logger.debug(`Registering endpoint ${this.apiDef.basePath || ""}${path}:${method}`);
 		if (this.COMPILERMODE) {
-			this.endpointCompile(path, method, swaggerDef, handler, stringMethod,
+			this.endpointCompile(path, method, swaggerDef, handler, method,
 				middleware, documented, postMiddleware, disableSerializer);
 		} else {
-			this.endpointRun(path, method, swaggerDef, handler, stringMethod,
+			this.endpointRun(path, method, swaggerDef, handler, method,
 				middleware, documented, postMiddleware, disableSerializer);
 		}
 	}
@@ -482,7 +473,7 @@ export class Valory {
 	}
 
 	private endpointCompile(path: string, method: HttpMethod, swaggerDef: Swagger.Operation, handler: ApiHandler,
-	                        stringMethod: string, middleware: ApiMiddleware[] = [], documented: boolean = true,
+	                        stringMethod: HttpMethod, middleware: ApiMiddleware[] = [], documented: boolean = true,
 	                        postMiddleware: ApiMiddleware[] = [], disableSerializer: boolean = true) {
 		const middlewares: ApiMiddleware[] = this.globalMiddleware.concat(middleware,
 			this.globalPostMiddleware, postMiddleware);
@@ -490,7 +481,7 @@ export class Valory {
 			this.metadata.undocumentedEndpoints.push(path);
 		}
 		if (disableSerializer || this.server.disableSerialization) {
-			this.metadata.disableSerialization.push(`${path}:${HttpMethod[method].toLowerCase()}`);
+			this.metadata.disableSerialization.push(`${path}:${method}`);
 		}
 		for (const item of middlewares) {
 			if (item.tag != null) {
@@ -509,9 +500,11 @@ export class Valory {
 				}
 			}
 		}
-		swaggerDef.tags = uniq(swaggerDef.tags);
-		this.apiDef.tags = uniq(this.apiDef.tags);
-		set(this.apiDef.paths, `${path}.${stringMethod}`, swaggerDef);
+		swaggerDef.tags = Array.from(new Set(swaggerDef.tags));
+		this.apiDef.tags = Array.from(new Set(this.apiDef.tags));
+		const pathObj = this.apiDef.paths[path] ?? ({} as Swagger.Path);
+		(pathObj as any)[stringMethod.toLowerCase()] = swaggerDef;
+		this.apiDef.paths[path] = pathObj;
 	}
 
 	private endpointRun(path: string, method: HttpMethod, swaggerDef: Swagger.Operation,
@@ -543,7 +536,7 @@ export class Valory {
 		const logRequest = this.logRequest;
 		const logProvider = this.requestLogProvider;
 		const wrapper = (req: ApiRequest): Promise<ApiResponse> => {
-			const requestId = uuid();
+			const requestId = fastUUID();
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			requestContext.requestId = requestId;
 			const requestLogger = logProvider(childLogger, requestContext);
@@ -606,7 +599,7 @@ export class Valory {
 		this.server.register(prefix + "/swagger.json", HttpMethod.GET, (req) => {
 			if (swaggerBlob == null) {
 				swaggerBlob = JSON.parse(this.validatorModule.swaggerBlob);
-				swaggerBlob.paths = omit(swaggerBlob.paths, this.validatorModule.undocumentedEndpoints);
+				swaggerBlob.paths = fastOmit(swaggerBlob.paths, this.validatorModule.undocumentedEndpoints);
 			}
 			return Promise.resolve({
 				body: JSON.stringify(swaggerBlob),
@@ -637,7 +630,7 @@ function processMiddleware(middlewares: ApiMiddleware[],
                            req: ApiRequest, logger: Logger): Promise<void | ApiResponse> {
 	return new Promise<void | ApiResponse>((resolve) => {
 		let err: ApiExchange = null;
-		steed.eachSeries(middlewares, (handler: ApiMiddleware, done) => {
+		eachSeries(null, (handler: ApiMiddleware, done) => {
 			const handlerLogger = logger.child({middleware: handler.name});
 			handlerLogger.debug("Running Middleware");
 			handler.handler(req, handlerLogger, (error) => {
@@ -649,14 +642,14 @@ function processMiddleware(middlewares: ApiMiddleware[],
 
 				done();
 			});
-		}, (error) => {
+		}, middlewares, (error) => {
 			resolve(err as ApiResponse);
 		});
 	});
 }
 
 function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
-	const tagDef: Swagger.Tag = {name: "Errors", description: "", externalDocs: null};
+	const tagDef: Swagger.Tag = {name: "Errors", description: ""};
 	let table = ERRORTABLEHEADER;
 	const keys = Object.keys(errors);
 	keys.sort((a, b) => {
@@ -679,5 +672,5 @@ function generateErrorTable(errors: { [x: string]: ErrorDef }): Swagger.Tag {
 		table += "|" + error.errorCode + "|" + name + "|" + error.defaultMessage + "|\n";
 	}
 	tagDef.description = table;
-	return omitBy(tagDef, isNil) as Swagger.Tag;
+	return tagDef as Swagger.Tag;
 }
