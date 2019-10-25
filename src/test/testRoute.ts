@@ -134,7 +134,7 @@ export class TestRoute extends Controller {
 	public testId(@Request() req: ApiRequest) {
 		return {
 			requestId: req.getAttachment(Valory.RequestIDKey),
-			loggerId: (this.logger as any)[pinoSymbols.chindingsSym],
+			loggerId: (this.logger as any)[pinoSymbols.chindingsSym] as string,
 			middlewareId: req.getAttachment(MiddlewareLoggerKey),
 		};
 	}
@@ -178,11 +178,10 @@ export class ErrorTestRoute extends Controller {
 export class MiddlewareTestRoute extends Controller {
 	@Middleware(new ClassMiddleware())
 	@Get("pre/class/success")
-	@DisableSerialization()
-	public preClassSuccess(@Request() req: ApiRequest): any {
+	public preClassSuccess(@Request() req: ApiRequest) {
 		const res = {
 			attachments: (req as any).attachments,
-			key: ClassMiddleware.ClassMiddlewareDataKey,
+			key: ClassMiddleware.ClassMiddlewareDataKey as any,
 			data: cloneDeep(req.getAttachment(ClassMiddleware.ClassMiddlewareDataKey)),
 		};
 
@@ -255,13 +254,13 @@ interface Child1 {
 interface Child2 {
 	name: "Child2";
 	nerdy: boolean;
+
 }
 
 type Parent = Child1 | Child2;
 
 @Route("types")
 export class TypesTestController extends Controller {
-	@DisableSerialization()
 	@Post("discriminator/basic")
 	public discriminatorBasic(@Body() input: Parent) {
 		return input;

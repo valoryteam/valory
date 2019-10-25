@@ -143,12 +143,12 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                     discrimFastFail: options.discrimFastFail,
                     lodash: require("lodash"),
                 });
-                if (options.disableSerialization.indexOf(`${path}:${method}`) === -1 &&
+                if (options.disableSerialization.indexOf(`${path}:${method.toUpperCase()}`) === -1 &&
                     (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
                     (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
                     const serializerHash = hash + SERIALIZER_SUFFIX;
                     const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
-                        [method].responses["200"].schema, true);
+                        [method].responses["200"].schema);
                     const serializer = templates.serializerTemplate({
                         hash: serializerHash,
                         serializer: generatedSerializer,

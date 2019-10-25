@@ -502,7 +502,7 @@ export class Valory {
 		}
 		swaggerDef.tags = Array.from(new Set(swaggerDef.tags));
 		this.apiDef.tags = Array.from(new Set(this.apiDef.tags));
-		const pathObj = this.apiDef.paths[path] ?? ({} as Swagger.Path);
+		const pathObj = this.apiDef.paths[path] || ({} as Swagger.Path);
 		(pathObj as any)[stringMethod.toLowerCase()] = swaggerDef;
 		this.apiDef.paths[path] = pathObj;
 	}

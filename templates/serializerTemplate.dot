@@ -1,8 +1,9 @@
 {{? it.schema.type === "object" || it.schema.type === "array" }}
-{{~ it.serializer : func }}
-{{= func.replace(/\$main/g, it.hash).replace(/function ([^\s]+) \(([a-zA-Z]+?)\)/g, `const $1 = ($2) => `) }};
-{{~}}
+{{= it.serializer.code.replace(new Regex(it.serializer.funcName), it.hash).replace(/function ([^\s]+) \(([a-zA-Z]+?)\)/g, `const $1 = ($2) => `) }};
 {{?}}
-{{? it.schema.type !== "object" && it.schema.type !== "array" }}
-const {{= it.hash}} = null;
+{{? it.schema.type !== "object" && it.schema.type !== "array" && it.schema.type !== "string"}}
+const {{= it.hash}} = {{= it.serializer.funcName}};
+{{?}}
+{{? it.schema.type === "string" }}
+const {{= it.hash}} = noop
 {{?}}

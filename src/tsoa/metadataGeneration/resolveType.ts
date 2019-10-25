@@ -121,6 +121,12 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
         return ref;
     }
 
+    if (typeNode.kind === ts.SyntaxKind.SymbolKeyword) {
+        return {
+            dataType: "string",
+        };
+    }
+
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
         throw new GenerateMetadataError(`Unknown type: ${ts.SyntaxKind[typeNode.kind]}`);
     }

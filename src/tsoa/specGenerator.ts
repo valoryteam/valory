@@ -243,7 +243,7 @@ export class SpecGenerator {
         } else {
             if (source.type.dataType === "any") {
                 if (source.in === "body") {
-                    (parameter as Swagger.BodyParameter).schema = {type: "object"};
+                    (parameter as Swagger.BodyParameter).schema = {};
                 } else {
                     parameter.type = "string";
                 }
@@ -375,7 +375,7 @@ export class SpecGenerator {
 
     private getSwaggerTypeForPrimitiveType(type: Tsoa.Type): Swagger.Schema | undefined {
         const map = {
-            any: {type: "object"},
+            any: {},
             binary: {type: "string", format: "binary"},
             boolean: {type: "boolean"},
             buffer: {type: "string", format: "byte"},

@@ -1,5 +1,4 @@
 {{const code = it.validatorLib.join("");}}
-{{?code.indexOf("formats")>-1}}const formats = require("ajv/lib/compile/formats")({{?it.format}}'{{=it.format}}'{{?}});{{?}}
 const FUNCTION_PREFIX = "f";
 const CRYPTO = require("crypto");
 
