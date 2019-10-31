@@ -11,6 +11,7 @@ var {{= it.hash }} =
       const dataObjCheckHead = /if \(\(data && typeof data === "object" && !Array.isArray\(data\)\)\) \{/g;
       const dataObjCheckTail = /}  else \{  var err =  \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } ;  vErrors.push\(err\); errors\+\+;  }/g;
       const dataObjCheckTailSingle = /}  else \{  validationErrors = \[ \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } \]; return false;  }/g;
+      const commonTypeChecks = /== ['"](string|object|number|boolean|false|true)['"]/g;
 
       const discrimArr = [];
       let noop = false;
@@ -58,7 +59,10 @@ var {{= it.hash }} =
             }
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
-                replace = (`'ValidationError[${keyword}]: request${dataPath} ${message}${allowedVal}'`);
+                /* replace = it.stringCache.add(`'ValidationError[${keyword}]: request${dataPath} ${message}${allowedVal}'`); */
+                const cachedPrefix = it.stringCache.add(`"ValidationError[${keyword}]: request"`);
+                const cachedMessage = it.stringCache.add(`"${message}"`);
+                replace = `${cachedPrefix} + ${cachedMessage} + "${allowedVal}"`
             } else {
                 replace = (`'ValidationError[${keyword}]: request${dataPath} + ' ${message}${allowedVal}'`);
             }
@@ -106,7 +110,11 @@ var {{= it.hash }} =
             }
             if(dataPath.indexOf("+")<0){
                 dataPath = dataPath.replace(/'/g,"");
-                replace = (`'ValidationError[${keyword}]: request${dataPath} ${message}${allowedVal}'`);
+                /* const cachedPrefix = it.stringCache.add(`"ValidationError[${keyword}]: request"`); */
+                /* const cachedMessage = it.stringCache.add(`"${message}"`); */
+                /* const cachedPath = it.stringCache.add(`'${dataPath} '`); */
+                /* replace = `${cachedPrefix} + ${cachedPath} + ${cachedMessage} + '${allowedVal}'` */
+                replace = `'ValidationError[${keyword}]: request${dataPath} ${message}${allowedVal}'`;
             } else {
                 replace = (`'ValidationError[${keyword}]: request${dataPath} + ' ${message}${allowedVal}'`);
             }
@@ -169,6 +177,12 @@ var {{= it.hash }} =
       } else {
           code = code.replace(dataObjCheckTail, "");
       }
+
+      /* Cache common type checks */
+      code = code.replace(commonTypeChecks, (match, type) => {
+          const cachedType = it.stringCache.add(`'${type}'`);
+          return `== ${cachedType}`;
+      });
 
       /* Check for empty validation */
       if (it.lodash.isEqual(it.schema, {"properties": {}, "required": [], "type": "object"})){

@@ -1,25 +1,28 @@
-import {cloneDeep, merge} from "lodash";
-import {dereference, validate} from "swagger-parser";
-import {sha1String} from "../lib/helpers";
-import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
-import {compileMethodSchema} from "./method";
-import {ClosureCompiler} from "../lib/closureCompiler";
+import chalk from "chalk";
 import * as fs from "fs";
+import {cloneDeep, escapeRegExp, merge} from "lodash";
+import {join} from "path";
+import {dereference, validate} from "swagger-parser";
+import {ClosureCompiler} from "../lib/closureCompiler";
+import {COMPSWAG_VERION} from "../lib/config";
+import {build as fastJson, preamble} from "../lib/fastStringify";
+import {sha1String} from "../lib/helpers";
+import {Spinner, spinnerFail} from "../lib/spinner";
+import {Swagger} from "../server/swagger";
+import {VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
 import {
     CompilationLevel,
     CompilerOutput,
     FUNCTION_PREFIX,
-    HASH_SEED,
-    ICompilerOptions, SERIALIZER_SUFFIX,
+    ICompilerOptions,
+    SERIALIZER_SUFFIX,
     ValidatorModuleContent,
 } from "./compilerheaders";
-import {join} from "path";
-import {VALORYPRETTYLOGGERVAR} from "../server/valoryheaders";
+import {compileMethodSchema} from "./method";
+import {mangleKeys, resolve, schemaPreprocess, swaggerPreproccess} from "./preprocessor";
+import {ValueCache} from "./valueCache";
 import Pino = require("pino");
-import {Swagger} from "../server/swagger";
-import {COMPSWAG_VERION, Config} from "../lib/config";
-import chalk from "chalk";
-import {Spinner, spinnerFail} from "../lib/spinner";
+
 const Ajv = require("ajv");
 
 export const CompileLog = Pino({prettyPrint: process.env[VALORYPRETTYLOGGERVAR] === "true"});
@@ -28,7 +31,6 @@ const dotJs = require("dot");
 dotJs.log = false;
 const templates = dotJs.process({path: join(__dirname, "../../templates")});
 const errorSup = "undefinedVars";
-import {build as fastJson, preamble} from "../lib/fastStringify";
 
 export const DisallowedFormats = ["float", "double", "int32", "int64", "byte", "binary"];
 
@@ -39,8 +41,11 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         success: false,
         module: null,
         debugArtifacts: {
+            stringCache: new ValueCache(),
             hashes: [],
+            functionNames: [],
             serializerHashes: [],
+            serializerFunctionNames: [],
             preSwagger: null,
             derefSwagger: null,
             initialSchema: [],
@@ -121,7 +126,8 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         for (const method of Object.keys(output.debugArtifacts.derefSwagger.paths[path])) {
             await Spinner.start("Building endpoint");
             try {
-                const hash = FUNCTION_PREFIX + sha1String(`${path}:${method.toUpperCase()}`);
+                const functionName = `${path}:${method.toUpperCase()}`;
+                const hash = FUNCTION_PREFIX + sha1String(functionName);
                 const endpointLogger = CompileLog.child({endpoint: `${path}:${method}`, hash});
                 // endpointLogger.info("Building method schema");
                 const schema = compileMethodSchema((output.debugArtifacts.derefSwagger.paths[path] as any)
@@ -135,6 +141,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                     funcName: path,
                     localConsumes: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].consumes,
                     hash,
+                    stringCache: output.debugArtifacts.stringCache,
                     format: (ajv as any)._opts.format,
                     mangledKeys: mangled.mangledKeys,
                     schema: mangled.schema,
@@ -147,17 +154,23 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
                     (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"] != null &&
                     (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema != null) {
                     const serializerHash = hash + SERIALIZER_SUFFIX;
+                    const serializerName = functionName + SERIALIZER_SUFFIX;
                     const generatedSerializer = fastJson((output.debugArtifacts.derefSwagger.paths[path] as any)
                         [method].responses["200"].schema);
                     const serializer = templates.serializerTemplate({
                         hash: serializerHash,
-                        serializer: generatedSerializer,
+                        stringCache: output.debugArtifacts.stringCache,
+                        serializerCode: generatedSerializer.code,
+                        serializerName: generatedSerializer.funcName,
+                        serializerNameEscaped: escapeRegExp(generatedSerializer.funcName),
                         schema: (output.debugArtifacts.derefSwagger.paths[path] as any)[method].responses["200"].schema,
                     });
+                    output.debugArtifacts.serializerFunctionNames.push(serializerName);
                     output.debugArtifacts.serializerHashes.push(serializerHash);
                     output.debugArtifacts.serializers.push(serializer);
                 }
                 output.debugArtifacts.hashes.push(hash);
+                output.debugArtifacts.functionNames.push(functionName);
                 output.debugArtifacts.initialSchema.push(schema);
                 output.debugArtifacts.intermediateFunctions.push(templated);
                 output.debugArtifacts.processedSchema.push(schemaProcessed.schema);
@@ -176,7 +189,9 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         validatorLib: output.debugArtifacts.intermediateFunctions.concat(output.debugArtifacts.serializers),
         defHash: sha1String(JSON.stringify(spec.definitions)),
         exportHashes: output.debugArtifacts.hashes.concat(output.debugArtifacts.serializerHashes),
+        exportNames: output.debugArtifacts.functionNames.concat(output.debugArtifacts.serializerFunctionNames),
         swagger: spec,
+        stringCache: output.debugArtifacts.stringCache.generate(),
         preamble,
         undocumentedEndpoints: options.undocumentedEndpoints,
         compswagVersion: COMPSWAG_VERION,
@@ -193,7 +208,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         use_types_for_optimization: true,
         preserve_type_annotations: true,
         js_output_file: outputTemp.name,
-        language_out: "ES5_STRICT",
+        language_out: "ECMASCRIPT_2016",
         debug: options.debug,
         jscomp_off: errorSup,
     };
@@ -236,10 +251,10 @@ function finalProcess(content: ValidatorModuleContent): ValidatorModuleContent {
     const arrayify = /([a-zA-Z]*?)=[\S\n\r]*?\"([a-zA-Z ]+?)\".split\(\" \"\)/gm;
     // const arrayCheckReg = /Array.isArray\(([a-zA-Z]*?)\)/g;
 
-    let ret = content.replace(trueReg, " true");
-    ret = ret.replace(falseReg, " false");
-    ret = ret.replace(nullReg, "undefined");
-    ret = ret.replace(arrayify, (match, varName, value) => {
+    // let ret = content.replace(trueReg, " true");
+    // ret = ret.replace(falseReg, " false");
+    // ret = ret.replace(nullReg, "undefined");
+    const ret = content.replace(arrayify, (match, varName, value) => {
         return `${varName}=${JSON.stringify(value.split(" "))}`;
     });
     // ret = ret.replace(arrayCheckReg,"($1 instanceof Array)");

@@ -1,6 +1,6 @@
 {{const code = it.validatorLib.join("");}}
 const FUNCTION_PREFIX = "f";
-const CRYPTO = require("crypto");
+{{=it.stringCache}}
 
 {{=it.preamble}}
 
@@ -13,7 +13,7 @@ function pushArr(target, other) {
 }
 
 function validate(path, method, data) {
-    const key = FUNCTION_PREFIX + CRYPTO["createHash"]("sha1")["update"](`${path}:${method}`)["digest"]("hex");
+    const key = `${path}:${method}`;
     const serializer = module["exports"][key + "s"];
     return {
         "validator": module["exports"][key],
@@ -92,10 +92,10 @@ function equal(a, b) {
 
 
 {{
-let exportsDefinitions = it.exportHashes.map(function(hash){
-    return ('"'+hash+'": '+ hash +',');
-});
-exportsDefinitions = exportsDefinitions.join("");
+let exportsDefinitions = "";
+for (let i = 0; i < it.exportHashes.length; i++) {
+    exportsDefinitions += `"${it.exportNames[i]}": ${it.exportHashes[i]},`
+}
 }}
 module["exports"]= {
 {{=exportsDefinitions}}

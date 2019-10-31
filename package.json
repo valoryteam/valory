@@ -67,7 +67,7 @@
 		"fastify": "^2.3.0",
 		"fastseries": "^1.7.2",
 		"flatstr": "^1.0.11",
-		"google-closure-compiler": "^20190415.0.0",
+		"google-closure-compiler": "20191027.0.0",
 		"inquirer": "^6.3.1",
 		"json-schema-merge-allof": "^0.6.0",
 		"lodash": "^4.17.11",

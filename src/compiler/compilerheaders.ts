@@ -1,4 +1,5 @@
 import {Swagger} from "../server/swagger";
+import {ValueCache} from "./valueCache";
 
 export const HASH_SEED = 3141997;
 
@@ -51,7 +52,10 @@ export interface CompilerOutput {
 	success: boolean;
 	module: ValidatorModuleContent;
 	debugArtifacts?: {
+		stringCache: ValueCache
+		functionNames: string[],
 		hashes: string[];
+		serializerFunctionNames: string[]
 		serializerHashes: string[];
 		preSwagger: { swagger: Swagger.Spec, discriminators: DiscriminatorMap };
 		derefSwagger: Swagger.Spec;

@@ -48,6 +48,7 @@ function processDebugArtifact<K extends keyof CompilerOutput["debugArtifacts"]>(
                 content: item as string,
                 extension: ".js",
             };
+        case "stringCache":
         case "closureOutput":
         case "derefSwagger":
         case "hashes":
@@ -55,6 +56,8 @@ function processDebugArtifact<K extends keyof CompilerOutput["debugArtifacts"]>(
         case "mangledSchema":
         case "preSwagger":
         case "serializerHashes":
+        case "functionNames":
+        case "serializerFunctionNames":
         case "processedSchema":
             return {
                 content: JSON.stringify(item),
