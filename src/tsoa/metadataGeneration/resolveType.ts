@@ -76,7 +76,7 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
     if (typeNode.kind === ts.SyntaxKind.LiteralType) {
         // Literal types generate a const enum
         const literal = typeNode as ts.LiteralTypeNode;
-        let constValue: string | number;
+        let constValue: string | number | boolean;
 
         switch (literal.literal.kind) {
             case ts.SyntaxKind.StringLiteral:
@@ -84,6 +84,12 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
                 break;
             case ts.SyntaxKind.NumericLiteral:
                 constValue = parseFloat(literal.literal.text);
+                break;
+            case ts.SyntaxKind.TrueKeyword:
+                constValue = true;
+                break;
+            case ts.SyntaxKind.FalseKeyword:
+                constValue = false;
                 break;
             default:
                 constValue = String((literal.literal as any).text);
