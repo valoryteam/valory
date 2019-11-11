@@ -58,7 +58,10 @@ export class TestObj {
 
 export class ExtTest extends TestObj {
 	public extProp: string;
-	public constBool: true;
+	/**
+	 * @format url
+	 */
+	public url: string;
 }
 
 export type ArrayAlias = number[];

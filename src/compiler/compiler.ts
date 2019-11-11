@@ -89,6 +89,7 @@ export async function compile(spec: Swagger.Spec, options?: ICompilerOptions) {
         errorDataPath: "property",
         unicode: false,
         allErrors: !options.singleError,
+        removeAdditional: true,
     });
     // if (options.discrimFastFail) {
     //     CompileLog.warn("discriminator fast fail is enabled EXPERIMENTAL");
