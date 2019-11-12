@@ -54,7 +54,7 @@ var {{= it.hash }} =
             if(keyword==="pattern"){
                 const split = message.split(" ");
                 const pattern = split[split.length-1];
-                split[split.length-1] = pattern.substring(1,pattern.length-1);
+                split[split.length-1] = ""; /* pattern.substring(1,pattern.length-1); */
                 message = split.join(" ");
             }
             if(dataPath.indexOf("+")<0){
@@ -105,7 +105,7 @@ var {{= it.hash }} =
             if(keyword==="pattern"){
                 const split = message.split(" ");
                 const pattern = split[split.length-1];
-                split[split.length-1] = pattern.substring(1,pattern.length-1);
+                split[split.length-1] = ""; /* pattern.substring(1,pattern.length-1); */
                 message = split.join(" ");
             }
             if(dataPath.indexOf("+")<0){

@@ -111,9 +111,11 @@ export type ParentType = ChildType | OtherChildType;
  */
 export interface ChildType {
     dtype: "ChildType";
-    /**
-     * @example "joe"
-     */
+	/**
+	 * Phone number (No country code)
+	 * @example "3214249450"
+	 * @pattern ^\d{1,14}$
+	 */
     thing: string;
     constant: "yay";
     test: ComputedEnum;
