@@ -1,5 +1,6 @@
 import {ValidatorModule} from "../compiler/compilerheaders";
 import {eachSeries, fastOmit, fastUUID} from "../lib/helpers";
+import {getResponse, ResponseMatrix} from "../lib/responseMatrix";
 import {Swagger} from "./swagger";
 import {loadModule} from "../compiler/loader";
 import {Logger} from "pino";
@@ -519,9 +520,6 @@ export class Valory {
 			requestId: "",
 			route,
 		};
-		// if (this.server.disableSerialization) {
-		// 	validator.serializer = (a: any) => a;
-		// }
 		if (this.apiDef.basePath != null) {
 			path = this.apiDef.basePath + path;
 		}
@@ -535,60 +533,53 @@ export class Valory {
 		const postMiddlewareProcessor = (postMiddlewares.length > 0) ? processMiddleware : noopPromise;
 		const logRequest = this.logRequest;
 		const logProvider = this.requestLogProvider;
-		const wrapper = (req: ApiRequest): Promise<ApiResponse> => {
+		const wrapper = async (req: ApiRequest): Promise<ApiResponse> => {
 			const requestId = fastUUID();
 			req.putAttachment(Valory.RequestIDKey, requestId);
 			requestContext.requestId = requestId;
 			const requestLogger = logProvider(childLogger, requestContext);
 			requestLogger.debug("Received request");
-			let initialResponse: ApiResponse = null;
-			let handlerResponded = false;
-			return middlewareProcessor(middlewares, req, requestLogger).then((middlewareResp) => {
-				if (middlewareResp != null) {
-					return Promise.resolve(middlewareResp);
-				}
-				const result = validator.validator(req);
-				req.putAttachment(Valory.ValidationResultKey, result);
-				if (result !== true) {
-					return Promise.resolve(this.buildError("ValidationError", result as string[]));
-				} else {
-					handlerResponded = true;
-					return Promise.resolve(handler(req, requestLogger, requestContext));
-				}
-			}).catch((error) => {
-				handlerResponded = false;
-				if (error.name === "ValoryEndpointError") {
-					return this.buildError(error.valoryErrorCode, error.message || undefined);
-				}
-				requestLogger.error("Internal exception occurred while processing request");
-				requestLogger.error(error);
-				return Promise.resolve(this.buildError("InternalError"));
-			}).then((response: ApiResponse) => {
-				req.putAttachment(Valory.ResponseKey, response);
-				initialResponse = response;
-				return postMiddlewareProcessor(postMiddlewares, req, requestLogger);
-			}).then((response) => {
-				logRequest(req, response || initialResponse, requestId);
-				if (response != null) {
-					return (response as ApiResponse);
-				}
-				if (handlerResponded && !initialResponse.disableSerializer) {
-					try {
-						initialResponse.body = flatStr(validator.serializer(initialResponse.body));
-					} catch (e) {
-						requestLogger.error(e, "Failed to serialize response");
-						return this.buildError("InternalError");
+			const response: ResponseMatrix = {
+				errorResponse: null,
+				handlerResponse: null,
+				postMiddlewareResponse: null,
+				preMiddlewareResponse: null,
+				validatorResponse: null,
+			};
+			try {
+				response.preMiddlewareResponse = await middlewareProcessor(middlewares, req, requestLogger);
+				if (response.preMiddlewareResponse == null) {
+					const result = validator.validator(req);
+					req.putAttachment(Valory.ValidationResultKey, result);
+					if (result !== true) {
+						response.validatorResponse = this.buildError("ValidationError", result as string[]);
+					} else {
+						response.handlerResponse = await handler(req, requestLogger, requestContext);
 					}
 				}
-				return initialResponse;
-			}).catch((error) => {
-				requestLogger.error("Internal exception occurred while processing request");
-				requestLogger.error(error);
-				return this.buildError("InternalError");
-			}).then((res: ApiResponse) => {
-				res.headers[requestIdName] = requestId;
-				return res;
-			});
+			} catch (error) {
+				if (error.name === "ValoryEndpointError") {
+					response.errorResponse = this.buildError(error.valoryErrorCode, error.message || undefined);
+				} else {
+					requestLogger.error(error, "Internal exception occurred while processing request");
+					response.errorResponse = this.buildError("InternalError");
+				}
+			}
+			try {
+				response.postMiddlewareResponse = await postMiddlewareProcessor(postMiddlewares, req, requestLogger);
+				const finalResponse = getResponse(response);
+				logRequest(req, finalResponse.response, requestId);
+				if (finalResponse.isHandler && !finalResponse.response.disableSerializer) {
+					finalResponse.response.body = flatStr(validator.serializer(finalResponse.response.body));
+				}
+				finalResponse.response.headers[requestIdName] = requestId;
+				return finalResponse.response;
+			} catch (error) {
+				requestLogger.error(error, "Internal exception occurred while processing request");
+				const finalResponse = this.buildError("InternalError");
+				finalResponse.headers[requestIdName] = requestId;
+				return finalResponse;
+			}
 		};
 		this.server.register(path, method, wrapper);
 	}
@@ -622,13 +613,12 @@ export class Valory {
 	}
 }
 
-function noopPromise(...args: any[]) {
-	return Promise.resolve();
+function noopPromise(...args: any[]): Promise<null> {
+	return Promise.resolve(null);
 }
 
-function processMiddleware(middlewares: ApiMiddleware[],
-                           req: ApiRequest, logger: Logger): Promise<void | ApiResponse> {
-	return new Promise<void | ApiResponse>((resolve) => {
+function processMiddleware(middlewares: ApiMiddleware[], req: ApiRequest, logger: Logger): Promise<ApiResponse | null> {
+	return new Promise((resolve) => {
 		let err: ApiExchange = null;
 		eachSeries(null, (handler: ApiMiddleware, done) => {
 			const handlerLogger = logger.child({middleware: handler.name});
