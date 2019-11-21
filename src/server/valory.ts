@@ -566,6 +566,7 @@ export class Valory {
 				}
 			}
 			try {
+				req.putAttachment(Valory.ResponseKey, getResponse(response).response);
 				response.postMiddlewareResponse = await postMiddlewareProcessor(postMiddlewares, req, requestLogger);
 				const finalResponse = getResponse(response);
 				logRequest(req, finalResponse.response, requestId);
