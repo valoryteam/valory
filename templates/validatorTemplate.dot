@@ -203,7 +203,7 @@ var {{= it.hash }} =
         {{
           let patterns = it.validate.source.patterns.map(function(pattern, id){
             pattern = pattern.replace(/\\/g,'\\\\');
-            return ("\/**@const*\/ const pattern" + id + " = new RegExp(\"" + pattern + "\");");
+            return `const pattern${id} = /${pattern}/;`;
           });
         }}
         {{= patterns.join("") }}

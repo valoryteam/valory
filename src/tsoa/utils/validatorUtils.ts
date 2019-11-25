@@ -183,7 +183,7 @@ export function getPropertyValidators(property: ts.PropertyDeclaration): Tsoa.Va
 				}
 				validateObj[name] = {
 					errorMsg: getErrorMsg(comment),
-					value,
+					value: removeSurroundingQuotes(value),
 				};
 				break;
 			default:
@@ -200,6 +200,14 @@ export function getPropertyValidators(property: ts.PropertyDeclaration): Tsoa.Va
 		}
 		return validateObj;
 	}, {} as Tsoa.Validators);
+}
+
+function removeSurroundingQuotes(str: string) {
+	const quoteChar = ["'", '"', "`"];
+	if (quoteChar.indexOf(str.substr(0, 1)) !== -1 && quoteChar.indexOf(str.substr(str.length - 1, 1)) !== -1) {
+		return str.substring(1, str.length - 1);
+	}
+	return str;
 }
 
 function getParameterTagSupport() {
