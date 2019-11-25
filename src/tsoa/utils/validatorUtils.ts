@@ -89,7 +89,7 @@ export function getParameterValidators(parameter: ts.ParameterDeclaration, param
 				}
 				validateObj[name] = {
 					errorMsg: getErrorMsg(comment),
-					value,
+					value: removeSurroundingQuotes(value),
 				};
 				break;
 			default:
