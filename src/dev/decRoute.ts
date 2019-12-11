@@ -56,13 +56,28 @@ export class TestObj {
     };
 }
 
-export class ExtTest extends TestObj {
+export class ExtTest {
 	public extProp: string;
 	/**
 	 * @format url
 	 */
 	public url: string;
+	public state1: StateAbbrev;
+	public state2: StateAbbrev;
 }
+
+/**
+ * US State abbreviation
+ */
+export type StateAbbrev = "AL" | "AK" | "AS" | "AZ" | "AR" | "CA" | "CO" |
+	"CT" | "DE" | "DC" | "FM" | "FL" | "GA" | "GU" |
+	"HI" | "ID" | "IL" | "IN" | "IA" | "KS" | "KY" |
+	"LA" | "ME" | "MH" | "MD" | "MA" | "MI" | "MN" |
+	"MS" | "MO" | "MT" | "NE" | "NV" | "NH" | "NJ" |
+	"NM" | "NY" | "NC" | "ND" | "MP" | "OH" | "OK" |
+	"OR" | "PW" | "PA" | "PR" | "RI" | "SC" | "SD" |
+	"TN" | "TX" | "UT" | "VT" | "VI" | "VA" | "WA" |
+	"WV" | "WI" | "WY"
 
 export type ArrayAlias = number[];
 // export type TupleAlias = [number, number];
@@ -133,7 +148,7 @@ export interface OtherChildType {
     dtype: "OtherChildType";
     other: number;
     enum: ComputedEnum;
-    // stuff: TestObj["nested"];
+    state: StateAbbrev;
 }
 
 export type ApiResAsync<T> = Promise<ApiRes<T>>;

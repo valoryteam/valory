@@ -54,6 +54,7 @@
 		"husky": "^2.2.0",
 		"mocha": "6.1.4",
 		"mocha-typescript": "^1.1.17",
+		"pino-pretty": "^3.5.0",
 		"request": "^2.88.0",
 		"request-promise": "^4.2.4",
 		"semantic-release": "^15.13.12",
