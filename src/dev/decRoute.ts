@@ -77,7 +77,7 @@ export type StateAbbrev = "AL" | "AK" | "AS" | "AZ" | "AR" | "CA" | "CO" |
 	"NM" | "NY" | "NC" | "ND" | "MP" | "OH" | "OK" |
 	"OR" | "PW" | "PA" | "PR" | "RI" | "SC" | "SD" |
 	"TN" | "TX" | "UT" | "VT" | "VI" | "VA" | "WA" |
-	"WV" | "WI" | "WY"
+	"WV" | "WI" | "WY";
 
 export type ArrayAlias = number[];
 // export type TupleAlias = [number, number];
