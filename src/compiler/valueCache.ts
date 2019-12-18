@@ -21,9 +21,9 @@ export class ValueCache {
 
 	public generate(): string {
 		return Object.values(this.cache).map((value) => {
-			let ret = `const ${value.identifier} = ${value.value};\n`;
+			const ret = `const ${value.identifier} = ${value.value};\n`;
 			if (value.usages > 1) {
-				ret = "/** @noinline */ " + ret;
+				// ret = "/** @noinline */ " + ret;
 			}
 			return ret;
 		}).join("");

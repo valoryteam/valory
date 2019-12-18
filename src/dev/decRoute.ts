@@ -119,19 +119,13 @@ const TestMiddleware: ApiMiddleware = {
 /**
  * Parent type description
  */
-export type ParentType = ChildType | OtherChildType;
+export type ParentType = ChildType | OtherChildType | ThirdChildType;
 
 /**
  * ChildType description
  */
 export interface ChildType {
     dtype: "ChildType";
-	/**
-	 * Phone number (No country code)
-	 * @example "3214249450"
-	 * @pattern `^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$`
-	 */
-    thing: string;
     constant: "yay";
     test: ComputedEnum;
 	/**
@@ -147,8 +141,13 @@ export interface ChildType {
 export interface OtherChildType {
     dtype: "OtherChildType";
     other: number;
-    enum: ComputedEnum;
-    state: StateAbbrev;
+    // enum: ComputedEnum;
+    // state: StateAbbrev;
+}
+
+export interface ThirdChildType {
+	dtype: "ThirdChildType";
+	stuff: boolean;
 }
 
 export type ApiResAsync<T> = Promise<ApiRes<T>>;
@@ -173,7 +172,7 @@ export class BurnRoutes extends Controller {
 	 * @return {ApiRes<string>} A success response
 	 */
 	@Post("/other/{thing}/")
-	public test(@Path() thing: StringAlias, @Body() input: ParentType): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
+	public test(@Path() thing: StringAlias, @Body() input: {test1: ParentType, test2: ParentType}): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
 		this.logger.info("A thing has happen");
 		return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
 	}

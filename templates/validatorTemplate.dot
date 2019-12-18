@@ -12,6 +12,7 @@ var {{= it.hash }} =
       const dataObjCheckTail = /}  else \{  var err =  \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } ;  vErrors.push\(err\); errors\+\+;  }/g;
       const dataObjCheckTailSingle = /}  else \{  validationErrors = \[ \{ keyword: 'type' , dataPath: \(dataPath \|\| ''\) \+ "" , schemaPath: '#\/type' , params: \{ type: 'object' }  , message: 'should be object'  } \]; return false;  }/g;
       const commonTypeChecks = /== ['"](string|object|number|boolean|false|true)['"]/g;
+      const setvErrorsLength = /vErrors.length = ([a-zA-Z0-9_$]*);/g;
 
       const discrimArr = [];
       let noop = false;
@@ -94,7 +95,7 @@ var {{= it.hash }} =
                     const id = generateUID();
                     discrimArr.push(prop);
                     if (it.discrimFastFail) {
-                        return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n errors++; \n break ${id}${it.discriminators[prop].parent};\n`;
+                        return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n errors++; \n silentErrorCounter++; \n break ${id}${it.discriminators[prop].parent};\n`;
                     } else {
                         return `err = null; //:${id}:${it.discriminators[prop].parent}:${prop}:DISC:\n`;
                     }
@@ -189,12 +190,16 @@ var {{= it.hash }} =
           noop = true
       }
 
+      /* Prevent resetting vErrors length */
+      code = code.replace(setvErrorsLength, "vErrors.length=vErrors.length;");
+
       /* Get ready to stick it back together */
       let functionHeader = code.substring(0, code.indexOf("{"));
       let functionBody = code.substring(code.indexOf("{") + 1, code.lastIndexOf("}"));
     }}
     {{?!noop}}
         {{= functionHeader}} {
+        let silentErrorCounter = 0;
         let validationErrors = {{=(it.singleError) ? "null" : "[]"}};
         {{~ it.validate.source.defaults:d:i }}
           {{= "\/**@const*\/"}} const default{{=i}} = {{=JSON.stringify(d)}};
