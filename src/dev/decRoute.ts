@@ -55,16 +55,16 @@ export class TestObj {
 	    nestedProp: "stuff",
     };
 }
-
-export class ExtTest {
-	public extProp: string;
+// tslint:disable-next-line
+export type ExtTest = {
+	extProp: string;
 	/**
 	 * @format url
 	 */
-	public url: string;
-	public state1: StateAbbrev;
-	public state2: StateAbbrev;
-}
+	url: string;
+	// state1: StateAbbrev;
+	// state2: StateAbbrev;
+};
 
 /**
  * US State abbreviation
@@ -168,37 +168,38 @@ export interface ApiRes<T> {
 
 @Route("/")
 export class BurnRoutes extends Controller {
-	/**
-	 * @return {ApiRes<string>} A success response
-	 */
-	@Post("/other/{thing}/")
-	public test(@Path() thing: StringAlias, @Body() input: {test1: ParentType, test2: ParentType}): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
-		this.logger.info("A thing has happen");
-		return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
-	}
-
-	@Post("submit/generic/literal")
-	public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: string}}>, literal2: GenericType<{other: string}>}) {
-		return genericInput;
-	}
+	// /**
+	//  * @return {ApiRes<string>} A success response
+	//  */
+	// @Post("/other/{thing}/")
+	// public test(@Path() thing: StringAlias, @Body() input: {test1: ParentType, test2: ParentType}): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
+	// 	this.logger.info("A thing has happen");
+	// 	return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
+	// }
+	//
+	// @Post("submit/generic/literal")
+	// public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: string}}>, literal2: GenericType<{other: string}>}) {
+	// 	return genericInput;
+	// }
 }
 
 @Route("thing")
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
-    @Get()
-	@Response(400, "Explosion")
-    public yay(): {thing: "yay"} {
-        this.logger.info("yay");
-        return this.buildError("AccessDenied");
-        return {
-            thing: "yay",
-        };
-    }
+    // @Get()
+	// @Response(400, "Explosion")
+    // public yay(): {thing: "yay"} {
+    //     this.logger.info("yay");
+    //     return this.buildError("AccessDenied");
+    //     return {
+    //         thing: "yay",
+    //     };
+    // }
 
     @Post("other/{test}")
-    public test(@Path() test: StringAlias, @Body() input: ExtTest): ApiRes<Burn> {
-        return {status_code: 1, response_data: {alias: "stuff", array: [], string: "", literal: "test", literalEnum: "otherthing", id: "id", powerlevel: 20, literalNum: 2, name: ""}};
+    public test(@Path() test: StringAlias, @Body() input: ExtTest): string {
+    	return "yay";
+        // return {status_code: 1, response_data: {alias: "stuff", array: [], string: "", literal: "test", literalEnum: "otherthing", id: "id", powerlevel: 20, literalNum: 2, name: ""}};
     }
 
     @Options("*")

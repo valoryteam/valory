@@ -10,6 +10,7 @@ import {GenerateMetadataError} from "./exceptions";
 import {MetadataGenerator} from "./metadataGenerator";
 import {Tsoa} from "./tsoa";
 import {Swagger} from "../../server/swagger";
+import ObjectType = Tsoa.ObjectType;
 
 const syntaxKindMap: { [kind: number]: string } = {};
 syntaxKindMap[ts.SyntaxKind.NumberKeyword] = "number";
@@ -317,7 +318,7 @@ function getDateType(typeNode: ts.TypeNode, parentNode?: ts.Node): Tsoa.Type {
     }
 }
 
-function getAliasType(node: UsableDeclaration): Tsoa.ReferenceAlias | undefined {
+function getAliasType(node: UsableDeclaration): Tsoa.ReferenceAlias | Tsoa.ReferenceType | undefined {
     if (node.kind !== ts.SyntaxKind.TypeAliasDeclaration) {
         return;
     }
@@ -328,12 +329,30 @@ function getAliasType(node: UsableDeclaration): Tsoa.ReferenceAlias | undefined 
         return;
     }
 
-    if (aliasDeclaration.type.kind === ts.SyntaxKind.TypeReference) {
-        // console.log()
+    const resolvedAlias = resolveType(node.type, node.type.parent);
+
+    // If this is a reference to a type literal, we actually want to just become the type we reference
+    /**
+     * ex:
+     * type Test = {
+     *     thing: string
+     * }
+     *
+     *
+     */
+    if (node.type.kind === ts.SyntaxKind.TypeLiteral && resolvedAlias.dataType === "object") {
+        return {
+            description: getNodeDescription(node),
+            dataType: "refObject",
+            example: getNodeExample(node),
+            properties: (resolvedAlias as ObjectType).properties,
+            refName: node.name.text,
+            additionalProperties: (resolvedAlias as ObjectType).additionalProperties,
+        };
     }
 
     return {
-        type: resolveType(node.type, node.type.parent),
+        type: resolvedAlias,
         description: getNodeDescription(node),
         format: getNodeFormat(node),
         refName: node.name.text,
