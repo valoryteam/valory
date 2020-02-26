@@ -1,7 +1,7 @@
 // tslint:disable:max-line-length
 
 import {indexOf, intersection, map} from "lodash";
-import {ModifierFlags} from "typescript";
+import {ModifierFlags, TypeAliasDeclaration, TypeReferenceNode} from "typescript";
 import * as ts from "typescript";
 import {sha1String} from "../../lib/helpers";
 import {getJSDocComment, getJSDocTagNames, isExistJSDocTag} from "../utils/jsDocUtils";
@@ -882,7 +882,8 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
                         });
 
                     // I am not sure in what cases
-                    const typeIdentifier = (aType as ts.TypeReferenceNode).typeName;
+                    const typeRef = (aType as ts.TypeReferenceNode);
+                    const typeIdentifier = typeRef.typeName;
                     let typeIdentifierName: string;
 
                     // typeIdentifier can either be a Identifier or a QualifiedName
@@ -897,6 +898,30 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
                     if (indexOfType >= 0) {
                         aType = genericTypes[indexOfType] as ts.TypeNode;
                     }
+
+                    const subTypeArguments = (type: ts.TypeReferenceNode) => {
+                        if (type.typeArguments) {
+                            for (let i =0; i < type.typeArguments.length; i++) {
+                                const typeArg = type.typeArguments[i];
+                                if (typeArg.kind === ts.SyntaxKind.TypeReference) {
+                                    const typeArgIdentifier = (typeArg as TypeReferenceNode).typeName;
+                                    let typeArgIdentifierName: string;
+                                    if ((typeArgIdentifier as ts.Identifier).text) {
+                                        typeArgIdentifierName = (typeArgIdentifier as ts.Identifier).text;
+                                    } else {
+                                        typeArgIdentifierName = (typeArgIdentifier as ts.QualifiedName).right.text;
+                                    }
+                                    const indexOfTypeArg = indexOf(typeParams, typeArgIdentifierName);
+                                    if (indexOfTypeArg >= 0) {
+                                        (type.typeArguments[i] as any) = genericTypes[indexOfTypeArg];
+                                    } else {
+                                        subTypeArguments(typeArg as ts.TypeReferenceNode);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    subTypeArguments(typeRef);
                 }
 
                 // console.log(resolveType(aType, aType.parent));
@@ -1009,6 +1034,30 @@ function getModelProperties(node: UsableDeclaration, genericTypes?: ts.NodeArray
                 if (indexOfType >= 0) {
                     typeNode = genericTypes[indexOfType] as ts.TypeNode;
                 }
+
+                const subTypeArguments = (typeRef: ts.TypeReferenceNode) => {
+                    if (typeRef.typeArguments) {
+                        for (let i =0; i < typeRef.typeArguments.length; i++) {
+                            const typeArg = typeRef.typeArguments[i];
+                            if (typeArg.kind === ts.SyntaxKind.TypeReference) {
+                                const typeArgIdentifier = (typeArg as TypeReferenceNode).typeName;
+                                let typeArgIdentifierName: string;
+                                if ((typeArgIdentifier as ts.Identifier).text) {
+                                    typeArgIdentifierName = (typeArgIdentifier as ts.Identifier).text;
+                                } else {
+                                    typeArgIdentifierName = (typeArgIdentifier as ts.QualifiedName).right.text;
+                                }
+                                const indexOfTypeArg = indexOf(typeParams, typeArgIdentifierName);
+                                if (indexOfTypeArg >= 0) {
+                                    (typeRef.typeArguments[i] as any) = genericTypes[indexOfTypeArg];
+                                } else {
+                                    subTypeArguments(typeArg as ts.TypeReferenceNode);
+                                }
+                            }
+                        }
+                    }
+                };
+                subTypeArguments(typeNode as ts.TypeReferenceNode);
             }
 
             const type = resolveType(typeNode, property);

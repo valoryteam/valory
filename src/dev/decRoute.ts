@@ -1,16 +1,16 @@
 import {
-	ApiRequest,
-	Body,
-	Header,
-	Post,
-	Route,
-	Request,
-	Controller,
-	Logger,
-	Middleware,
-	ApiMiddleware,
-	Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization, Options,
-	Response,
+    ApiRequest,
+    Body,
+    Header,
+    Post,
+    Route,
+    Request,
+    Controller,
+    Logger,
+    Middleware,
+    ApiMiddleware,
+    Valory, ApiError, Hidden, Query, PostMiddleware, Get, Path, BodyProp, DisableSerialization, Options,
+    Response,
 } from "../main";
 
 export interface TestResponse<T> {
@@ -30,7 +30,7 @@ export class Burn {
     public literalEnum: LiteralEnum;
     public literal: LiteralAlias;
     public literalNum: LiteralNum;
-	public readonly id: string;
+    public readonly id: string;
 }
 
 export class TestObj {
@@ -49,41 +49,42 @@ export class TestObj {
             num: number;
         };
     } = {
-    	nestedObj: {
-    		num: 2,
-	    },
-	    nestedProp: "stuff",
+        nestedObj: {
+            num: 2,
+        },
+        nestedProp: "stuff",
     };
 }
+
 // tslint:disable-next-line
 export type ExtTest = {
-	extProp: string;
-	/**
-	 * @format url
-	 */
-	url: string;
-	// state1: StateAbbrev;
-	// state2: StateAbbrev;
+    extProp: string;
+    /**
+     * @format url
+     */
+    url: string;
+    // state1: StateAbbrev;
+    // state2: StateAbbrev;
 };
 
 /**
  * US State abbreviation
  */
 export type StateAbbrev = "AL" | "AK" | "AS" | "AZ" | "AR" | "CA" | "CO" |
-	"CT" | "DE" | "DC" | "FM" | "FL" | "GA" | "GU" |
-	"HI" | "ID" | "IL" | "IN" | "IA" | "KS" | "KY" |
-	"LA" | "ME" | "MH" | "MD" | "MA" | "MI" | "MN" |
-	"MS" | "MO" | "MT" | "NE" | "NV" | "NH" | "NJ" |
-	"NM" | "NY" | "NC" | "ND" | "MP" | "OH" | "OK" |
-	"OR" | "PW" | "PA" | "PR" | "RI" | "SC" | "SD" |
-	"TN" | "TX" | "UT" | "VT" | "VI" | "VA" | "WA" |
-	"WV" | "WI" | "WY";
+    "CT" | "DE" | "DC" | "FM" | "FL" | "GA" | "GU" |
+    "HI" | "ID" | "IL" | "IN" | "IA" | "KS" | "KY" |
+    "LA" | "ME" | "MH" | "MD" | "MA" | "MI" | "MN" |
+    "MS" | "MO" | "MT" | "NE" | "NV" | "NH" | "NJ" |
+    "NM" | "NY" | "NC" | "ND" | "MP" | "OH" | "OK" |
+    "OR" | "PW" | "PA" | "PR" | "RI" | "SC" | "SD" |
+    "TN" | "TX" | "UT" | "VT" | "VI" | "VA" | "WA" |
+    "WV" | "WI" | "WY";
 
 export type ArrayAlias = number[];
 // export type TupleAlias = [number, number];
 /**
  * alias to a string
- * @example a string
+ * @example "a string"
  * @minLength 3
  * @pattern [abc].*z
  */
@@ -94,8 +95,8 @@ export type LiteralEnum = "thing" | "otherthing";
 export type LiteralNum = 2;
 
 export const enum ComputedEnum {
-	test = "test",
-	other = "thing",
+    test = "test",
+    other = "thing",
 }
 
 export interface SimpleExampleTest {
@@ -128,14 +129,14 @@ export interface ChildType {
     dtype: "ChildType";
     constant: "yay";
     test: ComputedEnum;
-	/**
-	 * @multipleOf 2
-	 */
-	num: number;
-	/**
-	 * Override description
-	 */
-	// indexed: TestObj["nested"];
+    /**
+     * @multipleOf 2
+     */
+    num: number;
+    /**
+     * Override description
+     */
+    // indexed: TestObj["nested"];
 }
 
 export interface OtherChildType {
@@ -146,8 +147,8 @@ export interface OtherChildType {
 }
 
 export interface ThirdChildType {
-	dtype: "ThirdChildType";
-	stuff: boolean;
+    dtype: "ThirdChildType";
+    stuff: boolean;
 }
 
 export type ApiResAsync<T> = Promise<ApiRes<T>>;
@@ -157,8 +158,9 @@ export interface NestedGeneric<T> {
 }
 
 export interface GenericType<T> {
-	common: string;
-	generic: T;
+    common: string;
+    // tslint:disable-next-line
+    generic: Array<T>;
 }
 
 export interface ApiRes<T> {
@@ -168,26 +170,31 @@ export interface ApiRes<T> {
 
 @Route("/")
 export class BurnRoutes extends Controller {
-	// /**
-	//  * @return {ApiRes<string>} A success response
-	//  */
-	// @Post("/other/{thing}/")
-	// public test(@Path() thing: StringAlias, @Body() input: {test1: ParentType, test2: ParentType}): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
-	// 	this.logger.info("A thing has happen");
-	// 	return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
-	// }
-	//
-	// @Post("submit/generic/literal")
-	// public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: string}}>, literal2: GenericType<{other: string}>}) {
-	// 	return genericInput;
-	// }
+    // /**
+    //  * @return {ApiRes<string>} A success response
+    //  */
+    // @Post("/other/{thing}/")
+    // public test(@Path() thing: StringAlias, @Body() input: {test1: ParentType, test2: ParentType}): ApiRes<ApiRes<ApiRes<{stuff?: boolean}>>> {
+    // 	this.logger.info("A thing has happen");
+    // 	return {status_code: 1, response_data: {status_code: 1, response_data: {status_code: 1, response_data: {}}}};
+    // }
+    //
+    // @Post("submit/generic/literal")
+    // public submitGenericLiteral(@Body() genericInput: {literal1: GenericType<{potato: "thing" | "TestObj", nested: {meat: string}}>, literal2: GenericType<{other: string}>}) {
+    // 	return genericInput;
+    // }
+}
+
+export interface GenericArray<T> {
+    // tslint:disable-next-line
+    test: GenericType<T>;
 }
 
 @Route("thing")
 export class ThingRoutes extends Controller {
     // @PostMiddleware(TestMiddleware)
     // @Get()
-	// @Response(400, "Explosion")
+    // @Response(400, "Explosion")
     // public yay(): {thing: "yay"} {
     //     this.logger.info("yay");
     //     return this.buildError("AccessDenied");
@@ -197,14 +204,17 @@ export class ThingRoutes extends Controller {
     // }
 
     @Post("other/{test}")
-    public test(@Path() test: StringAlias, @Body() input: ExtTest): string {
-    	return "yay";
+    public test(@Path() test: StringAlias): GenericType<GenericArray<string>> {
+        return {
+                common: test,
+                generic: [{test: {generic: ["yay"], common: "yay"}}],
+        };
         // return {status_code: 1, response_data: {alias: "stuff", array: [], string: "", literal: "test", literalEnum: "otherthing", id: "id", powerlevel: 20, literalNum: 2, name: ""}};
     }
 
     @Options("*")
-	public cors() {
-    	this.setHeader("access-control-allow-origin", "*");
+    public cors() {
+        this.setHeader("access-control-allow-origin", "*");
     }
 }
 
