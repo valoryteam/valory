@@ -92,6 +92,7 @@ export type StringAlias = string;
 export type AliasAlias = StringAlias;
 export type LiteralAlias = "test";
 export type LiteralEnum = "thing" | "otherthing";
+export type LiteralEnumNumber = 0 | 1;
 export type LiteralNum = 2;
 
 export const enum ComputedEnum {
@@ -204,7 +205,7 @@ export class ThingRoutes extends Controller {
     // }
 
     @Post("other/{test}")
-    public test(@Path() test: StringAlias): GenericType<GenericArray<string>> {
+    public test(@Path() test: StringAlias, @Body() input: LiteralEnumNumber): any {
         return {
                 common: test,
                 generic: [{test: {generic: ["yay"], common: "yay"}}],

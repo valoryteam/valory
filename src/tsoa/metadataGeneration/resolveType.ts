@@ -50,6 +50,8 @@ export function resolveType(typeNode: ts.TypeNode, parentNode?: ts.Node, extract
                     /* tslint:disable-next-line:no-shadowed-variable */
                     const literalType = (type as ts.LiteralTypeNode).literal;
                     switch (literalType.kind) {
+                        case ts.SyntaxKind.NumericLiteral:
+                            return +(literalType as any).text;
                         case ts.SyntaxKind.TrueKeyword:
                             return "true";
                         case ts.SyntaxKind.FalseKeyword:
