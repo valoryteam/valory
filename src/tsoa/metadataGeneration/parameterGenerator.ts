@@ -215,7 +215,7 @@ export class ParameterGenerator {
 	}
 
 	private supportBodyMethod(method: string) {
-		return ["post", "put", "patch"].some((m) => m === method.toLowerCase());
+		return ["post", "put", "patch", "delete"].some((m) => m === method.toLowerCase());
 	}
 
 	private supportParameterDecorator(decoratorName: string) {
