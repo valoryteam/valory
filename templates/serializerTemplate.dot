@@ -1,9 +1,0 @@
-{{? it.schema.type === "object" || it.schema.type === "array" }}
-{{= it.serializerCode.replace(new RegExp(it.serializerNameEscaped, "g"), it.hash).replace(/function ([^\s]+) \(([a-zA-Z]+?)\)/g, `const $1 = ($2) => `) }};
-{{?}}
-{{? it.schema.type !== "object" && it.schema.type !== "array" && it.schema.type !== "string"}}
-const {{= it.hash}} = {{= it.serializerName}};
-{{?}}
-{{? it.schema.type === "string" }}
-const {{= it.hash}} = noop
-{{?}}
