@@ -2,9 +2,10 @@ import {OpenAPIV3} from "openapi-types";
 import {ApiAdaptor} from "../lib/common/adaptor";
 import P = require("pino");
 import {Logger} from "pino";
-import {Config} from "../lib/config";
+import {Config, METADATA_VERSION} from "../lib/config";
 import {HttpMethod} from "../lib/common/headers";
 import {Endpoint} from "./endpoint";
+import {loadGlobalData, ValoryGlobalData} from "../lib/global-data";
 
 export interface ValoryArgs {
     openapi: {
@@ -25,6 +26,10 @@ export class Valory {
     public readonly adaptor: ApiAdaptor;
     public readonly apiDef: OpenAPIV3.Document;
     public readonly logger: Logger;
+    /**
+     * @hidden
+     */
+    public readonly globalData?: ValoryGlobalData;
 
     public static createInstance(args: ValoryArgs) {
         Valory.directInstantiation = false;
@@ -37,8 +42,12 @@ export class Valory {
     }
 
     private constructor(args: ValoryArgs) {
-        if (Valory.instance != null) {throw new Error("Valory instance has already been created");}
-        if (Valory.directInstantiation) {throw new Error("Valory should not be directly instantiated");}
+        if (Valory.instance != null) {
+            throw new Error("Valory instance has already been created");
+        }
+        if (Valory.directInstantiation) {
+            throw new Error("Valory should not be directly instantiated");
+        }
         Valory.instance = this;
 
         const {adaptor, openapi, baseLogger} = args;
@@ -49,12 +58,13 @@ export class Valory {
         this.apiDef = {
             ...openapi,
             paths: {},
-            openapi: "3.0",
+            openapi: "3.0.2",
         };
+        Config.load(false);
 
-        // if (Config.CompileMode) {
-        // } else {
-        // }
+        if (!Config.CompileMode) {
+            this.globalData = loadGlobalData();
+        }
     }
 
     public endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject) {
@@ -63,10 +73,21 @@ export class Valory {
     }
 
     public start() {
-        return this.adaptor.start()
+        if (Config.CompileMode) {
+            this.exportMetadata();
+        } else {
+            return this.adaptor.start()
+        }
     }
 
     public shutdown() {
         return this.adaptor.shutdown()
+    }
+
+    private exportMetadata() {
+        Config.setMetadata({
+            openapi: this.apiDef,
+            version: METADATA_VERSION
+        })
     }
 }

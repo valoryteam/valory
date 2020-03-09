@@ -6,12 +6,14 @@ import {ApiContext} from "../lib/common/context";
 import {Logger} from "pino";
 import {ApiMiddleware, ApiMiddlewareExecutor} from "../lib/common/middleware";
 import {AttachmentRegistry} from "../lib/common/attachment-registry";
+import {RequestValidator} from "./middleware/request-validator";
 
 export class Endpoint {
+    public static readonly ExceptionKey = AttachmentRegistry.createKey<Error>();
     public static readonly RequestLoggerKey = AttachmentRegistry.createKey<Logger>();
     public static readonly HandlerLoggerKey = AttachmentRegistry.createKey<Logger>();
 
-    private executor: AsyncSeries<ApiContext>;
+    private executor: AsyncSeries<ApiContext, ApiMiddleware>;
     private middleware: {middleware: ApiMiddleware, priority: number}[] = [];
     private logger: Logger;
 
@@ -27,6 +29,7 @@ export class Endpoint {
     private registerSwagger() {
         const paths = this.valory.apiDef.paths[this.path] || {};
         paths[lowercaseHttpMethod(this.method)] = this.operation;
+        this.valory.apiDef.paths[this.path] = paths;
     }
 
     private registerEndpoint() {
@@ -34,18 +37,15 @@ export class Endpoint {
     }
 
     private buildExecutor() {
-        const handlerAccum: {function: ApiMiddlewareExecutor, priority: number}[] = [];
-        for (let i = 0; i < this.middleware.length; i++) {
-            handlerAccum.push({function: this.middleware[i].middleware.handler, priority: this.middleware[i].priority})
-        }
-        this.executor = new AsyncSeries<ApiContext>(
-            handlerAccum,
-            (arg, i) => {
+        const sortedMiddleware = this.middleware.sort(((a, b) => b.priority - a.priority));
+        this.executor = new AsyncSeries(
+            sortedMiddleware.map(a=>a.middleware),
+            (arg: ApiContext, i: number) => {
                 const handlerLogger = arg.attachments.getAttachment(Endpoint.RequestLoggerKey).child({middleware: this.middleware[i].middleware.name});
                 arg.attachments.putAttachment(Endpoint.HandlerLoggerKey, handlerLogger);
             },
             (arg, err, i) => {
-                // TODO: Figure out error handling
+                arg.attachments.putAttachment(Endpoint.ExceptionKey, err);
             })
     }
 
@@ -61,7 +61,12 @@ export class Endpoint {
         return this
     }
 
+    public addDefaultMiddleware() {
+        this.addMiddleware(new RequestValidator(this.valory, this.path, this.method), 100)
+    }
+
     public done() {
+        this.addDefaultMiddleware();
         this.registerEndpoint();
         this.registerSwagger();
         this.buildExecutor();

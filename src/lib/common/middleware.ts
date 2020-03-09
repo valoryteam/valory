@@ -5,6 +5,6 @@ export type ApiMiddlewareExecutor = (ctx: ApiContext) => Promise<void> | void
 
 export interface ApiMiddleware {
     handler: ApiMiddlewareExecutor;
-    name: string;
-    tags?: OpenAPIV3.TagObject[]
+    readonly name: string;
+    readonly tags?: OpenAPIV3.TagObject[]
 }

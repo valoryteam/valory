@@ -1,23 +1,22 @@
 export type AsyncFunctor<T> = (arg: T) => Promise<any> | any
 
-export class AsyncSeries<T> {
+export class AsyncSeries<T, K extends {handler: AsyncFunctor<T>}> {
     private readonly functionNum: number;
-    private functions: {function: AsyncFunctor<T>, priority: number}[];
 
     constructor(
-        functions: {function: AsyncFunctor<T>, priority: number}[],
+        private functions: K[],
         private iterator: (arg: T, i: number) => void,
         private exceptionHandler: (arg: T, err: Error, i: number) => void,
     ) {
         this.functionNum = functions.length;
-        this.functions = functions.sort((a, b) => a.priority - b.priority)
+        // this.functions = functions.sort((a, b) => b.priority - a.priority)
     }
 
     public async execute(arg: T) {
         for (let i = 0; i < this.functionNum; i++) {
             try {
                 this.iterator(arg, i);
-                await this.functions[i].function(arg)
+                await this.functions[i].handler(arg)
             } catch (e) {
                 this.exceptionHandler(arg, e, i);
             }
