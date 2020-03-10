@@ -1,16 +1,16 @@
 import {CommandModule} from "yargs";
-import {Spinner, spinnerFail, spinnerWrap} from "../lib/spinner";
-import {COMPSWAG_VERSION, Config, METADATA_VERSION, ROUTES_VERSION} from "../lib/config";
-import chalk = require("chalk");
-import {SpecCompiler} from "../compiler/spec-compiler/spec-compiler";
-import {ModuleBuilder} from "../compiler/module/module-builder";
-import {GLOBAL_ENTRY_KEY, saveGlobalData, saveGlobalDataRoutesOnly} from "../lib/global-data";
-import {ThreadSpinner} from "thread-spin";
-import {RouteCompiler} from "../compiler/route-compiler/route-compiler";
-import {OpenAPIV3} from "openapi-types";
-import {HttpMethodLowercase, HttpMethodsLowercase, uppercaseHttpMethod} from "../lib/common/headers";
 import {spawnSync} from "child_process";
 import {gte, coerce} from "semver";
+import chalk = require("chalk");
+import {ThreadSpinner} from "thread-spin";
+import {OpenAPIV3} from "openapi-types";
+import {Spinner, spinnerFail, spinnerWrap} from "../lib/spinner";
+import {COMPSWAG_VERSION, Config, METADATA_VERSION, ROUTES_VERSION} from "../lib/config";
+import {SpecCompiler} from "../compiler/spec-compiler/spec-compiler";
+import {saveGlobalData, saveGlobalDataRoutesOnly} from "../lib/global-data";
+import {RouteCompiler} from "../compiler/route-compiler/route-compiler";
+import {HttpMethodLowercase, HttpMethodsLowercase, uppercaseHttpMethod} from "../lib/common/headers";
+import {GLOBAL_ENTRY_KEY} from "../lib/common/compiler-headers";
 
 export interface CompileOptions {
     path: string;

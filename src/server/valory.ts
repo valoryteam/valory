@@ -4,9 +4,9 @@ import {Logger} from "pino";
 import {Config, METADATA_VERSION} from "../lib/config";
 import {HttpMethod} from "../lib/common/headers";
 import {Endpoint} from "./endpoint";
-import {loadGlobalData, ValoryGlobalData} from "../lib/global-data";
-import {RoutesModule} from "../lib/common/compiler-headers";
+import {RoutesModule, ValoryGlobalData} from "../lib/common/compiler-headers";
 import P = require("pino");
+import {loadGlobalData} from "../lib/global-data-load";
 
 export interface ValoryArgs {
     openapi: {
@@ -53,7 +53,7 @@ export class Valory {
 
         const {adaptor, openapi, baseLogger} = args;
 
-        this.adaptor = adaptor;
+        this.adaptor = this.resolveAdaptor(adaptor);
         this.logger = baseLogger || P();
 
         this.apiDef = {
@@ -68,6 +68,13 @@ export class Valory {
 
         this.globalData = loadGlobalData();
         this.registerGeneratedRoutes(this.globalData.routes)
+    }
+
+    private resolveAdaptor(provided: ApiAdaptor): ApiAdaptor {
+        const defaultAdaptorPath = Config.getDefaultAdaptorPath();
+        if (defaultAdaptorPath == null) {return provided}
+        const defaultAdaptor = require(defaultAdaptorPath).DefaultAdaptor;
+        return new defaultAdaptor();
     }
 
     public endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject) {

@@ -1,8 +1,5 @@
 import {ValidateFunction} from "ajv";
 import {OpenAPIV3} from "openapi-types";
-import {Valory} from "../../server/valory";
-
-
 
 export interface ValidatorModule {
     validators: {[path: string]: {[method: string]: {[status: string]: ValidateFunction}}};
@@ -12,7 +9,14 @@ export interface ValidatorModule {
 }
 
 export interface RoutesModule {
-    register: (app: Valory) => void
+    register: (app: any) => void
     components: OpenAPIV3.ComponentsObject;
     routesVersion: number;
 }
+
+export interface ValoryGlobalData {
+    validation: ValidatorModule;
+    routes: RoutesModule;
+}
+
+export const GLOBAL_ENTRY_KEY = "VALORY_DATA";

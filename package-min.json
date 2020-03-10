@@ -2,7 +2,7 @@
 	"typings": "dist/main.d.ts",
 	"name": "valory-runtime",
 	"version": "3.4.3",
-	"description": "Minimal runtime only valory build",
+	"description": "Minimal runtime-only valory build",
 	"files": [
 		"dist",
 		"package.json"
@@ -11,9 +11,7 @@
 	"author": "John Conley",
 	"dependencies": {
 		"@types/pino": "^5.20.0",
-		"pino": "^5.11.1",
-		"fastseries": "^1.7.2",
-		"flatstr": "^1.0.9"
+		"pino": "^5.11.1"
 	},
 	"license": "ISC",
 	"release": {

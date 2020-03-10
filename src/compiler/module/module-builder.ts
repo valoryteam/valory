@@ -57,7 +57,7 @@ export class ModuleBuilder {
         // @ts-nocheck
         /* tslint:disable */
         global["${this.input.globalVar}"] = {
-            ${Object.keys(this.input.modules).map(file => `"${file}": require("./${file}"),`)}
+            ${Object.keys(this.input.modules).map(file => `"${file}": require("./${file}")`).join(",")}
         };
         `;
     }

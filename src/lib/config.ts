@@ -39,6 +39,7 @@ const ConfigSchema: JSONSchema7 = {
 export namespace Config {
     export const VALORY_COMPILE_MODE_VAR = "VALORY_COMPILE_MODE";
     export const VALORY_METADATA_VAR = "VALORY_METADATA";
+    export const VALORY_DEFAULT_ADAPTOR_VAR = "VALORY_DEFAULT_ADAPTOR";
     export const CONFIG_FILE = "valory.json";
     export let CompileMode = false;
     export let RootPath = "";
@@ -87,6 +88,14 @@ export namespace Config {
             throw Error(`Metadata version mismatch. required: ${METADATA_VERSION} actual: ${metadata.version}`)
         }
         return metadata;
+    }
+
+    export function setDefaultAdaptorPath(defaultAdaptorPath: string) {
+        process.env[VALORY_DEFAULT_ADAPTOR_VAR] = defaultAdaptorPath;
+    }
+
+    export function getDefaultAdaptorPath(): string | null {
+        return process.env[VALORY_DEFAULT_ADAPTOR_VAR];
     }
 
     export function resolveEntryPoint() {

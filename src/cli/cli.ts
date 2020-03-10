@@ -2,6 +2,7 @@
 
 import yargs = require("yargs");
 import {CompileCommand} from "./compile-command";
+import {TestCommand} from "./test-command";
 require("ts-node").register({
     pretty: false,
     typeCheck: false,
@@ -9,5 +10,6 @@ require("ts-node").register({
 });
 
 yargs.command(CompileCommand)
+    .command(TestCommand)
     .demandCommand()
     .parse();

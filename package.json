@@ -65,7 +65,7 @@
 	},
 	"preferGlobal": true,
 	"bin": {
-		"valory": "compiler/lib/cli.js"
+		"valory": "compiler/cli/cli.js"
 	},
 	"repository": "https://github.com/valoryteam/valory.git",
 	"release": {

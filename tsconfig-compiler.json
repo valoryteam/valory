@@ -5,10 +5,9 @@
 		"sourceMap": false,
 		"declaration": false
 	},
-	"include": [],
 	"files": [
-		"src/lib/cli.ts",
-		"src/compiler/compiler.ts",
-		"src/lib/defaultAdaptor.ts"
-	]
+		"src/cli/cli.ts",
+		"src/lib/default-adaptor.ts"
+	],
+	"include": []
 }
