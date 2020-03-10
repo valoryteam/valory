@@ -17,3 +17,36 @@ export function sha1String(data: string | Buffer): string {
 export function sha1Buffer(data: string | Buffer): Buffer {
     return createHash("sha1").update(data).digest();
 }
+
+export function versionCheck(title: string, required: number, actual: number) {
+    if (required !== actual) {
+        throw Error(`${title} version mismatch. required: ${required} actual: ${actual}`)
+    }
+}
+
+export function memoizeSingle<T>(fn: ()=>T): ()=>T {
+    let cache: T | null = null;
+    return () => {
+        if (cache == null) {cache = fn()}
+        return cache;
+    }
+}
+
+export function arrayPush<T>(target?: T[], other?: T[]): T[] {
+    if (other == null || other.length === 0) {
+        return target
+    }
+    if (target == null || target.length === 0) {
+        return other;
+    }
+
+    // Pre allocate
+    const originalTargetLength = target.length;
+    const otherLength = other.length;
+    target.length = originalTargetLength + otherLength;
+
+    for (let i = 0; i < otherLength; i++) {
+        target[originalTargetLength + i] = other[i]
+    }
+    return target;
+}

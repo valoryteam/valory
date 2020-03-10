@@ -3,9 +3,11 @@ import {OpenAPIV3} from "openapi-types";
 import * as path from "path";
 import {JSONSchema7} from "json-schema";
 import ajv = require("ajv");
+import {IPackageJSON} from "package-json";
 
 export const METADATA_VERSION = 2;
 export const COMPSWAG_VERSION = 2;
+export const ROUTES_VERSION = 2;
 
 export interface ValoryMetadata {
     openapi: OpenAPIV3.Document
@@ -40,6 +42,8 @@ export namespace Config {
     export const CONFIG_FILE = "valory.json";
     export let CompileMode = false;
     export let RootPath = "";
+    export let PackageJSONPath = "";
+    export let PackageJSON: IPackageJSON;
     export let ConfigPath = "";
     export let ConfigData: ValoryConfig;
     export let CLIMode = false;
@@ -49,8 +53,10 @@ export namespace Config {
         CLIMode = cliMode;
         RootPath = rootPath || resolveRootPath();
         ConfigPath = path.join(RootPath, CONFIG_FILE);
+        PackageJSONPath = path.join(RootPath, "package.json");
         if (loadConfig) {
-            ConfigData = loadValidatedConfig(ConfigPath)
+            ConfigData = loadValidatedConfig(ConfigPath);
+            PackageJSON = require(PackageJSONPath);
         }
     }
 

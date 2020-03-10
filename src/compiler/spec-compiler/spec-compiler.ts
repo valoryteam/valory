@@ -15,7 +15,7 @@ export interface CompilerOptions {
 
 }
 
-export interface CompilerOutput {
+export interface SpecCompilerOutput {
     initialInput?: OpenAPIV3.Document;
     dereferencedSpec?: OpenAPIV3.Document;
     operations?: Operation[];
@@ -28,7 +28,7 @@ export interface CompilerOutput {
 }
 
 export class SpecCompiler {
-    private output: CompilerOutput = {};
+    private output: SpecCompilerOutput = {};
 
     constructor(
         private input: OpenAPIV3.Document,

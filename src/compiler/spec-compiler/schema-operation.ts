@@ -34,7 +34,7 @@ function processParameter(input: OpenAPIV3.RequestBodyObject | OpenAPIV3.Paramet
         outerSchema.properties.body = innerSchema;
     } else {
         const param = input as OpenAPIV3.ParameterObject;
-        const property: JSONSchema4 = {};
+        const property: JSONSchema4 = {properties: {}};
         property.properties[param.name] = innerSchema;
         if (param.required) {property.required = [param.name]}
         outerSchema.properties[location] = property;

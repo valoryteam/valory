@@ -9,6 +9,7 @@ const Ajv = new ajv({
     sourceCode: true,
     useDefaults: "shared",
     allErrors: true,
+    unknownFormats: ["double", "int32", "int64", "float", "byte"],
 });
 
 export interface CompiledSchemaOperation {

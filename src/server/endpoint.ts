@@ -7,6 +7,7 @@ import {Logger} from "pino";
 import {ApiMiddleware, ApiMiddlewareExecutor} from "../lib/common/middleware";
 import {AttachmentRegistry} from "../lib/common/attachment-registry";
 import {RequestValidator} from "./middleware/request-validator";
+import {arrayPush} from "../lib/common/util";
 
 export class Endpoint {
     public static readonly ExceptionKey = AttachmentRegistry.createKey<Error>();
@@ -14,7 +15,7 @@ export class Endpoint {
     public static readonly HandlerLoggerKey = AttachmentRegistry.createKey<Logger>();
 
     private executor: AsyncSeries<ApiContext, ApiMiddleware>;
-    private middleware: {middleware: ApiMiddleware, priority: number}[] = [];
+    private middleware: ApiMiddleware[] = [];
     private logger: Logger;
 
     constructor(
@@ -23,7 +24,8 @@ export class Endpoint {
         public method: HttpMethod,
         public operation: OpenAPIV3.OperationObject
     ) {
-        this.logger = valory.logger.child({path, method})
+        this.logger = valory.logger.child({path, method});
+        this.addDefaultPreMiddleware();
     }
 
     private registerSwagger() {
@@ -37,11 +39,10 @@ export class Endpoint {
     }
 
     private buildExecutor() {
-        const sortedMiddleware = this.middleware.sort(((a, b) => b.priority - a.priority));
         this.executor = new AsyncSeries(
-            sortedMiddleware.map(a=>a.middleware),
+            this.middleware,
             (arg: ApiContext, i: number) => {
-                const handlerLogger = arg.attachments.getAttachment(Endpoint.RequestLoggerKey).child({middleware: this.middleware[i].middleware.name});
+                const handlerLogger = arg.attachments.getAttachment(Endpoint.RequestLoggerKey).child({middleware: this.middleware[i].name});
                 arg.attachments.putAttachment(Endpoint.HandlerLoggerKey, handlerLogger);
             },
             (arg, err, i) => {
@@ -56,17 +57,21 @@ export class Endpoint {
         return ctx;
     }
 
-    public addMiddleware(middleware: ApiMiddleware, priority: number) {
-        this.middleware.push({middleware, priority});
-        return this
+    public appendMiddleware(middleware: ApiMiddleware) {
+        this.middleware.push(middleware);
+        return this;
     }
 
-    public addDefaultMiddleware() {
-        this.addMiddleware(new RequestValidator(this.valory, this.path, this.method), 100)
+    public appendMiddlewareList(middlewares: ApiMiddleware[]) {
+        this.middleware = arrayPush(this.middleware, middlewares);
+        return this;
+    }
+
+    public addDefaultPreMiddleware() {
+        this.appendMiddleware(new RequestValidator(this.valory, this.path, this.method))
     }
 
     public done() {
-        this.addDefaultMiddleware();
         this.registerEndpoint();
         this.registerSwagger();
         this.buildExecutor();

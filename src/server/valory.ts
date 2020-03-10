@@ -1,11 +1,12 @@
 import {OpenAPIV3} from "openapi-types";
 import {ApiAdaptor} from "../lib/common/adaptor";
-import P = require("pino");
 import {Logger} from "pino";
 import {Config, METADATA_VERSION} from "../lib/config";
 import {HttpMethod} from "../lib/common/headers";
 import {Endpoint} from "./endpoint";
 import {loadGlobalData, ValoryGlobalData} from "../lib/global-data";
+import {RoutesModule} from "../lib/common/compiler-headers";
+import P = require("pino");
 
 export interface ValoryArgs {
     openapi: {
@@ -60,28 +61,35 @@ export class Valory {
             paths: {},
             openapi: "3.0.2",
         };
+
         Config.load(false);
 
-        if (!Config.CompileMode) {
-            this.globalData = loadGlobalData();
-        }
+        if (!Config.CompileMode) this.logger.info("Starting Valory");
+
+        this.globalData = loadGlobalData();
+        this.registerGeneratedRoutes(this.globalData.routes)
     }
 
     public endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject) {
-        const endpoint = new Endpoint(this, path, method, operation);
-        return endpoint;
+        return new Endpoint(this, path, method, operation);
     }
 
     public start() {
         if (Config.CompileMode) {
             this.exportMetadata();
         } else {
+            this.logger.info("Startup Complete");
             return this.adaptor.start()
         }
     }
 
     public shutdown() {
         return this.adaptor.shutdown()
+    }
+
+    public registerGeneratedRoutes(routes: RoutesModule) {
+        routes.register(this);
+        this.apiDef.components = Object.assign(this.apiDef.components || {}, routes.components)
     }
 
     private exportMetadata() {

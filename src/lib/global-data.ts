@@ -1,15 +1,18 @@
-import {ValidatorModule} from "./common/compiler-headers";
+import {RoutesModule, ValidatorModule} from "./common/compiler-headers";
 import {ModuleBuilder} from "../compiler/module/module-builder";
+import {ROUTES_VERSION} from "./config";
+import {versionCheck} from "./common/util";
 
 export interface ValoryGlobalData {
     validation: ValidatorModule;
+    routes: RoutesModule;
 }
 
 export const GLOBAL_ENTRY_KEY = "VALORY_DATA";
 
-export function saveGlobalDataBlank(outputDirectory: string) {
+export function saveGlobalDataRoutesOnly(routes: string, outputDirectory: string) {
     const builder = new ModuleBuilder({
-       modules: {},
+       modules: {routes},
        destinationPath: outputDirectory,
        globalVar: GLOBAL_ENTRY_KEY,
     });
@@ -26,8 +29,11 @@ export function saveGlobalData(data: {[P in keyof ValoryGlobalData]: string}, ou
 }
 
 export function loadGlobalData(): ValoryGlobalData {
-    if ((global as any)[GLOBAL_ENTRY_KEY] == null) {
+    const data: ValoryGlobalData = (global as any)[GLOBAL_ENTRY_KEY];
+    if (data == null) {
         throw Error("Could not retrieve generated data")
     }
-    return (global as any)[GLOBAL_ENTRY_KEY]
+    versionCheck("Routes", data.routes.routesVersion, ROUTES_VERSION);
+
+    return data
 }

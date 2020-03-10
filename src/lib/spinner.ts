@@ -14,7 +14,7 @@ export async function spinnerFail(message: string, e: any, die: boolean = true, 
     }
 }
 
-export async function spinnerWrap<T>(value: Promise<T> | T | (() => Promise<T> | T), text: string): Promise<T> {
+export async function spinnerWrap<T>(value: Promise<T> | T | (() => Promise<T> | T), text: string, textSuccess: string = text, textFailure: string = `Failed: ${text}`): Promise<T> {
     try {
         let result;
         await Spinner.start(text);
@@ -23,10 +23,10 @@ export async function spinnerWrap<T>(value: Promise<T> | T | (() => Promise<T> |
         } else {
             result = await value;
         }
-        await Spinner.succeed(text);
+        await Spinner.succeed(textSuccess);
         return result;
     } catch (e) {
-        await spinnerFail(`Failed: ${text}`, e, false);
+        await spinnerFail(textFailure, e, false);
         throw e;
     }
 }

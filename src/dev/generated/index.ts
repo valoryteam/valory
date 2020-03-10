@@ -13,6 +13,6 @@
         // @ts-nocheck
         /* tslint:disable */
         global["VALORY_DATA"] = {
-            "validation": require("./validation"),
+            "validation": require("./validation"),,"routes": require("./routes"),
         };
         
