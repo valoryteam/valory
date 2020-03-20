@@ -80,12 +80,19 @@ export class RouteModule {
         return process.env.NODE_ENV === "test" ? relative(this.outputDirectory, join(Config.RootPath, "src/main")) : "valory-runtime"
     }
 
+    private resolveMethodPath(controllerPath: string, methodPath: string) {
+        const path = (`/${controllerPath}/${methodPath}`).replace(/\/\//, "/");
+        return (path.endsWith("/") && path.length > 1) ? path.substring(0, path.length - 1) : path;
+    }
+
     private generateOperation(controller: Controller, method: Method) {
-        const path = (`/${controller.path}/${method.path}`).replace(/\/\//, "/");
+        const path = this.resolveMethodPath(controller.path, method.path);
+        const controllerName = this.getControllerName(controller.name);
+        const qualifiedMethod = `${controllerName}.${method.name}`;
         return `
         app.endpoint("${path}","${uppercaseHttpMethod(method.method)}",${JSON.stringify(this.spec.paths[path][method.method])})
-            .appendMiddlewareList(${this.getControllerName(controller.name)}.middleware)
-            .appendMiddlewareList(${this.getControllerName(controller.name)}.${method.name}.middleware)
+            .appendMiddlewareList(${controllerName}.middleware)
+            .appendMiddlewareList(${qualifiedMethod}.middleware)
             .appendMiddleware({
                 name: "PrimaryHandler",
                 async handler(ctx) {
@@ -93,24 +100,28 @@ export class RouteModule {
                         return;
                     }
                     if (${this.getControllerExtensionCheckName(controller.name)}) {
-                        ${this.getControllerName(controller.name)}.logger = ctx.attachments.getAttachment(Endpoint.HandlerLoggerKey);
-                        ${this.getControllerName(controller.name)}.headers = ctx.response.headers || {};
+                        ${controllerName}.ctx = ctx;
+                        ${controllerName}.logger = ctx.attachments.getAttachment(Endpoint.HandlerLoggerKey);
+                        ${controllerName}.headers = ctx.response.headers || {};
                     }
                     
-                    const response = await ${this.getControllerName(controller.name)}.${method.name}(
+                    const response = await ${controllerName}.${method.name}(
                         ${method.parameters.map(this.generateParameter).join(",")}
                     );
                     ctx.response.body = response;
+                    ctx.response.statusCode = ${qualifiedMethod}.statusCode || 200;
                     if (${this.getControllerExtensionCheckName(controller.name)}) {
-                        ctx.response.statusCode = ${this.getControllerName(controller.name)}.getStatus();
-                        ctx.response.headers = ${this.getControllerName(controller.name)}.getHeaders();
-                        ${this.getControllerName(controller.name)}.clearStatus();
-                        ${this.getControllerName(controller.name)}.clearHeaders();
+                        if (${controllerName}.statusSet) {
+                            ctx.response.statusCode = ${controllerName}.getStatus();                        
+                        }
+                        ctx.response.headers = ${controllerName}.getHeaders();
+                        ${controllerName}.clearStatus();
+                        ${controllerName}.clearHeaders();
                     }
                 }
             })
-            .appendMiddlewareList(${this.getControllerName(controller.name)}.${method.name}.postMiddleware)
-            .appendMiddlewareList(${this.getControllerName(controller.name)}.postMiddleware)
+            .appendMiddlewareList(${controllerName}.${method.name}.postMiddleware)
+            .appendMiddlewareList(${controllerName}.postMiddleware)
             .done();
         `;
     }

@@ -26,7 +26,7 @@ export async function spinnerWrap<T>(value: Promise<T> | T | (() => Promise<T> |
         await Spinner.succeed(textSuccess);
         return result;
     } catch (e) {
-        await spinnerFail(textFailure, e, false);
+        await spinnerFail(textFailure, e, true);
         throw e;
     }
 }

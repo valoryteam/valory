@@ -68,10 +68,16 @@ export class Endpoint {
     }
 
     public addDefaultPreMiddleware() {
-        this.appendMiddleware(new RequestValidator(this.valory, this.path, this.method))
+        this.appendMiddlewareList(this.valory.beforeAllMiddleware);
+        this.appendMiddleware(new RequestValidator(this.valory, this.path, this.method));
+    }
+
+    public addDefaultPostMiddleware() {
+        this.appendMiddlewareList(this.valory.afterAllMiddleware)
     }
 
     public done() {
+        this.addDefaultPostMiddleware();
         this.registerEndpoint();
         this.registerSwagger();
         this.buildExecutor();

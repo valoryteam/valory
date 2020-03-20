@@ -11,6 +11,7 @@ import {saveGlobalData, saveGlobalDataRoutesOnly} from "../lib/global-data";
 import {RouteCompiler} from "../compiler/route-compiler/route-compiler";
 import {HttpMethodLowercase, HttpMethodsLowercase, uppercaseHttpMethod} from "../lib/common/headers";
 import {GLOBAL_ENTRY_KEY} from "../lib/common/compiler-headers";
+import {writeFileSync} from "fs";
 
 export interface CompileOptions {
     path: string;
@@ -84,6 +85,7 @@ async function compile(options: CompileOptions) {
     const specCompiler = new SpecCompiler(metadata.openapi, {});
     const compiledSpec = await specCompiler.compile();
     await spinnerWrap(saveGlobalData({validation: compiledSpec, routes}, Config.resolveOutputDirectory()), "Outputting Generated Files");
+    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(metadata.openapi))}
     ThreadSpinner.shutdown();
     printFooter(metadata.openapi);
 }

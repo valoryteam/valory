@@ -132,7 +132,6 @@ export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: 
     ${functionDeclarations.join("\n")}
     module["exports"] = {
         "validators": ${JSON.stringify(exportStructure).replace(/:"(.+?)"/g, ":$1")},
-        "spec": ${stringSpec},
         "compswagVersion": ${COMPSWAG_VERSION},
         "specHash": "${specHash}"
     };

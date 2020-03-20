@@ -17,7 +17,7 @@ export interface ValoryMetadata {
 export interface ValoryConfig {
     entrypoint: string;
     outputDirectory: string;
-    swaggerOutput: string;
+    specOutput: string;
 }
 
 const ConfigSchema: JSONSchema7 = {
@@ -29,7 +29,7 @@ const ConfigSchema: JSONSchema7 = {
         outputDirectory: {
             type: "string"
         },
-        swaggerOutput: {
+        specOutput: {
             type: "string"
         }
     },
@@ -104,6 +104,10 @@ export namespace Config {
 
     export function resolveOutputDirectory() {
         return path.join(RootPath, ConfigData.outputDirectory);
+    }
+
+    export function resolveSpecOutput() {
+        return (ConfigData.specOutput) ? path.join(RootPath, ConfigData.specOutput) : null
     }
 
     function resolveRootPath() {

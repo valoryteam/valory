@@ -36,9 +36,6 @@ export function arrayPush<T>(target?: T[], other?: T[]): T[] {
     if (other == null || other.length === 0) {
         return target
     }
-    if (target == null || target.length === 0) {
-        return other;
-    }
 
     // Pre allocate
     const originalTargetLength = target.length;

@@ -7,6 +7,7 @@ import {Endpoint} from "./endpoint";
 import {RoutesModule, ValoryGlobalData} from "../lib/common/compiler-headers";
 import P = require("pino");
 import {loadGlobalData} from "../lib/global-data-load";
+import {ApiMiddleware} from "../main";
 
 export interface ValoryArgs {
     openapi: {
@@ -17,6 +18,8 @@ export interface ValoryArgs {
         tags?: OpenAPIV3.TagObject[];
         externalDocs?: OpenAPIV3.ExternalDocumentationObject;
     };
+    beforeAllMiddleware?: ApiMiddleware[];
+    afterAllMiddleware?: ApiMiddleware[];
     adaptor: ApiAdaptor;
     baseLogger?: Logger;
 }
@@ -27,10 +30,10 @@ export class Valory {
     public readonly adaptor: ApiAdaptor;
     public readonly apiDef: OpenAPIV3.Document;
     public readonly logger: Logger;
-    /**
-     * @hidden
-     */
-    public readonly globalData?: ValoryGlobalData;
+
+    /** @hidden */ public readonly beforeAllMiddleware: ApiMiddleware[];
+    /** @hidden */ public readonly afterAllMiddleware: ApiMiddleware[];
+    /** @hidden */ public readonly globalData?: ValoryGlobalData;
 
     public static createInstance(args: ValoryArgs) {
         Valory.directInstantiation = false;
@@ -51,9 +54,11 @@ export class Valory {
         }
         Valory.instance = this;
 
-        const {adaptor, openapi, baseLogger} = args;
+        const {adaptor, openapi, baseLogger, afterAllMiddleware, beforeAllMiddleware} = args;
 
         this.adaptor = this.resolveAdaptor(adaptor);
+        this.afterAllMiddleware = afterAllMiddleware;
+        this.beforeAllMiddleware = beforeAllMiddleware;
         this.logger = baseLogger || P();
 
         this.apiDef = {
@@ -96,7 +101,10 @@ export class Valory {
 
     public registerGeneratedRoutes(routes: RoutesModule) {
         routes.register(this);
-        this.apiDef.components = Object.assign(this.apiDef.components || {}, routes.components)
+        this.apiDef.components = {
+            ...routes.components,
+            ...this.apiDef.components
+        }
     }
 
     private exportMetadata() {

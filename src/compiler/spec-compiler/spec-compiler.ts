@@ -1,5 +1,5 @@
 import {OpenAPIV3} from "openapi-types";
-import {validate, dereference} from "swagger-parser";
+import {validate} from "swagger-parser";
 import {Spinner, spinnerFail, spinnerWrap} from "../../lib/spinner";
 import chalk = require("chalk");
 import {generateOperations, Operation} from "./operations";
@@ -9,6 +9,7 @@ import {CompiledSchemaOperation, compileSchemaOperation} from "./compile-validat
 import {processCompiledSchemaOperation, ProcessedCompiledSchemaOperation} from "./process-validator";
 import {generateModule} from "./generate-module";
 import {compileModule} from "./compile-module";
+import {cloneDeep, } from "lodash";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CompilerOptions {
@@ -17,6 +18,7 @@ export interface CompilerOptions {
 
 export interface SpecCompilerOutput {
     initialInput?: OpenAPIV3.Document;
+    mangledSpec?: OpenAPIV3.Document;
     dereferencedSpec?: OpenAPIV3.Document;
     operations?: Operation[];
     schemaOperations?: SchemaOperation[];
@@ -38,7 +40,7 @@ export class SpecCompiler {
     public async compile(): Promise<string> {
         console.log(chalk.bold("Spec Compilation"));
         this.output.initialInput = this.input;
-        this.output.dereferencedSpec = await spinnerWrap(validate(this.input), "Validating Spec") as OpenAPIV3.Document;
+        this.output.dereferencedSpec = await spinnerWrap(validate(cloneDeep(this.output.initialInput)), "Validating Spec") as OpenAPIV3.Document;
         this.output.operations = await spinnerWrap(generateOperations(this.output.dereferencedSpec), "Generating Operations");
         this.output.schemaOperations = await spinnerWrap(this.output.operations.map(generateSchemaOperation), "Generating Operation Schemas");
         this.output.schemaOperationsOpt = await spinnerWrap(this.output.schemaOperations.map(op=>{

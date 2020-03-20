@@ -1,4 +1,5 @@
 import {Logger} from "pino";
+import {ApiContext} from "../main";
 
 /**
  * Base class for route controllers. Not required, but provides useful functionality.
@@ -8,13 +9,16 @@ export class Controller {
      * Holds the request logger
      */
     public logger: Logger;
+    public ctx: ApiContext;
     private statusCode: number = 200;
+    private statusSet = false;
     private headers = {} as { [name: string]: string | undefined };
 
     /**
      * Set the returned status code.
      */
     public setStatus(statusCode: number) {
+        this.statusSet = true;
         this.statusCode = statusCode;
     }
 
@@ -50,6 +54,7 @@ export class Controller {
      * Reset the status code to 200. Used internally.
      */
     public clearStatus() {
+        this.statusSet = false;
         this.statusCode = 200;
     }
 

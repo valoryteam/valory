@@ -5,7 +5,6 @@ export {
     Route,
     Tags,
     SuccessResponse,
-    Security,
     OperationId,
     Head,
     Example,
@@ -20,7 +19,9 @@ export {
     Path,
     Response,
     AppendMiddleware,
-    PrependMiddleware
+    PrependMiddleware,
+    Options,
+    Security
 } from "./server/decorators"
 export {Endpoint} from "./server/endpoint"
 export {RequestValidator} from "./server/middleware/request-validator"
@@ -39,3 +40,4 @@ export {
     ApiExchange
 } from "./lib/common/headers"
 export {ApiRequest} from "./lib/common/request"
+export {ApiResponse} from "./lib/common/response"
