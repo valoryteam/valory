@@ -36,7 +36,7 @@
 		"@types/pino": "^5.17.0",
 		"@types/semver": "^7.1.0",
 		"@types/yargs": "^15.0.4",
-		"cz-conventional-changelog": "^3.1.0",
+		"cz-conventional-changelog": "^2.1.0",
 		"husky": "^4.2.3",
 		"semantic-release": "^17.0.4",
 		"tslint": "^6.1.0",
