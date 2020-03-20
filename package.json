@@ -3,6 +3,7 @@
 	"version": "3.5.1",
 	"description": "A server agnostic web framework for creating bulletproof apis",
 	"scripts": {
+		"test": "echo 'no tests :('",
 		"buildTest": "tsc && npm run build",
 		"build": "npm run compiler && npm run runtime",
 		"compiler": "tsc -p tsconfig-compiler.json",
