@@ -5,6 +5,7 @@ import {spinnerWrap} from "../../lib/spinner";
 import {tmpdir} from "os";
 import {RouteModule} from "./route-module";
 import {unencodePropNames} from "./unencode-prop-names";
+import {oneOfToAnyOf} from "./oneOf-to-anyOf";
 
 export class RouteCompiler {
     constructor(
@@ -22,7 +23,7 @@ export class RouteCompiler {
             outputDirectory: tmpdir(),
             noImplicitAdditionalProperties: "silently-remove-extras",
         });
-        const spec = await spinnerWrap(unencodePropNames(specGenerator.GetSpec()), "Generating Spec");
+        const spec = await spinnerWrap(oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec())), "Generating Spec");
         const routeModule = new RouteModule(metadata, spec as any, this.input.outputDirectory);
         const routes = await spinnerWrap(routeModule.generate(), "Generating Routes");
         return routes;

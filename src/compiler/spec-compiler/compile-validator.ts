@@ -5,10 +5,10 @@ import {JSONSchema4} from "json-schema";
 import {ValidateFunction} from "ajv";
 
 const Ajv = new ajv({
-    removeAdditional: true,
+    removeAdditional: false,
     sourceCode: true,
     useDefaults: "shared",
-    allErrors: true,
+    allErrors: false,
     unknownFormats: ["double", "int32", "int64", "float", "byte"],
 });
 

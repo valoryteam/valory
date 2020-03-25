@@ -6,7 +6,7 @@ import {AttachmentRegistry} from "../../lib/common/attachment-registry";
 import {AJVTypes} from "../../lib/common/compiler-headers";
 
 export class RequestValidator implements ApiMiddleware {
-    public static ValidationErrorsKey = AttachmentRegistry.createKey<AJVTypes.ErrorObject[]>();
+    public static ValidationErrorsKey = AttachmentRegistry.createKey<string[]>();
 
     public readonly name = "RequestValidator";
     private readonly validator: AJVTypes.ValidateFunction;
@@ -21,7 +21,7 @@ export class RequestValidator implements ApiMiddleware {
             ctx.attachments.putAttachment(RequestValidator.ValidationErrorsKey, this.validator.errors);
             ctx.response = {
                 statusCode: 422,
-                body: this.validator.errors.map(RequestValidator.renderError),
+                body: this.validator.errors,
                 headers: {"Content-Type": "application/json"},
             }
         }

@@ -1,4 +1,4 @@
-import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response} from "../server/decorators";
+import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query} from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/middleware";
 
@@ -9,7 +9,7 @@ export interface TestInput {
      * @isInt
      */
     number: number;
-    string: EndpointArgs;
+    string: EndpointArgs[];
 }
 
 export interface EndpointArgsURL {
@@ -49,15 +49,17 @@ export type NumberAlias = number;
 
 export type Complex = Omit<TestInput & {[key: string]: any}, "string">
 
+export enum Direction {
+    ASC = "asc",
+    DESC = "desc"
+}
+
 @Route()
 export class TestController extends Controller {
-    /**
-     * @param coolHeader Do a thing in a header
-     */
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("cool-header") coolHeader: NumberAlias, @Body() input: Complex) {
+    @Post() public test(@Body() enumTest: TestInput) {
         this.setHeader("content-type", "text/plain");
     }
 }

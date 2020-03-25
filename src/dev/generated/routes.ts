@@ -26,10 +26,10 @@ function isController(object) {
         
         module.exports = {
             routesVersion: 2,
-            components: {"examples":{},"headers":{},"parameters":{},"requestBodies":{},"responses":{},"schemas":{"NumberAlias":{"type":"integer","format":"int32"},"Pick_TestInput~AND~{[key:string]:any}.Exclude_keyofTestInput~AND~{[key:string]:any}.\"string\"__":{"properties":{},"type":"object","description":"From T, pick a set of properties whose keys are in the union K"},"Omit_TestInput~AND~{[key:string]:any}.\"string\"_":{"$ref":"#/components/schemas/Pick_TestInput~AND~%7B%5Bkey%3Astring%5D%3Aany%7D.Exclude_keyofTestInput~AND~%7B%5Bkey%3Astring%5D%3Aany%7D.%22string%22__","description":"Construct a type with the properties of T except for those in type K."},"Complex":{"$ref":"#/components/schemas/Omit_TestInput~AND~%7B%5Bkey%3Astring%5D%3Aany%7D.%22string%22_"}},"securitySchemes":{}},
+            components: {"examples":{},"headers":{},"parameters":{},"requestBodies":{},"responses":{},"schemas":{"EndpointArgsSMS":{"properties":{"type":{"type":"string","enum":["https://nrfcloud.github.io/docs/sms"],"nullable":false},"number":{"type":"string"}},"required":["type","number"],"type":"object","additionalProperties":false},"EndpointArgsURL":{"properties":{"type":{"type":"string","enum":["https://nrfcloud.github.io/docs/webhook"],"nullable":false},"url":{"type":"string"}},"required":["type","url"],"type":"object","additionalProperties":false},"EndpointArgs":{"anyOf":[{"$ref":"#/components/schemas/EndpointArgsSMS"},{"$ref":"#/components/schemas/EndpointArgsURL"}]},"TestInput":{"properties":{"number":{"type":"number","format":"double","description":"a number prop","example":2},"string":{"items":{"$ref":"#/components/schemas/EndpointArgs"},"type":"array"}},"required":["number","string"],"type":"object","additionalProperties":false}},"securitySchemes":{}},
             register(app) {
                 
-        app.endpoint("/","POST",{"operationId":"Test","responses":{"202":{"content":{"application/json":{}},"description":""},"313":{"content":{"application/json":{}},"description":""}},"security":[],"parameters":[{"description":"Do a thing in a header","in":"header","name":"cool-header","required":true,"schema":{"$ref":"#/components/schemas/NumberAlias"}}],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/Complex"}}}}})
+        app.endpoint("/","POST",{"operationId":"Test","responses":{"202":{"content":{"application/json":{}},"description":""},"313":{"content":{"application/json":{}},"description":""}},"security":[],"parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/TestInput"}}}}})
             .appendMiddlewareList(TestControllerController.middleware)
             .appendMiddlewareList(TestControllerController.test.middleware)
             .appendMiddleware({
@@ -45,7 +45,7 @@ function isController(object) {
                     }
                     
                     const response = await TestControllerController.test(
-                        ctx.request.headers["cool-header"],ctx.request.body
+                        ctx.request.body
                     );
                     ctx.response.body = response;
                     ctx.response.statusCode = TestControllerController.test.statusCode || 200;

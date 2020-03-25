@@ -13,7 +13,6 @@ import {cloneDeep, } from "lodash";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CompilerOptions {
-
 }
 
 export interface SpecCompilerOutput {

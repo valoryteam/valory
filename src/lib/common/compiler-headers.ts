@@ -109,7 +109,7 @@ export namespace AJVTypes {
             rootData?: object | any[]
         ): boolean | PromiseLike<any>;
         schema?: object | boolean;
-        errors?: null | ErrorObject[];
+        errors?: string[];
         refs?: object;
         refVal?: any[];
         root?: ValidateFunction | object;
