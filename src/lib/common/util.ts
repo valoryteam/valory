@@ -47,3 +47,15 @@ export function arrayPush<T>(target?: T[], other?: T[]): T[] {
     }
     return target;
 }
+
+export function lowercaseKeys(obj: {[key: string]: unknown}) {
+    const keys = Object.keys(obj);
+    const n = keys.length;
+    for (let i =0; i<n;i++) {
+        const key = keys[i];
+        const val = obj[key];
+        delete obj[key];
+        obj[key.toLowerCase()] = val;
+    }
+    return obj;
+}

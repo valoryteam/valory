@@ -30,15 +30,12 @@ export class DefaultAdaptor implements ApiAdaptor {
 
             req.on("end", async () => {
                 const parsedUrl = url.parse(req.url, true);
-                const body = attemptParse(req.headers["content-type"], rawBody);
                 const ctx = new ApiContext({
                     headers: req.headers,
                     queryParams: parsedUrl.query,
                     pathParams: (req as any).params,
                     path,
                     method,
-                    body,
-                    formData: body as any,
                     rawBody,
                 });
 
@@ -55,24 +52,5 @@ export class DefaultAdaptor implements ApiAdaptor {
 
     public shutdown() {
         this.server.close()
-    }
-}
-
-function attemptParse(contentType: string, obj: any): any {
-    if (contentType == null) {
-        return obj;
-    }
-    const parsedContentType = contentType.split(";")[0];
-    try {
-        switch (parsedContentType) {
-            case "application/json":
-                return JSON.parse(obj);
-            case "application/x-www-form-urlencoded":
-                return qs.parse(obj);
-            default:
-                return obj;
-        }
-    } catch (err) {
-        return obj;
     }
 }

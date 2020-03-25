@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////
 // ___   ___    _  _  ___ _____   ___ ___ ___ _____   //
 // |   \ / _ \  | \| |/ _ \_   _| | __|   \_ _|_   _| //
@@ -9,30 +10,20 @@
 ////////////////////////////////////////////////////////
 
 
-// @ts-nocheck
-/* tslint:disable */
-'use strict';
+    // @ts-nocheck
+    /* tslint:disable */
+    'use strict';function u(g,f){if(g===f)return!0;var h=Array.isArray(g),c=Array.isArray(f);if(h&&c){if(g.length!=f.length)return!1;for(c=0;c<g.length;c++)if(!u(g[c],f[c]))return!1;return!0}if(h!=c)return!1;if(g&&f&&"object"===typeof g&&"object"===typeof f){h=Object.keys(g);if(h.length!==Object.keys(f).length)return!1;c=g instanceof Date;var d=f instanceof Date;if(c&&d)return g.getTime()==f.getTime();if(c!=d)return!1;c=g instanceof RegExp;d=f instanceof RegExp;if(c&&d)return g.toString()==f.toString();
+if(c!=d)return!1;for(c=0;c<h.length;c++)if(!Object.prototype.hasOwnProperty.call(f,h[c]))return!1;for(c=0;c<h.length;c++)if(!u(g[h[c]],f[h[c]]))return!1;return!0}return!1}
+module.exports={validators:{"/":{POST:{202:function(){return!0},313:function(){function g(f,h){var c=null,d=0;if(f&&"object"===typeof f&&!Array.isArray(f))if(f=f.body,void 0===f){var a=`ValidationError[required]: request${(h||"")+""} should have required property \'body\'`;null===c?c=[a]:c.push(a);d++}else f&&"object"===typeof f&&!Array.isArray(f)?(void 0===f.yes?(a=`ValidationError[required]: request${(h||"")+".body"} should have required property \'yes\'`,null===c?c=[a]:c.push(a),d++):"string"!==
+typeof f.yes&&(a=`ValidationError[type]: request${(h||"")+".body.yes"} should be string`,null===c?c=[a]:c.push(a),d++),void 0===f.cool?(a=`ValidationError[required]: request${(h||"")+".body"} should have required property \'cool\'`,null===c?c=[a]:c.push(a),d++):"boolean"!==typeof f.cool&&(a=`ValidationError[type]: request${(h||"")+".body.cool"} should be boolean`,null===c?c=[a]:c.push(a),d++)):(a=`ValidationError[type]: request${(h||"")+".body"} should be object`,null===c?c=[a]:c.push(a),d++);g.errors=
+c;return 0===d}return g}(),"-1":function(){function g(c,d){var a=null,e=0;if(c&&"object"===typeof c&&!Array.isArray(c))if(c=c.body,void 0===c){var b=`ValidationError[required]: request${(d||"")+""} should have required property \'body\'`;null===a?a=[b]:a.push(b);e++}else if(c&&"object"===typeof c&&!Array.isArray(c)){for(var k in c)"number"!=k&&"string"!=k&&(b=`ValidationError[additionalProperties]: request${(d||"")+".body"} should NOT have additional properties`,null===a?a=[b]:a.push(b),e++);k=c.number;
+if(void 0===k)b=`ValidationError[required]: request${(d||"")+".body"} should have required property \'number\'`,null===a?a=[b]:a.push(b),e++;else if("number"===typeof k){if(1.7976931348623157E308<k||k!==k)b=`ValidationError[maximum]: request${(d||"")+".body.number"} should be <= 1.7976931348623157e+308`,null===a?a=[b]:a.push(b),e++;if(-1.7976931348623157E308>k||k!==k)b=`ValidationError[minimum]: request${(d||"")+".body.number"} should be >= -1.7976931348623157e+308`,null===a?a=[b]:a.push(b),e++}else b=
+`ValidationError[type]: request${(d||"")+".body.number"} should be number`,null===a?a=[b]:a.push(b),e++;k=c.string;if(void 0===k)b=`ValidationError[required]: request${(d||"")+".body"} should have required property \'string\'`,null===a?a=[b]:a.push(b),e++;else if(Array.isArray(k))for(c=0;c<k.length;c++){var l=k[c],v=e,q=!1,n=e;if(l&&"object"===typeof l&&!Array.isArray(l)){for(var r in l){var m=!("type"==r||"number"==r);m&&(b=`ValidationError[additionalProperties]: request${(d||"")+".body.string["+
+c+"]"} should NOT have additional properties`,null===a?a=[b]:a.push(b),e++)}m=l.type;if(void 0===m)b=`ValidationError[required]: request${(d||"")+".body.string["+c+"]"} should have required property \'type\'`,null===a?a=[b]:a.push(b),e++;else{"string"!==typeof m&&(b=`ValidationError[type]: request${(d||"")+".body.string["+c+"].type"} should be string`,null===a?a=[b]:a.push(b),e++);var t=f;b=!1;for(var p=0;p<t.length;p++)if(u(m,t[p])){b=!0;break}b||(b=`ValidationError[enum]: request${(d||"")+".body.string["+
+c+"].type"} should be equal to one of the allowed values`,null===a?a=[b]:a.push(b),e++)}void 0===l.number?(b=`ValidationError[required]: request${(d||"")+".body.string["+c+"]"} should have required property \'number\'`,null===a?a=[b]:a.push(b),e++):"string"!==typeof l.number&&(b=`ValidationError[type]: request${(d||"")+".body.string["+c+"].number"} should be string`,null===a?a=[b]:a.push(b),e++)}else b=`ValidationError[type]: request${(d||"")+".body.string["+c+"]"} should be object`,null===a?a=[b]:
+a.push(b),e++;n=e===n;q=q||n;if(!q){n=e;if(l&&"object"===typeof l&&!Array.isArray(l)){for(r in l)if(m=!("type"==r||"url"==r))b=`ValidationError[additionalProperties]: request${(d||"")+".body.string["+c+"]"} should NOT have additional properties`,null===a?a=[b]:a.push(b),e++;m=l.type;if(void 0===m)b=`ValidationError[required]: request${(d||"")+".body.string["+c+"]"} should have required property \'type\'`,null===a?a=[b]:a.push(b),e++;else{"string"!==typeof m&&(b=`ValidationError[type]: request${(d||
+"")+".body.string["+c+"].type"} should be string`,null===a?a=[b]:a.push(b),e++);t=h;b=!1;for(p=0;p<t.length;p++)if(u(m,t[p])){b=!0;break}b||(b=`ValidationError[enum]: request${(d||"")+".body.string["+c+"].type"} should be equal to one of the allowed values`,null===a?a=[b]:a.push(b),e++)}void 0===l.url?(b=`ValidationError[required]: request${(d||"")+".body.string["+c+"]"} should have required property \'url\'`,null===a?a=[b]:a.push(b),e++):"string"!==typeof l.url&&(b=`ValidationError[type]: request${(d||
+"")+".body.string["+c+"].url"} should be string`,null===a?a=[b]:a.push(b),e++)}else b=`ValidationError[type]: request${(d||"")+".body.string["+c+"]"} should be object`,null===a?a=[b]:a.push(b),e++;n=e===n;q=q||n}q?(e=v,null!==a&&(v?a.length=v:a=null)):(b=`ValidationError[anyOf]: request${(d||"")+".body.string["+c+"]"} should match some schema in anyOf`,null===a?a=[b]:a.push(b),e++)}else b=`ValidationError[type]: request${(d||"")+".body.string"} should be array`,null===a?a=[b]:a.push(b),e++}else b=
+`ValidationError[type]: request${(d||"")+".body"} should be object`,null===a?a=[b]:a.push(b),e++;g.errors=a;return 0===e}var f=["https://nrfcloud.github.io/docs/sms"],h=["https://nrfcloud.github.io/docs/webhook"];return g}()}}},compswagVersion:2,specHash:"80de70f4d5697e8adf5e1a35464ec4a18630c6b3"};
 
-function d() {
-    return !0
-}
-
-module.exports = {
-    validators: {
-        "/": {
-            POST: {
-                202: d, 313: d, "-1": function () {
-                    function e(a, f) {
-                        var b = null, c = 0;
-                        a && "object" === typeof a && !Array.isArray(a) && (void 0 === a.body ? (a = `ValidationError[required]: request${(f || "") + ""} should have required property \'body\'`, null === b ? b = [a] : b.push(a), c++) : "string" !== typeof a.body && (a = `ValidationError[type]: request${(f || "") + ".body"} should be string`, null === b ? b = [a] : b.push(a), c++));
-                        e.errors = b;
-                        return 0 === c
-                    }
-
-                    return e
-                }()
-            }
-        }
-    }, compswagVersion: 2, specHash: "757b73577a6d843f4502ea807083821500790fb5"
-};
-
+    
