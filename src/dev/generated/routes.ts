@@ -26,10 +26,10 @@ function isController(object) {
         
         module.exports = {
             routesVersion: 2,
-            components: {"examples":{},"headers":{},"parameters":{},"requestBodies":{},"responses":{},"schemas":{"EndpointArgsSMS":{"properties":{"type":{"type":"string","enum":["https://nrfcloud.github.io/docs/sms"],"nullable":false},"number":{"type":"string"}},"required":["type","number"],"type":"object","additionalProperties":false},"EndpointArgsURL":{"properties":{"type":{"type":"string","enum":["https://nrfcloud.github.io/docs/webhook"],"nullable":false},"url":{"type":"string"}},"required":["type","url"],"type":"object","additionalProperties":false},"EndpointArgs":{"anyOf":[{"$ref":"#/components/schemas/EndpointArgsSMS"},{"$ref":"#/components/schemas/EndpointArgsURL"}]},"TestInput":{"properties":{"number":{"type":"number","format":"double","description":"a number prop","example":2},"string":{"items":{"$ref":"#/components/schemas/EndpointArgs"},"type":"array"}},"required":["number","string"],"type":"object","additionalProperties":false}},"securitySchemes":{}},
+            components: {"examples":{},"headers":{},"parameters":{},"requestBodies":{},"responses":{},"schemas":{"Direction":{"enum":["asc","desc"],"type":"string"}},"securitySchemes":{}},
             register(app) {
                 
-        app.endpoint("/","POST",{"operationId":"Test","responses":{"202":{"content":{"application/json":{}},"description":""},"313":{"content":{"application/json":{"schema":{"properties":{"yes":{"type":"string"},"cool":{"type":"boolean"}},"required":["yes","cool"],"type":"object"}}},"description":""}},"security":[],"parameters":[],"requestBody":{"required":true,"content":{"application/json":{"schema":{"$ref":"#/components/schemas/TestInput"}}}}})
+        app.endpoint("/","POST",{"operationId":"Test","responses":{"202":{"content":{"application/json":{}},"description":""},"313":{"content":{"application/json":{"schema":{"properties":{"yes":{"type":"string"},"cool":{"type":"boolean"}},"required":["yes","cool"],"type":"object"}}},"description":""}},"security":[],"parameters":[{"in":"header","name":"test-type","required":true,"schema":{"$ref":"#/components/schemas/Direction"}}]})
             .appendMiddlewareList(TestControllerController.middleware)
             .appendMiddlewareList(TestControllerController.test.middleware)
             .appendMiddleware({
@@ -45,7 +45,7 @@ function isController(object) {
                     }
                     
                     const response = await TestControllerController.test(
-                        ctx.request.body
+                        ctx.request.headers["test-type"]
                     );
                     ctx.response.body = response;
                     ctx.response.statusCode = TestControllerController.test.statusCode || 200;

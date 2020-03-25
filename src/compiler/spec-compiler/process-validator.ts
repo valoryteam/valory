@@ -3,10 +3,13 @@ import {CompiledSchemaInteraction, CompiledSchemaOperation} from "./compile-vali
 import {isEqual, cloneDeepWith} from "lodash";
 import {JSONSchema4} from "json-schema";
 
+const mapKeysDeep = require("map-keys-deep-lodash");
+
 const OBJECTIFIED_PREFIX = "a";
 const ERROR_VAR = "validationErrors";
 const SCHEMA_VAR = "schema";
 const ErrorObjReg = /{[ ]*?keyword:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?dataPath:[ ]*?([\s\S]*?),[ ]*?schemaPath:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?params:[ ]*?([\s\S]*?),[ ]*?message:[ ]*?'([\s\S]*?)'[ ]*?}/g;
+const ValidIdentifierReg = /^(?:[A-Za-z_])(?:[0-9a-zA-Z_]*)$/;
 
 const NoopSchemas = [
     {},
@@ -33,7 +36,7 @@ export interface ProcessedCompiledSchemaInteraction extends CompiledSchemaIntera
     processedValidatorSource: string;
 }
 
-export function processCompiledSchemaOperation(input: CompiledSchemaOperation, options: {prepackErrors: boolean}): ProcessedCompiledSchemaOperation {
+export function processCompiledSchemaOperation(input: CompiledSchemaOperation, options: { prepackErrors: boolean }): ProcessedCompiledSchemaOperation {
     return {
         ...input,
         schemaInteractions: input.schemaInteractions.map(op => processCompiledSchemaInteraction(op, options))
@@ -44,28 +47,46 @@ function processError(fullMatch: string, keyword: string, dataPath: string, sche
     return `\`ValidationError[${keyword}]: request\${${dataPath}} ${message}\``
 }
 
-function objectifyArray<T>(arr: T[]): {[key: string]: T} {
+function objectifyArray<T>(arr: T[]): { [key: string]: T } {
     return arr.reduce((prev, curr, i) => {
         prev[OBJECTIFIED_PREFIX + i] = curr;
         return prev;
-    }, {} as {[key: string]: T})
+    }, {} as { [key: string]: T })
 }
 
 function objectifyUnions(input: JSONSchema4): unknown {
     return cloneDeepWith(input, (value, key) => {
-        if (["oneOf","anyOf"].includes(key as string)) {
+        if (["oneOf", "anyOf"].includes(key as string)) {
             return objectifyArray(value);
         }
     })
 }
 
-function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, options: {prepackErrors: boolean}): ProcessedCompiledSchemaInteraction {
+function mangleProps(input: JSONSchema4) {
+    const mangledMap: { [value: string]: string } = {};
+    const mangledSchema = mapKeysDeep(input, (value: string, key: string) => {
+        if (!ValidIdentifierReg.test(key)) {
+            const mangled = OBJECTIFIED_PREFIX + Buffer.from(key.toString()).toString("hex");
+            mangledMap[key] = mangled;
+            return mangled;
+        }
+        return key
+    });
+    return {
+        mangledMap,
+        mangledSchema
+    }
+}
+
+function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, options: { prepackErrors: boolean }): ProcessedCompiledSchemaInteraction {
     if (NoopSchemas.some(schema => isEqual(schema, input.schema))) {
         return {
             ...input,
             processedValidatorSource: "noopBool;"
         }
     }
+
+    const {mangledSchema, mangledMap} = mangleProps(input.schema);
 
     let processedCode = input.validator.toString();
 
@@ -86,16 +107,22 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
     processedCode = processedCode.replace(/validate.errors/g, "validate[\"errors\"]");
     processedCode = processedCode.replace(/validate.schema/g, "validateSchema");
 
+    // Apply property mangling
+    processedCode = processedCode.replace(/properties\['([\s\S]*?)']/g, (match, key) => {
+       const mangled = mangledMap[key];
+       return (mangled != null) ? `properties.${mangled}` : match;
+    });
+
     const functionHeader = processedCode.substring(0, processedCode.indexOf("{"));
     const functionBody = processedCode.substring(processedCode.indexOf("{") + 1, processedCode.lastIndexOf("}"));
-    const objectfiedSchema = objectifyUnions(input.schema);
+    const objectfiedSchema = objectifyUnions(mangledSchema);
 
     const finalCode = `
         function() {
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
-                return `const pattern${id} = new RegExp(\`${pattern}\`);`
-            }).join("\n")}
+        return `const pattern${id} = new RegExp(\`${pattern}\`);`
+    }).join("\n")}
             const validate = ${functionHeader} {
                 ${functionBody}
             };

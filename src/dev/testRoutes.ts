@@ -59,7 +59,7 @@ export class TestController extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Body() enumTest: TestInput) {
+    @Post() public test(@Header("test-type") test: Direction) {
         // this.setHeader("content-type", "text/plain");
         return {
             cool: true,
