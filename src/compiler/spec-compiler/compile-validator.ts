@@ -2,15 +2,7 @@ import {HttpMethod} from "../../lib/common/headers";
 import {SchemaInteraction, SchemaOperation} from "./schema-operation";
 import ajv = require("ajv");
 import {JSONSchema4} from "json-schema";
-import {ValidateFunction} from "ajv";
-
-const Ajv = new ajv({
-    removeAdditional: false,
-    sourceCode: true,
-    useDefaults: "shared",
-    allErrors: false,
-    unknownFormats: ["double", "int32", "int64", "float", "byte"],
-});
+import {Ajv, ValidateFunction} from "ajv";
 
 export interface CompiledSchemaOperation {
     path: string;
@@ -24,15 +16,24 @@ export interface CompiledSchemaInteraction {
     schema: JSONSchema4;
 }
 
-export function compileSchemaOperation(input: SchemaOperation): CompiledSchemaOperation {
+export function compileSchemaOperation(input: SchemaOperation, options: {coerceTypes: boolean | "array", allErrors: boolean}): CompiledSchemaOperation {
+    const compiler = new ajv({
+        removeAdditional: false,
+        sourceCode: true,
+        useDefaults: "shared",
+        allErrors: options.allErrors,
+        coerceTypes: options.coerceTypes,
+        unknownFormats: ["double", "int32", "int64", "float", "byte"],
+    });
+
     return {
         ...input,
-        schemaInteractions: input.schemaInteractions.map(compileSchemaInteraction)
+        schemaInteractions: input.schemaInteractions.map(op => compileSchemaInteraction(compiler, op))
     }
 }
 
-function compileSchemaInteraction(input: SchemaInteraction): CompiledSchemaInteraction {
-    const compiled = Ajv.compile(input.schema);
+function compileSchemaInteraction(compiler: Ajv, input: SchemaInteraction): CompiledSchemaInteraction {
+    const compiled = compiler.compile(input.schema);
     return {
         ...input,
         validator: compiled

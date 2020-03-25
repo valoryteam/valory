@@ -33,10 +33,10 @@ export interface ProcessedCompiledSchemaInteraction extends CompiledSchemaIntera
     processedValidatorSource: string;
 }
 
-export function processCompiledSchemaOperation(input: CompiledSchemaOperation): ProcessedCompiledSchemaOperation {
+export function processCompiledSchemaOperation(input: CompiledSchemaOperation, options: {prepackErrors: boolean}): ProcessedCompiledSchemaOperation {
     return {
         ...input,
-        schemaInteractions: input.schemaInteractions.map(processCompiledSchemaInteraction)
+        schemaInteractions: input.schemaInteractions.map(op => processCompiledSchemaInteraction(op, options))
     }
 }
 
@@ -59,7 +59,7 @@ function objectifyUnions(input: JSONSchema4): unknown {
     })
 }
 
-function processCompiledSchemaInteraction(input: CompiledSchemaInteraction): ProcessedCompiledSchemaInteraction {
+function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, options: {prepackErrors: boolean}): ProcessedCompiledSchemaInteraction {
     if (NoopSchemas.some(schema => isEqual(schema, input.schema))) {
         return {
             ...input,
@@ -70,7 +70,9 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction): Pro
     let processedCode = input.validator.toString();
 
     // Prepack error messages
-    processedCode = processedCode.replace(ErrorObjReg, processError);
+    if (options.prepackErrors) {
+        processedCode = processedCode.replace(ErrorObjReg, processError);
+    }
 
     // Objectify union access to prevent indirection
     processedCode = processedCode.replace(/anyOf\[(\d*?)\]/g, `anyOf.${OBJECTIFIED_PREFIX}$1`);

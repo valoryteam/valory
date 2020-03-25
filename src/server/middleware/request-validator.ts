@@ -21,7 +21,7 @@ export class RequestValidator implements ApiMiddleware {
             ctx.attachments.putAttachment(RequestValidator.ValidationErrorsKey, this.validator.errors);
             ctx.response = {
                 statusCode: 422,
-                body: this.validator.errors,
+                body: (typeof this.validator.errors[0] !== "string") ? (this.validator.errors as AJVTypes.ErrorObject[]).map(RequestValidator.renderError) : this.validator.errors,
                 headers: {"Content-Type": "application/json"},
             }
         }

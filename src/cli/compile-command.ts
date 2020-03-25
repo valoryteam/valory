@@ -82,7 +82,7 @@ async function compile(options: CompileOptions) {
         require(Config.resolveEntryPoint());
         return Config.getMetadata();
     }, "Registering Routes");
-    const specCompiler = new SpecCompiler(metadata.openapi, {});
+    const specCompiler = new SpecCompiler(metadata.openapi, Config.ConfigData.compilerOptions);
     const compiledSpec = await specCompiler.compile();
     await spinnerWrap(saveGlobalData({validation: compiledSpec, routes}, Config.resolveOutputDirectory()), "Outputting Generated Files");
     if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(metadata.openapi))}

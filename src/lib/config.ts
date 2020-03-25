@@ -4,6 +4,7 @@ import * as path from "path";
 import {JSONSchema7} from "json-schema";
 import ajv = require("ajv");
 import {IPackageJSON} from "package-json";
+import {CompilerOptions} from "../compiler/spec-compiler/spec-compiler";
 
 export const METADATA_VERSION = 2;
 export const COMPSWAG_VERSION = 2;
@@ -18,6 +19,7 @@ export interface ValoryConfig {
     entrypoint: string;
     outputDirectory: string;
     specOutput: string;
+    compilerOptions: Partial<CompilerOptions>
 }
 
 const ConfigSchema: JSONSchema7 = {
@@ -31,6 +33,23 @@ const ConfigSchema: JSONSchema7 = {
         },
         specOutput: {
             type: "string"
+        },
+        compilerOptions: {
+            type: "object",
+            properties: {
+                allErrors: {
+                    type: "boolean"
+                },
+                coerceTypes: {
+                    oneOf: [
+                        {type: "boolean"},
+                        {type: "string", const: "array"}
+                    ]
+                },
+                prepackErrors: {
+                    type: "boolean"
+                }
+            }
         }
     },
     required: ["entrypoint", "outputDirectory"]

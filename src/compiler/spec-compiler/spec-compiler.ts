@@ -9,10 +9,13 @@ import {CompiledSchemaOperation, compileSchemaOperation} from "./compile-validat
 import {processCompiledSchemaOperation, ProcessedCompiledSchemaOperation} from "./process-validator";
 import {generateModule} from "./generate-module";
 import {compileModule} from "./compile-module";
-import {cloneDeep, } from "lodash";
+import {cloneDeep,} from "lodash";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CompilerOptions {
+    allErrors: boolean;
+    coerceTypes: boolean;
+    prepackErrors: boolean;
 }
 
 export interface SpecCompilerOutput {
@@ -28,13 +31,25 @@ export interface SpecCompilerOutput {
     moduleCompiled?: string;
 }
 
+export const DefaultCompilerOptions: CompilerOptions = {
+    allErrors: false,
+    coerceTypes: false,
+    prepackErrors: true,
+};
+
 export class SpecCompiler {
     private output: SpecCompilerOutput = {};
+    private options: CompilerOptions;
 
     constructor(
         private input: OpenAPIV3.Document,
-        private options: CompilerOptions,
-    ) {}
+        options: Partial<CompilerOptions>,
+    ) {
+        this.options = {
+            ...DefaultCompilerOptions,
+            ...options
+        }
+    }
 
     public async compile(): Promise<string> {
         console.log(chalk.bold("Spec Compilation"));
@@ -42,19 +57,22 @@ export class SpecCompiler {
         this.output.dereferencedSpec = await spinnerWrap(validate(cloneDeep(this.output.initialInput)), "Validating Spec") as OpenAPIV3.Document;
         this.output.operations = await spinnerWrap(generateOperations(this.output.dereferencedSpec), "Generating Operations");
         this.output.schemaOperations = await spinnerWrap(this.output.operations.map(generateSchemaOperation), "Generating Operation Schemas");
-        this.output.schemaOperationsOpt = await spinnerWrap(this.output.schemaOperations.map(op=>{
+        this.output.schemaOperationsOpt = await spinnerWrap(this.output.schemaOperations.map(op => {
             return {
                 ...op,
-                schemaInteractions: op.schemaInteractions.map(interaction=>{
+                schemaInteractions: op.schemaInteractions.map(interaction => {
                     return {
                         ...interaction,
                         schema: mergeAllOf(interaction.schema)
                     }
                 })
             }
-        }),"Optimizing Operation Schemas");
-        this.output.compiledSchemaOperations = await spinnerWrap(this.output.schemaOperationsOpt.map(compileSchemaOperation), "Compiling Operation Schemas");
-        this.output.processedCompiledSchemaOperations = await spinnerWrap(this.output.compiledSchemaOperations.map(processCompiledSchemaOperation), "Processing Compiled Schemas");
+        }), "Optimizing Operation Schemas");
+        this.output.compiledSchemaOperations = await spinnerWrap(this.output.schemaOperationsOpt.map(op => compileSchemaOperation(op, {
+            coerceTypes: this.options.coerceTypes,
+            allErrors: this.options.allErrors
+        })), "Compiling Operation Schemas");
+        this.output.processedCompiledSchemaOperations = await spinnerWrap(this.output.compiledSchemaOperations.map(op => processCompiledSchemaOperation(op, {prepackErrors: this.options.prepackErrors})), "Processing Compiled Schemas");
         this.output.moduleSource = await spinnerWrap(generateModule(this.output.processedCompiledSchemaOperations, this.input), "Generating Module");
         this.output.moduleCompiled = await spinnerWrap(compileModule(this.output.moduleSource), "Compiling Module");
         return this.output.moduleCompiled;
