@@ -7,7 +7,6 @@
 [![NPM](https://nodei.co/npm/valory.png)](https://nodei.co/npm/valory/)
 ## Contents
 * [Documentation](documentation/index.md)
-* [API Reference](http://valory-docs.s3-website-us-east-1.amazonaws.com)
 * [Example Project](https://github.com/valoryteam/valory-example)
 * [Description](#description)
 * [Installation](#installation)
