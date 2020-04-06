@@ -6,7 +6,7 @@ export interface Map<T> {
 }
 
 export function isReferenceObject(input: any): input is OpenAPIV3.ReferenceObject {
-    return (typeof input.$ref === "string")
+    return (typeof input.$ref === "string");
 }
 
 
@@ -20,21 +20,21 @@ export function sha1Buffer(data: string | Buffer): Buffer {
 
 export function versionCheck(title: string, required: number, actual: number) {
     if (required !== actual) {
-        throw Error(`${title} version mismatch. required: ${required} actual: ${actual}`)
+        throw Error(`${title} version mismatch. required: ${required} actual: ${actual}`);
     }
 }
 
 export function memoizeSingle<T>(fn: ()=>T): ()=>T {
     let cache: T | null = null;
     return () => {
-        if (cache == null) {cache = fn()}
+        if (cache == null) {cache = fn();}
         return cache;
-    }
+    };
 }
 
 export function arrayPush<T>(target?: T[], other?: T[]): T[] {
     if (other == null || other.length === 0) {
-        return target
+        return target;
     }
 
     // Pre allocate
@@ -43,7 +43,7 @@ export function arrayPush<T>(target?: T[], other?: T[]): T[] {
     target.length = originalTargetLength + otherLength;
 
     for (let i = 0; i < otherLength; i++) {
-        target[originalTargetLength + i] = other[i]
+        target[originalTargetLength + i] = other[i];
     }
     return target;
 }

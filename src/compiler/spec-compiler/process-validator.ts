@@ -29,7 +29,7 @@ const NoopSchemas = [
 export interface ProcessedCompiledSchemaOperation {
     path: string;
     method: HttpMethod;
-    schemaInteractions: ProcessedCompiledSchemaInteraction[]
+    schemaInteractions: ProcessedCompiledSchemaInteraction[];
 }
 
 export interface ProcessedCompiledSchemaInteraction extends CompiledSchemaInteraction {
@@ -40,18 +40,18 @@ export function processCompiledSchemaOperation(input: CompiledSchemaOperation, o
     return {
         ...input,
         schemaInteractions: input.schemaInteractions.map(op => processCompiledSchemaInteraction(op, options))
-    }
+    };
 }
 
 function processError(fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string) {
-    return `\`ValidationError[${keyword}]: request\${${dataPath}} ${message}\``
+    return `\`ValidationError[${keyword}]: request\${${dataPath}} ${message}\``;
 }
 
 function objectifyArray<T>(arr: T[]): { [key: string]: T } {
     return arr.reduce((prev, curr, i) => {
         prev[OBJECTIFIED_PREFIX + i] = curr;
         return prev;
-    }, {} as { [key: string]: T })
+    }, {} as { [key: string]: T });
 }
 
 function objectifyUnions(input: JSONSchema4): unknown {
@@ -59,7 +59,7 @@ function objectifyUnions(input: JSONSchema4): unknown {
         if (["oneOf", "anyOf"].includes(key as string)) {
             return objectifyArray(value);
         }
-    })
+    });
 }
 
 function mangleProps(input: JSONSchema4) {
@@ -70,12 +70,12 @@ function mangleProps(input: JSONSchema4) {
             mangledMap[key] = mangled;
             return mangled;
         }
-        return key
+        return key;
     });
     return {
         mangledMap,
         mangledSchema
-    }
+    };
 }
 
 function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, options: { prepackErrors: boolean }): ProcessedCompiledSchemaInteraction {
@@ -83,7 +83,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
         return {
             ...input,
             processedValidatorSource: "noopBool;"
-        }
+        };
     }
 
     const {mangledSchema, mangledMap} = mangleProps(input.schema);
@@ -121,7 +121,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
         function() {
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
-        return `const pattern${id} = new RegExp(\`${pattern}\`);`
+        return `const pattern${id} = new RegExp(\`${pattern}\`);`;
     }).join("\n")}
             const validate = ${functionHeader} {
                 ${functionBody}
@@ -133,5 +133,5 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
     return {
         ...input,
         processedValidatorSource: finalCode
-    }
+    };
 }

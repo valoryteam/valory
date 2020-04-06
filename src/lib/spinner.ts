@@ -19,7 +19,7 @@ export async function spinnerWrap<T>(value: Promise<T> | T | (() => Promise<T> |
         let result;
         await Spinner.start(text);
         if (typeof value === "function") {
-            result = await (value as ()=>T)()
+            result = await (value as ()=>T)();
         } else {
             result = await value;
         }

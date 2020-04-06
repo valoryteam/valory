@@ -1,6 +1,6 @@
 import * as chalk from "chalk";
 import {MetadataGenerator} from "tsoa/dist/metadataGeneration/metadataGenerator";
-import {SpecGenerator3} from "tsoa/dist/swagger/specGenerator3"
+import {SpecGenerator3} from "tsoa/dist/swagger/specGenerator3";
 import {spinnerWrap} from "../../lib/spinner";
 import {tmpdir} from "os";
 import {RouteModule} from "./route-module";
@@ -15,8 +15,10 @@ export class RouteCompiler {
     public async compile(): Promise<string> {
         console.log(chalk.bold("Controller Generation"));
         const metadata = await spinnerWrap(() => {
-            const metadataGenerator = new MetadataGenerator(this.input.entrypoint);
-            return metadataGenerator.Generate()
+            const metadataGenerator = new MetadataGenerator(this.input.entrypoint, {
+                skipLibCheck: true,
+            });
+            return metadataGenerator.Generate();
         }, "Generating Metadata");
         const specGenerator = new SpecGenerator3(metadata, {
             entryFile: this.input.entrypoint,

@@ -6,7 +6,7 @@
 	"jsRules": {
 	},
 	"rules": {
-		"indent": true,
+		"indent": [true, "spaces", 4],
 		"no-var-requires": false,
 		"no-console": [false],
 		"no-string-literal": false,
@@ -23,6 +23,7 @@
 		"member-ordering": false,
 		"max-line-length": false,
 		"forin": false,
+		"semicolon": true,
 		"prefer-for-of": false
 	},
 	"rulesDirectory": []

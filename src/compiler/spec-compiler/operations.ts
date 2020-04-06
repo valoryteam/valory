@@ -12,10 +12,10 @@ export function generateOperations(spec: OpenAPIV3.Document): Operation[] {
         const [path, methods] = value;
         return HttpMethodsLowercase.map((method) => {
             const operation = methods[method];
-            if (operation == null) { return null }
+            if (operation == null) { return null; }
             return {
                 path, method: uppercaseHttpMethod(method), operation
-            }
+            };
         }).filter(x=>x);
-    })
+    });
 }

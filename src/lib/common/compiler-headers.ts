@@ -28,7 +28,7 @@ export namespace AJVTypes {
     }
 
     interface FormatParams {
-        format: string
+        format: string;
     }
 
     interface ComparisonParams {
@@ -126,7 +126,7 @@ export interface ValidatorModule {
 }
 
 export interface RoutesModule {
-    register: (app: any) => void
+    register: (app: any) => void;
     components: OpenAPIV3.ComponentsObject;
     routesVersion: number;
 }

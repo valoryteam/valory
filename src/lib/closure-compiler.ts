@@ -65,10 +65,10 @@ export class ClosureCompiler {
     public runPromise(): Promise<{code: number, stdOut: string, stdError: string}> {
         return new Promise(((resolve, reject) => {
             this.run((code, stdOut, stdError) => {
-                if (code !== 0) {reject(stdError)}
-                resolve({code, stdError, stdOut})
-            })
-        }))
+                if (code !== 0) {reject(stdError);}
+                resolve({code, stdError, stdOut});
+            });
+        }));
     }
 
     private getFullCommand() {

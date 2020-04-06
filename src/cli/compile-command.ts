@@ -47,7 +47,7 @@ async function checkRequirements() {
     } else {
         await spinnerFail("valory-runtime must be a dependency", null, true);
     }
-    console.log()
+    console.log();
 }
 
 function printHeader() {
@@ -85,7 +85,7 @@ async function compile(options: CompileOptions) {
     const specCompiler = new SpecCompiler(metadata.openapi, Config.ConfigData.compilerOptions);
     const compiledSpec = await specCompiler.compile();
     await spinnerWrap(saveGlobalData({validation: compiledSpec, routes}, Config.resolveOutputDirectory()), "Outputting Generated Files");
-    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(metadata.openapi))}
+    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(metadata.openapi));}
     ThreadSpinner.shutdown();
     printFooter(metadata.openapi);
 }
@@ -93,13 +93,13 @@ async function compile(options: CompileOptions) {
 function printFooter(spec: OpenAPIV3.Document) {
     console.log("");
     console.log(chalk.bold("Routes"));
-    console.log(getRouteList(spec))
+    console.log(getRouteList(spec));
 }
 
 function getRouteList(spec: OpenAPIV3.Document) {
     return Object.entries(spec.paths).flatMap(([path, item]) =>{
-        return Object.keys(item).filter(key => HttpMethodsLowercase.includes(key as any)).map((method: HttpMethodLowercase) => `${path}:${uppercaseHttpMethod(method)}`)
-    }).join("\n")
+        return Object.keys(item).filter(key => HttpMethodsLowercase.includes(key as any)).map((method: HttpMethodLowercase) => `${path}:${uppercaseHttpMethod(method)}`);
+    }).join("\n");
 }
 
 export const CompileCommand: CommandModule = {
@@ -108,6 +108,6 @@ export const CompileCommand: CommandModule = {
     async handler(args) {
         compile({
             path: process.cwd()
-        })
+        });
     }
 };

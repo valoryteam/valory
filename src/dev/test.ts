@@ -1,7 +1,7 @@
-import {Valory} from "../server/valory"
+import {Valory} from "../server/valory";
 import {DefaultAdaptor} from "../lib/default-adaptor";
 
-import "./testRoutes"
+import "./testRoutes";
 import "./generated";
 import {Body, Post, Route} from "../server/decorators";
 

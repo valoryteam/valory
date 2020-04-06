@@ -2,7 +2,7 @@ import {existsSync, mkdirSync, writeFileSync} from "fs";
 import * as path from "path";
 
 export interface ModuleBuilderInputs {
-    modules: {[name: string]: string},
+    modules: {[name: string]: string};
     destinationPath: string;
     globalVar: string;
 }
@@ -28,13 +28,13 @@ export class ModuleBuilder {
     public generate() {
         this.prepareDirectory();
         const files = this.getFiles();
-        this.saveFiles(files)
+        this.saveFiles(files);
     }
 
     private saveFiles(files: [string, string][]) {
         files.forEach(([name, content]) => {
             writeFileSync(`${this.resolveFilePath(name)}.ts`, FILE_HEADER + content);
-        })
+        });
     }
 
     private resolveFilePath(name: string) {
@@ -42,12 +42,12 @@ export class ModuleBuilder {
     }
 
     private getFiles(): [string, string][] {
-        return [...Object.entries(this.input.modules), ["index", this.generateIndex()]]
+        return [...Object.entries(this.input.modules), ["index", this.generateIndex()]];
     }
 
     private prepareDirectory() {
         if (!existsSync(this.input.destinationPath)) {
-            mkdirSync(this.input.destinationPath)
+            mkdirSync(this.input.destinationPath);
         }
 
     }

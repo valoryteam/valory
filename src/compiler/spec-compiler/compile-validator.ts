@@ -29,7 +29,7 @@ export function compileSchemaOperation(input: SchemaOperation, options: {coerceT
     return {
         ...input,
         schemaInteractions: input.schemaInteractions.map(op => compileSchemaInteraction(compiler, op))
-    }
+    };
 }
 
 function compileSchemaInteraction(compiler: Ajv, input: SchemaInteraction): CompiledSchemaInteraction {
@@ -37,5 +37,5 @@ function compileSchemaInteraction(compiler: Ajv, input: SchemaInteraction): Comp
     return {
         ...input,
         validator: compiled
-    }
+    };
 }

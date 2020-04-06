@@ -194,8 +194,8 @@ export function Header(name?: string): any {
 
 export function SuccessResponse(name: string | number, description?: string): any {
     return (target: any, propertyKey?: string) => {
-        if (propertyKey == null) { return }
-        if (typeof name !== "number") { return }
+        if (propertyKey == null) { return; }
+        if (typeof name !== "number") { return; }
         target[propertyKey].statusCode = name;
     };
 }

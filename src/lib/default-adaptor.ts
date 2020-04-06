@@ -41,16 +41,16 @@ export class DefaultAdaptor implements ApiAdaptor {
 
                 await handler(ctx);
                 res.writeHead(ctx.response.statusCode, ctx.response.headers);
-                res.end(ctx.serializeResponse())
-            })
-        })
+                res.end(ctx.serializeResponse());
+            });
+        });
     }
 
     public start() {
-        if (!Config.CompileMode) this.server.listen(this.port, this.host)
+        if (!Config.CompileMode) this.server.listen(this.port, this.host);
     }
 
     public shutdown() {
-        this.server.close()
+        this.server.close();
     }
 }

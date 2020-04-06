@@ -65,7 +65,7 @@ export class RouteModule {
     }
 
     private getControllerName(name: string) {
-        return `${name}Controller`
+        return `${name}Controller`;
     }
 
     private getControllerExtensionCheckName(name: string) {
@@ -73,11 +73,11 @@ export class RouteModule {
     }
 
     private generateController(controller: Controller) {
-        return controller.methods.map(method => this.generateOperation(controller, method))
+        return controller.methods.map(method => this.generateOperation(controller, method));
     }
 
     private resolveValoryRuntime() {
-        return process.env.NODE_ENV === "test" ? relative(this.outputDirectory, join(Config.RootPath, "src/main")) : "valory-runtime"
+        return process.env.NODE_ENV === "test" ? relative(this.outputDirectory, join(Config.RootPath, "src/main")) : "valory-runtime";
     }
 
     private resolveMethodPath(controllerPath: string, methodPath: string) {
@@ -141,7 +141,7 @@ export class RouteModule {
             case "header":
                 return `ctx.request.headers["${param.name}"]`;
             case "path":
-                return `ctx.request.pathParams["${param.name}"]`
+                return `ctx.request.pathParams["${param.name}"]`;
         }
     }
 }

@@ -35,7 +35,7 @@ export const literalMiddleware: ApiMiddleware = {
  * A omitted type
  * @example {"number": 2}
  */
-export type OmitTestInput = Omit<TestInput, "string">
+export type OmitTestInput = Omit<TestInput, "string">;
 
 /**
  * @format email
@@ -47,7 +47,7 @@ export type StringAlias = string;
  */
 export type NumberAlias = number;
 
-export type Complex = Omit<TestInput & {[key: string]: any}, "string">
+export type Complex = Omit<TestInput & {[key: string]: any}, "string">;
 
 export enum Direction {
     ASC = "asc",
@@ -64,6 +64,6 @@ export class TestController extends Controller {
         return {
             cool: true,
             yes: "blue"
-        }
+        };
     }
 }

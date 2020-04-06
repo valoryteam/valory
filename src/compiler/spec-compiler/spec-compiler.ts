@@ -48,7 +48,7 @@ export class SpecCompiler {
         this.options = {
             ...DefaultCompilerOptions,
             ...options
-        }
+        };
     }
 
     public async compile(): Promise<string> {
@@ -64,9 +64,9 @@ export class SpecCompiler {
                     return {
                         ...interaction,
                         schema: mergeAllOf(interaction.schema)
-                    }
+                    };
                 })
-            }
+            };
         }), "Optimizing Operation Schemas");
         this.output.compiledSchemaOperations = await spinnerWrap(this.output.schemaOperationsOpt.map(op => compileSchemaOperation(op, {
             coerceTypes: this.options.coerceTypes,

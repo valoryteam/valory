@@ -29,19 +29,19 @@ export class AttachmentRegistry {
         const size = keys.length;
         for (let i = 0; i < size; i++) {
             if (!this.attachments.has(keys[i].id)) {
-                return false
+                return false;
             }
         }
-        return true
+        return true;
     }
 
     public hasAnyAttachments(keys: AttachmentKey<any>[]): boolean {
         const size = keys.length;
         for (let i = 0; i < size; i++) {
             if (this.attachments.has(keys[i].id)) {
-                return true
+                return true;
             }
         }
-        return false
+        return false;
     }
 }

@@ -35,7 +35,7 @@ export class Endpoint {
     }
 
     private registerEndpoint() {
-        this.valory.adaptor.register(this.path, this.method, this.handleRequest.bind(this))
+        this.valory.adaptor.register(this.path, this.method, this.handleRequest.bind(this));
     }
 
     private buildExecutor() {
@@ -47,7 +47,7 @@ export class Endpoint {
             },
             (arg, err, i) => {
                 arg.attachments.putAttachment(Endpoint.ExceptionKey, err);
-            })
+            });
     }
 
     public async handleRequest(ctx: ApiContext): Promise<ApiContext> {
@@ -73,7 +73,7 @@ export class Endpoint {
     }
 
     public addDefaultPostMiddleware() {
-        this.appendMiddlewareList(this.valory.afterAllMiddleware)
+        this.appendMiddlewareList(this.valory.afterAllMiddleware);
     }
 
     public done() {

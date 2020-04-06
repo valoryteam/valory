@@ -12,7 +12,7 @@ export class RequestValidator implements ApiMiddleware {
     private readonly validator: AJVTypes.ValidateFunction;
 
     constructor(valory: Valory, path: string, method: HttpMethod) {
-        this.validator = valory.globalData.validation?.validators[path][method]["-1"]
+        this.validator = valory.globalData.validation?.validators[path][method]["-1"];
     }
 
     public handler(ctx: ApiContext) {
@@ -23,11 +23,11 @@ export class RequestValidator implements ApiMiddleware {
                 statusCode: 422,
                 body: (typeof this.validator.errors[0] !== "string") ? (this.validator.errors as AJVTypes.ErrorObject[]).map(RequestValidator.renderError) : this.validator.errors,
                 headers: {"Content-Type": "application/json"},
-            }
+            };
         }
     }
 
     public static renderError(error: AJVTypes.ErrorObject) {
-        return `ValidationError[${error.keyword}]: request${error.dataPath} ${error.message}`
+        return `ValidationError[${error.keyword}]: request${error.dataPath} ${error.message}`;
     }
 }

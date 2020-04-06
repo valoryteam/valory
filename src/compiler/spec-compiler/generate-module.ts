@@ -105,9 +105,9 @@ export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: 
                 return {
                     ...i,
                     id: simpleId(),
-                }
+                };
             })
-        }
+        };
     });
     const functionDeclarations = withIds.flatMap(op => op.schemaInteractions).map(interaction => {
         return `const ${interaction.id} = ${interaction.processedValidatorSource}`;
@@ -141,5 +141,5 @@ export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: 
 }
 
 function simpleId(size: number = 6) {
-    return "f" + randomBytes(size).toString("hex")
+    return "f" + randomBytes(size).toString("hex");
 }

@@ -72,12 +72,12 @@ export class Valory {
         if (!Config.CompileMode) this.logger.info("Starting Valory");
 
         this.globalData = loadGlobalData();
-        this.registerGeneratedRoutes(this.globalData.routes)
+        this.registerGeneratedRoutes(this.globalData.routes);
     }
 
     private resolveAdaptor(provided: ApiAdaptor): ApiAdaptor {
         const defaultAdaptorPath = Config.getDefaultAdaptorPath();
-        if (defaultAdaptorPath == null) {return provided}
+        if (defaultAdaptorPath == null) {return provided;}
         const defaultAdaptor = require(defaultAdaptorPath).DefaultAdaptor;
         return new defaultAdaptor();
     }
@@ -91,12 +91,12 @@ export class Valory {
             this.exportMetadata();
         } else {
             this.logger.info("Startup Complete");
-            return this.adaptor.start()
+            return this.adaptor.start();
         }
     }
 
     public shutdown() {
-        return this.adaptor.shutdown()
+        return this.adaptor.shutdown();
     }
 
     public registerGeneratedRoutes(routes: RoutesModule) {
@@ -104,13 +104,13 @@ export class Valory {
         this.apiDef.components = {
             ...routes.components,
             ...this.apiDef.components
-        }
+        };
     }
 
     private exportMetadata() {
         Config.setMetadata({
             openapi: this.apiDef,
             version: METADATA_VERSION
-        })
+        });
     }
 }

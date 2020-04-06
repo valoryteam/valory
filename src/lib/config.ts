@@ -11,15 +11,15 @@ export const COMPSWAG_VERSION = 2;
 export const ROUTES_VERSION = 2;
 
 export interface ValoryMetadata {
-    openapi: OpenAPIV3.Document
-    version: number
+    openapi: OpenAPIV3.Document;
+    version: number;
 }
 
 export interface ValoryConfig {
     entrypoint: string;
     outputDirectory: string;
-    specOutput: string;
-    compilerOptions: Partial<CompilerOptions>
+    specOutput?: string;
+    compilerOptions: Partial<CompilerOptions>;
 }
 
 const ConfigSchema: JSONSchema7 = {
@@ -83,28 +83,28 @@ export namespace Config {
     function loadValidatedConfig(configPath: string) {
         const data = JSON.parse(readFileSync(configPath, {encoding: "utf8"}));
         if (!ajv().validate(ConfigSchema, data)) {
-            throw Error("Config is invalid")
+            throw Error("Config is invalid");
         }
-        return data
+        return data;
     }
 
     export function setCompileMode(flag: boolean) {
-        process.env[VALORY_COMPILE_MODE_VAR] = flag ? "TRUE" : "FALSE"
+        process.env[VALORY_COMPILE_MODE_VAR] = flag ? "TRUE" : "FALSE";
     }
 
     export function setMetadata(metadata: ValoryMetadata) {
-        process.env[VALORY_METADATA_VAR] = JSON.stringify(metadata)
+        process.env[VALORY_METADATA_VAR] = JSON.stringify(metadata);
     }
 
     export function getMetadata(): ValoryMetadata {
         let metadata: ValoryMetadata;
         try {
-             metadata = JSON.parse(process.env[VALORY_METADATA_VAR])
+             metadata = JSON.parse(process.env[VALORY_METADATA_VAR]);
         } catch (e) {
-            throw Error("Could not parse metadata")
+            throw Error("Could not parse metadata");
         }
         if (metadata.version !== METADATA_VERSION) {
-            throw Error(`Metadata version mismatch. required: ${METADATA_VERSION} actual: ${metadata.version}`)
+            throw Error(`Metadata version mismatch. required: ${METADATA_VERSION} actual: ${metadata.version}`);
         }
         return metadata;
     }
@@ -126,10 +126,10 @@ export namespace Config {
     }
 
     export function resolveSpecOutput() {
-        return (ConfigData.specOutput) ? path.join(RootPath, ConfigData.specOutput) : null
+        return (ConfigData.specOutput) ? path.join(RootPath, ConfigData.specOutput) : null;
     }
 
     function resolveRootPath() {
-        return __dirname.split("node_modules")[0]
+        return __dirname.split("node_modules")[0];
     }
 }

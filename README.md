@@ -21,11 +21,10 @@ Valory is small framework designed to standardize the process of writing well do
 
 **What it do**
 * First class Typescript support with decorator based API
-* Uses swagger to specify endpoints
-* Supports the entire swagger 2.0 spec (even discriminators)
-* Automatically generates swagger documentation
+* Uses existing type structures to build out your API
+* Automatically generates Open API 3 documentation
 * Performs super fast input validations for requests
-* Modular adaptor system that allows you to (with a little work) use any node server
+* Modular adaptor system that allows you to use anything that can send an event to NodeJS as a REST server
 
 **What it don't do**
 * Make you write your code and docs separately
@@ -35,7 +34,7 @@ If you are on windows, you will want to install Java 1.7+. Closure compiler will
 
 Next, you'll need to add the Valory runtime to your project along with a server adaptor
 ```bash
-npm install valory-runtime valory-adaptor-fastify
+npm install valory-runtime valory-adaptor-polka
 ```
 Next, install the cli
 ```bash
@@ -56,10 +55,13 @@ Using Valory is pretty straightforward.
 **index.ts**
 ```typescript
 import {Valory, Swagger} from "valory-runtime";
-import {FastifyAdaptor} from "valory-adaptor-fastify"
+import {PolkaAdaptor} from "valory-adaptor-polka"
 
 // import our controller
 import "./someController"
+
+// import generated content
+import "./generated"
 
 // Define basic info for the api
 const info: Swagger.Info = {
@@ -70,19 +72,19 @@ const info: Swagger.Info = {
 // Create the valory singleton
 Valory.createInstance({
     info,
-    server: new FastifyAdaptor(),
+    server: new PolkaAdaptor({port: 8080}),
 });
 
 // Retrieve the valory instance (can be called anywhere)
 const valoryInstance = Valory.getInstance();
 
 // Build and start the app, passing any adaptor specific config data
-valoryInstance.start({port: 8080});
+valoryInstance.start();
 ```
 
 **someController.ts**
 ```typescript
-import {Get, Route, Controller, Post, Body, Path, Header} from "valory-runtime";
+import {Get, Route, Controller, Post, Body, Path, Header, SuccessResponse} from "valory-runtime";
 
 export interface Item {
     someField: string;
@@ -105,10 +107,10 @@ export interface Item {
         return `name is ${name}`;
     }
     
-    // even complex types work
+    // You can set the status of a successful response 
+    @SuccessResponse(418)
+    // even complex types work    
     @Post("submit") public submit(@Body() input: Item): {content: Item} {
-        // set the status code
-        this.setStatus(418);
         
         // access request logger
         this.logger.info("yay!");
@@ -136,38 +138,23 @@ node path/to/api.js
 valory test
 ```
 
-By default, this will also host a [ReDoc](https://www.npmjs.com/package/redoc) powered documentation site at the site root.
-
 ## Extensions
 These are the officially maintained adaptors and middleware available for Valory.
 
 **Adaptors**
-* [valory-adaptor-slimjim](https://www.npmjs.com/package/valory-adaptor-slimjim)
-    * Adaptor that uses slimjim (High speed)
 * [valory-adaptor-polka](https://www.npmjs.com/package/valory-adaptor-polka)
     * Adaptor that uses polka (Smallest size)
-* [valory-adaptor-fastify](https://www.npmjs.com/package/valory-adaptor-fastify)
-    * Adaptor that uses fastify (High stability)
 * [valory-adaptor-alb](https://www.npmjs.com/package/valory-adaptor-alb)
     * Adaptor for directly processing events from an AWS Application Load Balancer
-* [valory-adaptor-claudia](https://www.npmjs.com/package/valory-adaptor-claudia)
-    * Adaptor for use with [Claudia](https://www.npmjs.com/package/claudia) and [claudia-api-builder](https://www.npmjs.com/package/claudia-api-builder). Allows valory to be deployed as a serverless application in AWS Lambda.
 
-**Middleware**
-* [valory-middleware-jwt](https://www.npmjs.com/package/valory-middleware-jwt)
-    * Simple JWT auth middleware
-    
-
-**Related Projects**
-* [parcel-plugin-valory](https://www.npmjs.com/package/parcel-plugin-valory)
-    * Plugin for parcel-bundler that adds valory support
-    
 ## Contributions
 PR's are welcome!
 
 **PR guidelines**
 * Use [Angular Commit Guidelines](https://github.com/angular/angular.js/blob/master/DEVELOPERS.md#-git-commit-guidelines)
-* Explain why the change is necessary/helpful
+* Create an issue that explains the problem or feature
+  * Get approval on the issue from a maintainer
+* Create a PR the references the issue
 
 **Roadmap**
 - [ ] More comprehensive tests

@@ -4,7 +4,7 @@ import {Config} from "../lib/config";
 function testValoryApp(input: {path: string}) {
     Config.load(true, input.path, true);
     Config.setDefaultAdaptorPath(require.resolve("../lib/default-adaptor"));
-    require(Config.resolveEntryPoint())
+    require(Config.resolveEntryPoint());
 }
 
 export const TestCommand: CommandModule = {
@@ -13,6 +13,6 @@ export const TestCommand: CommandModule = {
     handler() {
         testValoryApp({
             path: process.cwd()
-        })
+        });
     }
 };

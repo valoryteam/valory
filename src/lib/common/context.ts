@@ -22,7 +22,7 @@ export class ApiContext {
     };
 
     public static registerParser(type: string, parser: ContentTypeParser) {
-        ApiContext.parserMap[type] = parser
+        ApiContext.parserMap[type] = parser;
     }
 
     public static registerSerializer(type: string, serializer: ContentTypeSerializer) {
@@ -51,12 +51,12 @@ export class ApiContext {
             rawBody: request.rawBody,
             pathParams: request.pathParams,
             queryParams: request.queryParams
-        }
+        };
     }
 
     private static parse(contentType: string = ApiContext.defaultContentType, input: string) {
         try {
-            return (ApiContext.parserMap[contentType] || NOOP_STRING)(input)
+            return (ApiContext.parserMap[contentType] || NOOP_STRING)(input);
         } catch (e) {
             return input;
         }
@@ -64,9 +64,9 @@ export class ApiContext {
 
     private static serialize(contentType: string = ApiContext.defaultContentType, input: unknown) {
         try {
-            return (ApiContext.serializerMap[contentType] || NOOP_STRING)(input)
+            return (ApiContext.serializerMap[contentType] || NOOP_STRING)(input);
         } catch (e) {
-            return input.toString()
+            return input.toString();
         }
     }
 
@@ -76,7 +76,7 @@ export class ApiContext {
 
     public serializeResponse() {
         const contentType = this.responseContentType();
-        if (this.response.body == null) {return ""}
+        if (this.response.body == null) {return "";}
         return ApiContext.serialize(contentType, this.response.body);
     }
 }
