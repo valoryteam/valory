@@ -23,7 +23,8 @@
 			]
 		},
 		"types": [
-			"node"
+			"node",
+			"jest"
 		],
 		"alwaysStrict": true
 	},

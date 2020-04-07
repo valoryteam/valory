@@ -17,6 +17,10 @@ export class AttachmentRegistry {
         this.attachments.set(key.id, value);
     }
 
+    public deleteAttachment<T>(key: AttachmentKey<T>): void {
+        this.attachments.delete(key.id);
+    }
+
     public getAttachment<T>(key: AttachmentKey<T>): T | null {
         return this.attachments.get(key.id);
     }
