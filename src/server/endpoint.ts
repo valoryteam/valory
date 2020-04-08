@@ -7,7 +7,8 @@ import {Logger} from "pino";
 import {ApiMiddleware, ApiMiddlewareExecutor} from "../lib/common/middleware";
 import {AttachmentRegistry} from "../lib/common/attachment-registry";
 import {RequestValidator} from "./middleware/request-validator";
-import {arrayPush} from "../lib/common/util";
+import {arrayPush, decompressObjectIfNeeded} from "../lib/common/util";
+import {Config} from "../lib/config";
 
 export class Endpoint {
     public static readonly ExceptionKey = AttachmentRegistry.createKey<Error>();
@@ -22,16 +23,18 @@ export class Endpoint {
         private valory: Valory,
         public path: string,
         public method: HttpMethod,
-        public operation: OpenAPIV3.OperationObject
+        public operation: OpenAPIV3.OperationObject | string
     ) {
         this.logger = valory.logger.child({path, method});
         this.addDefaultPreMiddleware();
     }
 
     private registerSwagger() {
-        const paths = this.valory.apiDef.paths[this.path] || {};
-        paths[lowercaseHttpMethod(this.method)] = this.operation;
-        this.valory.apiDef.paths[this.path] = paths;
+        if (Config.CompileMode) {
+            const paths = this.valory.apiDef.paths[this.path] || {};
+            paths[lowercaseHttpMethod(this.method)] = decompressObjectIfNeeded(this.operation);
+            this.valory.apiDef.paths[this.path] = paths;
+        }
     }
 
     private registerEndpoint() {
@@ -58,11 +61,19 @@ export class Endpoint {
     }
 
     public appendMiddleware(middleware: ApiMiddleware) {
+        return this.aM(middleware);
+    }
+
+    public aM(middleware: ApiMiddleware) {
         this.middleware.push(middleware);
         return this;
     }
 
     public appendMiddlewareList(middlewares: ApiMiddleware[]) {
+        return this.aML(middlewares);
+    }
+
+    public aML(middlewares: ApiMiddleware[]) {
         this.middleware = arrayPush(this.middleware, middlewares);
         return this;
     }

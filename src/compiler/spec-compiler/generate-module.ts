@@ -3,6 +3,7 @@ import {randomBytes} from "crypto";
 import {Map, sha1String} from "../../lib/common/util";
 import {OpenAPIV3} from "openapi-types";
 import {COMPSWAG_VERSION} from "../../lib/config";
+import {ValueCache} from "./value-cache";
 
 const VALIDATOR_MODULE_HEADER = `
 // @ts-nocheck
@@ -97,7 +98,7 @@ function equal(a, b) {
 };
 `;
 
-export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: OpenAPIV3.Document): string {
+export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: OpenAPIV3.Document, cache: ValueCache): string {
     const withIds = input.map((op) => {
         return {
             ...op,
@@ -129,6 +130,7 @@ export function generateModule(input: ProcessedCompiledSchemaOperation[], spec: 
 
     const finalSource = `
     ${VALIDATOR_MODULE_HEADER}
+    ${cache.generate()}
     ${functionDeclarations.join("\n")}
     module["exports"] = {
         "validators": ${JSON.stringify(exportStructure).replace(/:"(.+?)"/g, ":$1")},

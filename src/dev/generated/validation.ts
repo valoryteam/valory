@@ -1,3 +1,4 @@
+
 ////////////////////////////////////////////////////////
 // ___   ___    _  _  ___ _____   ___ ___ ___ _____   //
 // |   \ / _ \  | \| |/ _ \_   _| | __|   \_ _|_   _| //
@@ -9,84 +10,13 @@
 ////////////////////////////////////////////////////////
 
 
-// @ts-nocheck
-/* tslint:disable */
-'use strict';
+    // @ts-nocheck
+    /* tslint:disable */
+    'use strict';function f(c,a){if(c===a)return!0;var b=Array.isArray(c),d=Array.isArray(a);if(b&&d){if(c.length!=a.length)return!1;for(d=0;d<c.length;d++)if(!f(c[d],a[d]))return!1;return!0}if(b!=d)return!1;if(c&&a&&"object"===typeof c&&"object"===typeof a){b=Object.keys(c);if(b.length!==Object.keys(a).length)return!1;d=c instanceof Date;var e=a instanceof Date;if(d&&e)return c.getTime()==a.getTime();if(d!=e)return!1;d=c instanceof RegExp;e=a instanceof RegExp;if(d&&e)return c.toString()==a.toString();
+if(d!=e)return!1;for(d=0;d<b.length;d++)if(!Object.prototype.hasOwnProperty.call(a,b[d]))return!1;for(d=0;d<b.length;d++)if(!f(c[b[d]],a[b[d]]))return!1;return!0}return!1}/** @noinline */ const g="ValidationError[required]: request",h="ValidationError[type]: request";
+module.exports={validators:{"/":{POST:{202:function(){return!0},313:function(){function c(a,b){if(a&&"object"===typeof a&&!Array.isArray(a)){a=a.body;if(void 0===a)return c.errors=[`${g}${(b||"")+""} should have required property \'body\'`],!1;if(a&&"object"===typeof a&&!Array.isArray(a)){if(void 0===a.yes)return c.errors=[`${g}${(b||"")+".body"} should have required property \'yes\'`],!1;if("string"!==typeof a.yes)return c.errors=[`${h}${(b||"")+".body.yes"} should be string`],!1;if(void 0===a.cool)return c.errors=
+[`${g}${(b||"")+".body"} should have required property \'cool\'`],!1;if("boolean"!==typeof a.cool)return c.errors=[`${h}${(b||"")+".body.cool"} should be boolean`],!1}else return c.errors=[`${h}${(b||"")+".body"} should be object`],!1}c.errors=null;return!0}return c}(),"-1":function(){function c(b,d){if(b&&"object"===typeof b&&!Array.isArray(b)){b=b.headers;if(void 0===b)return c.errors=[`${g}${(d||"")+""} should have required property \'headers\'`],!1;if(b&&"object"===typeof b&&!Array.isArray(b)){var e=
+b["test-type"];if(void 0===e)return c.errors=[`${g}${(d||"")+".headers"} should have required property \'test-type\'`],!1;if("string"!==typeof e)return c.errors=[`${h}${(d||"")+".headers['test-type']"} should be string`],!1;b=!1;for(var k=0;k<a.length;k++)if(f(e,a[k])){b=!0;break}if(!b)return c.errors=[`${"ValidationError[enum]: request"}${(d||"")+".headers['test-type']"} should be equal to one of the allowed values`],!1}}c.errors=null;return!0}var a=["asc","desc"];return c}()}}},compswagVersion:2,
+specHash:"61b8070093392258c0c0764244dee822a99a3060"};
 
-function h(f, c) {
-    if (f === c) return !0;
-    var b = Array.isArray(f), a = Array.isArray(c);
-    if (b && a) {
-        if (f.length != c.length) return !1;
-        for (a = 0; a < f.length; a++) if (!h(f[a], c[a])) return !1;
-        return !0
-    }
-    if (b != a) return !1;
-    if (f && c && "object" === typeof f && "object" === typeof c) {
-        b = Object.keys(f);
-        if (b.length !== Object.keys(c).length) return !1;
-        a = f instanceof Date;
-        var d = c instanceof Date;
-        if (a && d) return f.getTime() == c.getTime();
-        if (a != d) return !1;
-        a = f instanceof RegExp;
-        d = c instanceof RegExp;
-        if (a && d) return f.toString() == c.toString();
-        if (a != d) return !1;
-        for (a = 0; a < b.length; a++) if (!Object.prototype.hasOwnProperty.call(c, b[a])) return !1;
-        for (a = 0; a < b.length; a++) if (!h(f[b[a]], c[b[a]])) return !1;
-        return !0
-    }
-    return !1
-}
-
-module.exports = {
-    validators: {
-        "/": {
-            POST: {
-                202: function () {
-                    return !0
-                }, 313: function () {
-                    function f(c, b) {
-                        var a = null, d = 0;
-                        if (c && "object" === typeof c && !Array.isArray(c)) if (c = c.body, void 0 === c) {
-                            var e = `ValidationError[required]: request${(b || "") + ""} should have required property \'body\'`;
-                            null === a ? a = [e] : a.push(e);
-                            d++
-                        } else c && "object" === typeof c && !Array.isArray(c) ? (void 0 === c.yes ? (e = `ValidationError[required]: request${(b || "") + ".body"} should have required property \'yes\'`, null === a ? a = [e] : a.push(e), d++) : "string" !==
-                            typeof c.yes && (e = `ValidationError[type]: request${(b || "") + ".body.yes"} should be string`, null === a ? a = [e] : a.push(e), d++), void 0 === c.cool ? (e = `ValidationError[required]: request${(b || "") + ".body"} should have required property \'cool\'`, null === a ? a = [e] : a.push(e), d++) : "boolean" !== typeof c.cool && (e = `ValidationError[type]: request${(b || "") + ".body.cool"} should be boolean`, null === a ? a = [e] : a.push(e), d++)) : (e = `ValidationError[type]: request${(b || "") + ".body"} should be object`, null === a ? a = [e] : a.push(e), d++);
-                        f.errors =
-                            a;
-                        return 0 === d
-                    }
-
-                    return f
-                }(), "-1": function () {
-                    function f(b, a) {
-                        var d = null, e = 0;
-                        if (b && "object" === typeof b && !Array.isArray(b)) if (b = b.headers, void 0 === b) {
-                            var g = `ValidationError[required]: request${(a || "") + ""} should have required property \'headers\'`;
-                            null === d ? d = [g] : d.push(g);
-                            e++
-                        } else if (b && "object" === typeof b && !Array.isArray(b)) if (b = b["test-type"], void 0 === b) g = `ValidationError[required]: request${(a || "") + ".headers"} should have required property \'test-type\'`, null === d ? d = [g] : d.push(g), e++; else {
-                            "string" !==
-                            typeof b && (g = `ValidationError[type]: request${(a || "") + ".headers['test-type']"} should be string`, null === d ? d = [g] : d.push(g), e++);
-                            g = !1;
-                            for (var k = 0; k < c.length; k++) if (h(b, c[k])) {
-                                g = !0;
-                                break
-                            }
-                            g || (g = `ValidationError[enum]: request${(a || "") + ".headers['test-type']"} should be equal to one of the allowed values`, null === d ? d = [g] : d.push(g), e++)
-                        }
-                        f.errors = d;
-                        return 0 === e
-                    }
-
-                    var c = ["asc", "desc"];
-                    return f
-                }()
-            }
-        }
-    }, compswagVersion: 2, specHash: "61b8070093392258c0c0764244dee822a99a3060"
-};
-
+    

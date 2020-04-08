@@ -8,6 +8,7 @@ import {RoutesModule, ValoryGlobalData} from "../lib/common/compiler-headers";
 import P = require("pino");
 import {loadGlobalData} from "../lib/global-data-load";
 import {ApiMiddleware} from "../main";
+import {decompressObject, decompressObjectIfNeeded} from "../lib/common/util";
 
 export interface ValoryArgs {
     openapi: {
@@ -28,12 +29,12 @@ export class Valory {
     private static instance: Valory;
     private static directInstantiation = true;
     public readonly adaptor: ApiAdaptor;
-    public readonly apiDef: OpenAPIV3.Document;
+    /** @internal */ public readonly apiDef: OpenAPIV3.Document;
     public readonly logger: Logger;
 
-    /** @hidden */ public readonly beforeAllMiddleware: ApiMiddleware[];
-    /** @hidden */ public readonly afterAllMiddleware: ApiMiddleware[];
-    /** @hidden */ public readonly globalData?: ValoryGlobalData;
+    /** @internal */ public readonly beforeAllMiddleware: ApiMiddleware[];
+    /** @internal */ public readonly afterAllMiddleware: ApiMiddleware[];
+    /** @internal */ public readonly globalData?: ValoryGlobalData;
 
     public static createInstance(args: ValoryArgs) {
         Valory.directInstantiation = false;
@@ -82,7 +83,7 @@ export class Valory {
         return new defaultAdaptor();
     }
 
-    public endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject) {
+    private endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject | string) {
         return new Endpoint(this, path, method, operation);
     }
 
@@ -101,10 +102,12 @@ export class Valory {
 
     public registerGeneratedRoutes(routes: RoutesModule) {
         routes.register(this);
-        this.apiDef.components = {
-            ...routes.components,
-            ...this.apiDef.components
-        };
+        if (Config.CompileMode) {
+            this.apiDef.components = {
+                ...decompressObjectIfNeeded(routes.components),
+                ...this.apiDef.components
+            };
+        }
     }
 
     private exportMetadata() {

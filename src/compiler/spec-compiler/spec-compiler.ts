@@ -10,6 +10,7 @@ import {processCompiledSchemaOperation, ProcessedCompiledSchemaOperation} from "
 import {generateModule} from "./generate-module";
 import {compileModule} from "./compile-module";
 import {cloneDeep,} from "lodash";
+import {ValueCache} from "./value-cache";
 
 // tslint:disable-next-line:no-empty-interface
 export interface CompilerOptions {
@@ -54,6 +55,7 @@ export class SpecCompiler {
     public async compile(): Promise<string> {
         console.log(chalk.bold("Spec Compilation"));
         this.output.initialInput = this.input;
+        const cache = new ValueCache();
         this.output.dereferencedSpec = await spinnerWrap(validate(cloneDeep(this.output.initialInput)), "Validating Spec") as OpenAPIV3.Document;
         this.output.operations = await spinnerWrap(generateOperations(this.output.dereferencedSpec), "Generating Operations");
         this.output.schemaOperations = await spinnerWrap(this.output.operations.map(generateSchemaOperation), "Generating Operation Schemas");
@@ -72,8 +74,8 @@ export class SpecCompiler {
             coerceTypes: this.options.coerceTypes,
             allErrors: this.options.allErrors
         })), "Compiling Operation Schemas");
-        this.output.processedCompiledSchemaOperations = await spinnerWrap(this.output.compiledSchemaOperations.map(op => processCompiledSchemaOperation(op, {prepackErrors: this.options.prepackErrors})), "Processing Compiled Schemas");
-        this.output.moduleSource = await spinnerWrap(generateModule(this.output.processedCompiledSchemaOperations, this.input), "Generating Module");
+        this.output.processedCompiledSchemaOperations = await spinnerWrap(this.output.compiledSchemaOperations.map(op => processCompiledSchemaOperation(op, cache,{prepackErrors: this.options.prepackErrors})), "Processing Compiled Schemas");
+        this.output.moduleSource = await spinnerWrap(generateModule(this.output.processedCompiledSchemaOperations, this.input, cache), "Generating Module");
         this.output.moduleCompiled = await spinnerWrap(compileModule(this.output.moduleSource), "Compiling Module");
         return this.output.moduleCompiled;
     }

@@ -20,22 +20,23 @@ function isController(object) {
 
 
         import {Endpoint, RequestValidator} from "../../main";
+        const handlerEscapeKeys = [RequestValidator.ValidationErrorsKey, Endpoint.ExceptionKey];
         import {TestController} from "./../testRoutes";
         const TestControllerController = new TestController();
         const TestControllerControllerExtendsController = isController(TestControllerController);
         
         module.exports = {
             routesVersion: 2,
-            components: {"examples":{},"headers":{},"parameters":{},"requestBodies":{},"responses":{},"schemas":{"Direction":{"enum":["asc","desc"],"type":"string"}},"securitySchemes":{}},
+            components: `G6IAQAXCduTPAxom2gXdNggq2EXdbHZbwFh3QZJFgRY1fwB+t7HRMuicsHRG9bHKQX8J6rGeCQF2mnZ9BZwPE87RSA6M5DPO22hnpiF4pDGEZTeKJkuVQAZ/noxAFA==`,
             register(app) {
                 
-        app.endpoint("/","POST",{"operationId":"Test","responses":{"202":{"content":{"application/json":{}},"description":""},"313":{"content":{"application/json":{"schema":{"properties":{"yes":{"type":"string"},"cool":{"type":"boolean"}},"required":["yes","cool"],"type":"object"}}},"description":""}},"security":[],"parameters":[{"in":"header","name":"test-type","required":true,"schema":{"$ref":"#/components/schemas/Direction"}}]})
-            .appendMiddlewareList(TestControllerController.middleware)
-            .appendMiddlewareList(TestControllerController.test.middleware)
-            .appendMiddleware({
+        app.endpoint("/","POST",`G5EBAIzTFfMjhHUPormlflsdr1tJdtuS4gsrE/wv8tg6LF19/+/mO8ANxmM2aA2QhVH0DzgOPAwodRNBEPTwsrUzue0D9e92gV3NiYAXQ1CXup2RHok3zc13xP+IK6UYHra1mZcwT99AFQeCb2l0FgCi9qypCJXZKVr1mPz4gmd0F85ALIvOLc9ZTd+XEd0OgK1k52BMwPSJaD7aXc1LgCQDw2BY3Fd+9QZJECvlRWPyfVU1niqqHQ==`)
+            .aML(TestControllerController.middleware)
+            .aML(TestControllerController.test.middleware)
+            .aM({
                 name: "PrimaryHandler",
                 async handler(ctx) {
-                    if (ctx.attachments.hasAttachment(RequestValidator.ValidationErrorsKey) || ctx.attachments.hasAttachment(Endpoint.ExceptionKey)) {
+                    if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
                         return;
                     }
                     if (TestControllerControllerExtendsController) {
@@ -59,10 +60,9 @@ function isController(object) {
                     }
                 }
             })
-            .appendMiddlewareList(TestControllerController.test.postMiddleware)
-            .appendMiddlewareList(TestControllerController.postMiddleware)
+            .aML(TestControllerController.test.postMiddleware)
+            .aML(TestControllerController.postMiddleware)
             .done();
         
             }
         };
-        

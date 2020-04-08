@@ -42,7 +42,7 @@ async function promptForConfig(path: string): Promise<ValoryConfig> {
 
     return {
         ...userInput,
-        specOutput: join(Config.RootPath, userInput.outputDirectory, "openapi.json"),
+        specOutput: join(userInput.outputDirectory, "openapi.json"),
         compilerOptions: {
             allErrors: false,
             coerceTypes: false,

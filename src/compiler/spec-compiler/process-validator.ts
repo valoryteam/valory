@@ -2,6 +2,7 @@ import {HttpMethod} from "../../lib/common/headers";
 import {CompiledSchemaInteraction, CompiledSchemaOperation} from "./compile-validator";
 import {isEqual, cloneDeepWith} from "lodash";
 import {JSONSchema4} from "json-schema";
+import {ValueCache} from "./value-cache";
 
 const mapKeysDeep = require("map-keys-deep-lodash");
 
@@ -36,15 +37,17 @@ export interface ProcessedCompiledSchemaInteraction extends CompiledSchemaIntera
     processedValidatorSource: string;
 }
 
-export function processCompiledSchemaOperation(input: CompiledSchemaOperation, options: { prepackErrors: boolean }): ProcessedCompiledSchemaOperation {
+export function processCompiledSchemaOperation(input: CompiledSchemaOperation, cache: ValueCache, options: { prepackErrors: boolean }): ProcessedCompiledSchemaOperation {
     return {
         ...input,
-        schemaInteractions: input.schemaInteractions.map(op => processCompiledSchemaInteraction(op, options))
+        schemaInteractions: input.schemaInteractions.map(op => processCompiledSchemaInteraction(op, cache, options))
     };
 }
 
-function processError(fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string) {
-    return `\`ValidationError[${keyword}]: request\${${dataPath}} ${message}\``;
+function processError(fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string, cache: ValueCache) {
+    const templateCache = (value: string) => `\${${cache.add("`" + value + "`")}}`;
+    const packed = `\`${templateCache(`ValidationError[${keyword}]: request`)}\${${dataPath}} ${message}\``;
+    return packed;
 }
 
 function objectifyArray<T>(arr: T[]): { [key: string]: T } {
@@ -78,7 +81,7 @@ function mangleProps(input: JSONSchema4) {
     };
 }
 
-function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, options: { prepackErrors: boolean }): ProcessedCompiledSchemaInteraction {
+function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, cache: ValueCache, options: { prepackErrors: boolean }): ProcessedCompiledSchemaInteraction {
     if (NoopSchemas.some(schema => isEqual(schema, input.schema))) {
         return {
             ...input,
@@ -92,7 +95,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
 
     // Prepack error messages
     if (options.prepackErrors) {
-        processedCode = processedCode.replace(ErrorObjReg, processError);
+        processedCode = processedCode.replace(ErrorObjReg, (fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string) => processError(fullMatch, keyword, dataPath, schemaPath, params, message, cache));
     }
 
     // Objectify union access to prevent indirection
@@ -109,8 +112,8 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
 
     // Apply property mangling
     processedCode = processedCode.replace(/properties\['([\s\S]*?)']/g, (match, key) => {
-       const mangled = mangledMap[key];
-       return (mangled != null) ? `properties.${mangled}` : match;
+        const mangled = mangledMap[key];
+        return (mangled != null) ? `properties.${mangled}` : match;
     });
 
     const functionHeader = processedCode.substring(0, processedCode.indexOf("{"));
@@ -121,7 +124,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
         function() {
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
-        return `const pattern${id} = new RegExp(\`${pattern}\`);`;
+        return `const pattern${id} = ${cache.add(`new RegExp(\`${pattern}\`)`)};`;
     }).join("\n")}
             const validate = ${functionHeader} {
                 ${functionBody}
@@ -132,6 +135,6 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, opti
 
     return {
         ...input,
-        processedValidatorSource: finalCode
+        processedValidatorSource: cache.add(finalCode)
     };
 }

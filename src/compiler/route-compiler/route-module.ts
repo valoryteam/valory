@@ -7,6 +7,7 @@ import {relative, join} from "path";
 import Method = Tsoa.Method;
 import {uppercaseHttpMethod} from "../../lib/common/headers";
 import Parameter = Tsoa.Parameter;
+import {compressObject} from "../../lib/common/util";
 
 const ROUTE_MODULE_HEADER = `
 // @ts-nocheck
@@ -40,7 +41,7 @@ export class RouteModule {
         
         module.exports = {
             routesVersion: ${ROUTES_VERSION},
-            components: ${JSON.stringify(this.spec.components)},
+            components: \`${compressObject(this.spec.components)}\`,
             register(app) {
                 ${routes.join("\n")}
             }
@@ -49,7 +50,8 @@ export class RouteModule {
     }
 
     private generateValoryRuntimeImport() {
-        return `import {Endpoint, RequestValidator} from "${this.resolveValoryRuntime()}";`;
+        return `import {Endpoint, RequestValidator} from "${this.resolveValoryRuntime()}";
+        const handlerEscapeKeys = [RequestValidator.ValidationErrorsKey, Endpoint.ExceptionKey];`;
     }
 
     private generateControllerImport(controller: Controller) {
@@ -90,13 +92,13 @@ export class RouteModule {
         const controllerName = this.getControllerName(controller.name);
         const qualifiedMethod = `${controllerName}.${method.name}`;
         return `
-        app.endpoint("${path}","${uppercaseHttpMethod(method.method)}",${JSON.stringify(this.spec.paths[path][method.method])})
-            .appendMiddlewareList(${controllerName}.middleware)
-            .appendMiddlewareList(${qualifiedMethod}.middleware)
-            .appendMiddleware({
+        app.endpoint("${path}","${uppercaseHttpMethod(method.method)}",\`${compressObject(this.spec.paths[path][method.method])}\`)
+            .aML(${controllerName}.middleware)
+            .aML(${qualifiedMethod}.middleware)
+            .aM({
                 name: "PrimaryHandler",
                 async handler(ctx) {
-                    if (ctx.attachments.hasAttachment(RequestValidator.ValidationErrorsKey) || ctx.attachments.hasAttachment(Endpoint.ExceptionKey)) {
+                    if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
                         return;
                     }
                     if (${this.getControllerExtensionCheckName(controller.name)}) {
@@ -120,8 +122,8 @@ export class RouteModule {
                     }
                 }
             })
-            .appendMiddlewareList(${controllerName}.${method.name}.postMiddleware)
-            .appendMiddlewareList(${controllerName}.postMiddleware)
+            .aML(${controllerName}.${method.name}.postMiddleware)
+            .aML(${controllerName}.postMiddleware)
             .done();
         `;
     }
