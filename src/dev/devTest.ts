@@ -4,9 +4,11 @@ import {DefaultAdaptor} from "../lib/default-adaptor";
 import "./testRoutes";
 import "./generated";
 import {Body, Post, Route} from "../server/decorators";
+import {ResponseValidator} from "../main";
 
 const app = Valory.createInstance({
    adaptor: new DefaultAdaptor(8080),
+   afterAllMiddleware: [new ResponseValidator()]
 });
 
 // app.endpoint("/test", "GET", {

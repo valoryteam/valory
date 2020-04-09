@@ -1,7 +1,6 @@
 import {Map} from "./util";
-import {ApiResponse} from "./response";
-import {ApiRequest} from "./request";
-import {AttachmentRegistry} from "./attachment-registry";
+import {OpenAPIV3} from "openapi-types";
+import {ApiContext} from "./context";
 
 export type HttpMethod = typeof HttpMethods[number];
 
@@ -68,4 +67,43 @@ export function uppercaseHttpMethod(method: HttpMethodLowercase): HttpMethod {
 export interface ApiExchange {
     headers: Map<any>;
     body: any;
+}
+
+export const VALORY_METADATA_VAR = "VALORY_METADATA";
+export const VALORY_DEFAULT_ADAPTOR_VAR = "VALORY_DEFAULT_ADAPTOR";
+export const METADATA_VERSION = 2;
+export const COMPSWAG_VERSION = 2;
+export const ROUTES_VERSION = 2;
+export const GLOBAL_ENTRY_KEY = "VALORY_DATA";
+
+export interface ApiResponse extends ApiExchange {
+    statusCode: number;
+}
+
+export interface ApiRequest extends ApiExchange {
+    rawBody: any;
+    formData: Map<any>;
+    queryParams: Map<any>;
+    pathParams: Map<any>;
+    path: string;
+    method: HttpMethod;
+}
+
+export type ApiMiddlewareExecutor = (ctx: ApiContext) => Promise<void> | void;
+
+export interface ApiMiddleware {
+    handler: ApiMiddlewareExecutor;
+    readonly name: string;
+    readonly tags?: OpenAPIV3.TagObject[];
+}
+
+export interface ApiAdaptor {
+    register(path: string, method: HttpMethod, handler: (ctx: ApiContext) => Promise<ApiContext>): void;
+
+    /**
+     * Startup underlying server
+     */
+    start(): any;
+
+    shutdown(): void;
 }

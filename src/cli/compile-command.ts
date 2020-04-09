@@ -5,12 +5,17 @@ import chalk = require("chalk");
 import {ThreadSpinner} from "thread-spin";
 import {OpenAPIV3} from "openapi-types";
 import {Spinner, spinnerFail, spinnerWrap} from "../lib/spinner";
-import {COMPSWAG_VERSION, Config, METADATA_VERSION, ROUTES_VERSION} from "../lib/config";
+import {Config} from "../lib/config";
 import {SpecCompiler} from "../compiler/spec-compiler/spec-compiler";
 import {saveGlobalData, saveGlobalDataRoutesOnly} from "../lib/global-data";
 import {RouteCompiler} from "../compiler/route-compiler/route-compiler";
-import {HttpMethodLowercase, HttpMethodsLowercase, uppercaseHttpMethod} from "../lib/common/headers";
-import {GLOBAL_ENTRY_KEY} from "../lib/common/compiler-headers";
+import {
+    COMPSWAG_VERSION, GLOBAL_ENTRY_KEY,
+    HttpMethodLowercase,
+    HttpMethodsLowercase, METADATA_VERSION,
+    ROUTES_VERSION,
+    uppercaseHttpMethod
+} from "../lib/common/headers";
 import {writeFileSync} from "fs";
 import {merge} from "lodash";
 
@@ -66,11 +71,16 @@ function printHeader() {
     console.log(`Project:       ${Config.PackageJSON.name}`);
     console.log(`Version:       ${Config.PackageJSON.version}`);
     console.log(`Config:        ${Config.ConfigPath}\n`);
+
+    console.log(chalk.bold("Compiler Options"));
+    Object.entries(Config.ConfigData.compilerOptions).forEach(([option, value]) => {
+        console.log(`${option}: ${value}`);
+    });
+    console.log("\n");
 }
 
 async function compile(options: CompileOptions) {
     await spinnerWrap(() => {
-        Config.setCompileMode(true);
         Config.load(true, options.path, true);
     }, "Loading Environment");
     printHeader();

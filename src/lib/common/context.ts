@@ -1,9 +1,8 @@
-import {ApiResponse} from "./response";
-import {ApiRequest} from "./request";
 import {AttachmentRegistry} from "./attachment-registry";
 import uuid = require("uuid-random");
 import {lowercaseKeys} from "./util";
 import qs = require("querystring");
+import {ApiRequest, ApiResponse} from "./headers";
 
 export type ContentTypeParser = (input: string) => any;
 export type ContentTypeSerializer = (input: unknown) => string;

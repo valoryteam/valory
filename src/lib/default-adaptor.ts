@@ -1,10 +1,7 @@
-import {ApiAdaptor} from "./common/adaptor";
 import {ApiContext} from "./common/context";
-import {HttpMethod} from "./common/headers";
+import {HttpMethod, ApiAdaptor} from "./common/headers";
 import {IncomingMessage, ServerResponse} from "http";
-import qs = require("querystring");
 import url = require("url");
-import {Config} from "./config";
 
 const polka = require("polka");
 const pathReplacer = /{([\S]*?)}/g;
@@ -47,7 +44,7 @@ export class DefaultAdaptor implements ApiAdaptor {
     }
 
     public start() {
-        if (!Config.CompileMode) this.server.listen(this.port, this.host);
+        this.server.listen(this.port, this.host);
     }
 
     public shutdown() {

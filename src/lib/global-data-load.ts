@@ -1,6 +1,6 @@
 import {versionCheck} from "./common/util";
-import {ROUTES_VERSION} from "./config";
-import {GLOBAL_ENTRY_KEY, ValoryGlobalData} from "./common/compiler-headers";
+import {ValoryGlobalData} from "./common/compiler-headers";
+import {GLOBAL_ENTRY_KEY, ROUTES_VERSION} from "./common/headers";
 
 export function loadGlobalData(): ValoryGlobalData {
     const data: ValoryGlobalData = (global as any)[GLOBAL_ENTRY_KEY];

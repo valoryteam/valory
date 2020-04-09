@@ -17,6 +17,7 @@ export interface CompilerOptions {
     allErrors: boolean;
     coerceTypes: boolean;
     prepackErrors: boolean;
+    excludeResponses: boolean;
 }
 
 export interface SpecCompilerOutput {
@@ -36,6 +37,7 @@ export const DefaultCompilerOptions: CompilerOptions = {
     allErrors: false,
     coerceTypes: false,
     prepackErrors: true,
+    excludeResponses: false
 };
 
 export class SpecCompiler {
@@ -58,7 +60,7 @@ export class SpecCompiler {
         const cache = new ValueCache();
         this.output.dereferencedSpec = await spinnerWrap(validate(cloneDeep(this.output.initialInput)), "Validating Spec") as OpenAPIV3.Document;
         this.output.operations = await spinnerWrap(generateOperations(this.output.dereferencedSpec), "Generating Operations");
-        this.output.schemaOperations = await spinnerWrap(this.output.operations.map(generateSchemaOperation), "Generating Operation Schemas");
+        this.output.schemaOperations = await spinnerWrap(this.output.operations.map(input => generateSchemaOperation(input, this.options.excludeResponses)), "Generating Operation Schemas");
         this.output.schemaOperationsOpt = await spinnerWrap(this.output.schemaOperations.map(op => {
             return {
                 ...op,

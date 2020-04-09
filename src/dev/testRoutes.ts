@@ -1,6 +1,6 @@
 import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query} from "../server/decorators";
 import {Controller} from "../server/controller";
-import {ApiMiddleware} from "../lib/common/middleware";
+import {ApiMiddleware} from "../lib/common/headers";
 
 export interface TestInput {
     /**
@@ -59,11 +59,11 @@ export class TestController extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("test-type") test: Direction) {
+    @Post() public test(@Header("test-type") test: Direction): EndpointArgsSMS {
         // this.setHeader("content-type", "text/plain");
         return {
             cool: true,
             yes: "blue"
-        };
+        } as any;
     }
 }

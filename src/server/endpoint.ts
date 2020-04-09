@@ -1,10 +1,9 @@
 import {Valory} from "./valory";
-import {HttpMethod, lowercaseHttpMethod} from "../lib/common/headers";
+import {ApiMiddleware, HttpMethod, lowercaseHttpMethod} from "../lib/common/headers";
 import {OpenAPIV3} from "openapi-types";
 import {AsyncSeries} from "../lib/async-series";
 import {ApiContext} from "../lib/common/context";
 import {Logger} from "pino";
-import {ApiMiddleware} from "../lib/common/middleware";
 import {AttachmentRegistry} from "../lib/common/attachment-registry";
 import {RequestValidator} from "./middleware/request-validator";
 import {arrayPush} from "../lib/common/util";
@@ -69,8 +68,8 @@ export class Endpoint {
     }
 
     public addDefaultPreMiddleware() {
-        this.appendMiddlewareList(this.valory.beforeAllMiddleware);
         this.appendMiddleware(new RequestValidator(this.valory, this.path, this.method));
+        this.appendMiddlewareList(this.valory.beforeAllMiddleware);
     }
 
     public addDefaultPostMiddleware() {

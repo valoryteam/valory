@@ -26,9 +26,7 @@ export {
 export {Endpoint} from "./server/endpoint";
 export {RequestValidator} from "./server/middleware/request-validator";
 export {Controller} from "./server/controller";
-export {ApiAdaptor} from "./lib/common/adaptor";
 export {AttachmentRegistry} from "./lib/common/attachment-registry";
-export {ApiMiddleware, ApiMiddlewareExecutor} from "./lib/common/middleware";
 export {ApiContext} from "./lib/common/context";
 export {
     uppercaseHttpMethod,
@@ -37,7 +35,11 @@ export {
     HttpMethodLowercase,
     HttpMethods,
     lowercaseHttpMethod,
-    ApiExchange
+    ApiExchange,
+    ApiAdaptor,
+    ApiMiddleware,
+    ApiMiddlewareExecutor,
+    ApiRequest,
+    ApiResponse,
 } from "./lib/common/headers";
-export {ApiRequest} from "./lib/common/request";
-export {ApiResponse} from "./lib/common/response";
+export {ResponseValidator} from "./server/middleware/response-validator";

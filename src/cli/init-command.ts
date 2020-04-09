@@ -46,7 +46,8 @@ async function promptForConfig(path: string): Promise<ValoryConfig> {
         compilerOptions: {
             allErrors: false,
             coerceTypes: false,
-            prepackErrors: true
+            prepackErrors: true,
+            excludeResponses: false,
         },
         spec: {
             info: {

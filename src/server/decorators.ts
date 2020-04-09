@@ -1,5 +1,5 @@
-import {ApiMiddleware} from "../lib/common/middleware";
 import {Controller} from "./controller";
+import {ApiMiddleware} from "../lib/common/headers";
 
 export function Example<T>(exampleModel: T): any {
     return () => {

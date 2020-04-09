@@ -2,13 +2,11 @@ import {readFileSync} from "fs";
 import {OpenAPIV3} from "openapi-types";
 import * as path from "path";
 import {JSONSchema7} from "json-schema";
-import ajv = require("ajv");
 import {IPackageJSON} from "package-json";
 import {CompilerOptions} from "../compiler/spec-compiler/spec-compiler";
-
-export const METADATA_VERSION = 2;
-export const COMPSWAG_VERSION = 2;
-export const ROUTES_VERSION = 2;
+import {METADATA_VERSION, VALORY_DEFAULT_ADAPTOR_VAR, VALORY_METADATA_VAR} from "./common/headers";
+import ajv = require("ajv");
+import {merge} from "lodash";
 
 export interface ValoryMetadata {
     openapi: OpenAPIV3.Document;
@@ -58,6 +56,9 @@ const ConfigSchema: JSONSchema7 = {
                 },
                 prepackErrors: {
                     type: "boolean"
+                },
+                excludeResponses: {
+                    type: "boolean"
                 }
             }
         },
@@ -68,12 +69,9 @@ const ConfigSchema: JSONSchema7 = {
     required: ["entrypoint", "outputDirectory"]
 };
 
+export const CONFIG_FILE = "valory.json";
+
 export namespace Config {
-    export const VALORY_COMPILE_MODE_VAR = "VALORY_COMPILE_MODE";
-    export const VALORY_METADATA_VAR = "VALORY_METADATA";
-    export const VALORY_DEFAULT_ADAPTOR_VAR = "VALORY_DEFAULT_ADAPTOR";
-    export const CONFIG_FILE = "valory.json";
-    export let CompileMode = false;
     export let RootPath = "";
     export let PackageJSONPath = "";
     export let PackageJSON: IPackageJSON;
@@ -82,7 +80,6 @@ export namespace Config {
     export let CLIMode = false;
 
     export function load(cliMode: boolean, rootPath?: string, loadConfig: boolean = false) {
-        CompileMode = process.env[VALORY_COMPILE_MODE_VAR] === "TRUE";
         CLIMode = cliMode;
         RootPath = rootPath || resolveRootPath();
         ConfigPath = path.join(RootPath, CONFIG_FILE);
@@ -94,17 +91,12 @@ export namespace Config {
     }
 
     function loadValidatedConfig(configPath: string) {
-        const lodash = "lodash";
-        const data = require(lodash).merge(JSON.parse(readFileSync(configPath, {encoding: "utf8"})), DefaultConfig);
+        const data = merge(JSON.parse(readFileSync(configPath, {encoding: "utf8"})), DefaultConfig);
         if (!ajv().validate(ConfigSchema, data)) {
             throw Error("Config is invalid");
         }
 
         return data;
-    }
-
-    export function setCompileMode(flag: boolean) {
-        process.env[VALORY_COMPILE_MODE_VAR] = flag ? "TRUE" : "FALSE";
     }
 
     export function setMetadata(metadata: ValoryMetadata) {

@@ -1,5 +1,4 @@
-import {ApiMiddleware} from "../../lib/common/middleware";
-import {HttpMethod} from "../../lib/common/headers";
+import {ApiMiddleware, HttpMethod} from "../../lib/common/headers";
 import {Valory} from "../valory";
 import {ApiContext} from "../../lib/common/context";
 import {AttachmentRegistry} from "../../lib/common/attachment-registry";
@@ -12,7 +11,7 @@ export class RequestValidator implements ApiMiddleware {
     private readonly validator: AJVTypes.ValidateFunction;
 
     constructor(valory: Valory, path: string, method: HttpMethod) {
-        this.validator = valory.globalData.validation?.validators[path][method]["-1"];
+        this.validator = valory.globalData.validation.validators[path][method]["-1"];
     }
 
     public handler(ctx: ApiContext) {

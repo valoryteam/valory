@@ -18,6 +18,7 @@ function isController(object) {
     return 'getHeaders' in object && 'getStatus' in object && 'setStatus' in object
 }
 
+const name = "PrimaryHandler";
 
         import {Endpoint, RequestValidator} from "../../main";
         const handlerEscapeKeys = [RequestValidator.ValidationErrorsKey, Endpoint.ExceptionKey];
@@ -33,7 +34,7 @@ function isController(object) {
             .aML(TestControllerController.middleware)
             .aML(TestControllerController.test.middleware)
             .aM({
-                name: "PrimaryHandler",
+                name,
                 async handler(ctx) {
                     if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
                         return;

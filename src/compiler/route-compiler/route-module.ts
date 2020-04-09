@@ -2,10 +2,10 @@ import {Tsoa} from "tsoa/dist/metadataGeneration/tsoa";
 import Metadata = Tsoa.Metadata;
 import {OpenAPIV3} from "openapi-types";
 import Controller = Tsoa.Controller;
-import {Config, ROUTES_VERSION} from "../../lib/config";
+import {Config} from "../../lib/config";
 import {relative, join} from "path";
 import Method = Tsoa.Method;
-import {uppercaseHttpMethod} from "../../lib/common/headers";
+import {ROUTES_VERSION, uppercaseHttpMethod} from "../../lib/common/headers";
 import Parameter = Tsoa.Parameter;
 
 const ROUTE_MODULE_HEADER = `
@@ -16,6 +16,7 @@ function isController(object) {
     return 'getHeaders' in object && 'getStatus' in object && 'setStatus' in object
 }
 
+const name = "PrimaryHandler";
 `;
 
 export class RouteModule {
@@ -94,7 +95,7 @@ export class RouteModule {
             .aML(${controllerName}.middleware)
             .aML(${qualifiedMethod}.middleware)
             .aM({
-                name: "PrimaryHandler",
+                name,
                 async handler(ctx) {
                     if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
                         return;

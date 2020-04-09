@@ -1,8 +1,5 @@
-import {OpenAPIV3} from "openapi-types";
-import {ApiAdaptor} from "../lib/common/adaptor";
 import {Logger} from "pino";
-import {Config, METADATA_VERSION} from "../lib/config";
-import {HttpMethod} from "../lib/common/headers";
+import {ApiAdaptor, HttpMethod, VALORY_DEFAULT_ADAPTOR_VAR} from "../lib/common/headers";
 import {Endpoint} from "./endpoint";
 import {RoutesModule, ValoryGlobalData} from "../lib/common/compiler-headers";
 import P = require("pino");
@@ -47,21 +44,19 @@ export class Valory {
 
         const {adaptor, baseLogger, afterAllMiddleware, beforeAllMiddleware} = args;
 
-        this.adaptor = this.resolveAdaptor(adaptor);
+        this.adaptor = Valory.resolveAdaptor(adaptor);
         this.afterAllMiddleware = afterAllMiddleware;
         this.beforeAllMiddleware = beforeAllMiddleware;
         this.logger = baseLogger || P();
 
-        Config.load(false);
-
-        if (!Config.CompileMode) this.logger.info("Starting Valory");
+        this.logger.info("Starting Valory");
 
         this.globalData = loadGlobalData();
         this.registerGeneratedRoutes(this.globalData.routes);
     }
 
-    private resolveAdaptor(provided: ApiAdaptor): ApiAdaptor {
-        const defaultAdaptorPath = Config.getDefaultAdaptorPath();
+    private static resolveAdaptor(provided: ApiAdaptor): ApiAdaptor {
+        const defaultAdaptorPath = process.env[VALORY_DEFAULT_ADAPTOR_VAR];
         if (defaultAdaptorPath == null) {return provided;}
         const defaultAdaptor = require(defaultAdaptorPath).DefaultAdaptor;
         return new defaultAdaptor();

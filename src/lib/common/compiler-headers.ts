@@ -136,4 +136,3 @@ export interface ValoryGlobalData {
     routes: RoutesModule;
 }
 
-export const GLOBAL_ENTRY_KEY = "VALORY_DATA";

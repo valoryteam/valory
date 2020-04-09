@@ -2,8 +2,8 @@ import {ProcessedCompiledSchemaOperation} from "./process-validator";
 import {randomBytes} from "crypto";
 import {Map, sha1String} from "../../lib/common/util";
 import {OpenAPIV3} from "openapi-types";
-import {COMPSWAG_VERSION} from "../../lib/config";
 import {ValueCache} from "./value-cache";
+import {COMPSWAG_VERSION} from "../../lib/common/headers";
 
 const VALIDATOR_MODULE_HEADER = `
 // @ts-nocheck
