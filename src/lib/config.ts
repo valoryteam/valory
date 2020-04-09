@@ -22,6 +22,12 @@ export interface ValoryConfig {
 }
 
 export const DefaultConfig: Partial<ValoryConfig> = {
+    compilerOptions: {
+        excludeResponses: false,
+        prepackErrors: true,
+        coerceTypes: false,
+        allErrors: false
+    },
     spec: {
         info: {
             title: "Default Title",
@@ -64,6 +70,7 @@ const ConfigSchema: JSONSchema7 = {
         },
         spec: {
             type: "object",
+            additionalItems: true
         }
     },
     required: ["entrypoint", "outputDirectory"]
@@ -92,7 +99,10 @@ export namespace Config {
 
     function loadValidatedConfig(configPath: string) {
         const data = merge(JSON.parse(readFileSync(configPath, {encoding: "utf8"})), DefaultConfig);
-        if (!ajv().validate(ConfigSchema, data)) {
+        if (!ajv({
+            useDefaults: "shared",
+            removeAdditional: "all"
+        }).validate(ConfigSchema, data)) {
             throw Error("Config is invalid");
         }
 

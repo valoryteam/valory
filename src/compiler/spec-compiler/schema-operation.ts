@@ -17,16 +17,15 @@ export interface SchemaInteraction {
 }
 
 export function generateSchemaOperation(input: Operation, excludeResponses: boolean): SchemaOperation {
-    const schemaInteractions = [generateSchemaRequest(input.operation)];
+    let schemaInteractions = [generateSchemaRequest(input.operation)];
     if (!excludeResponses) {
-        schemaInteractions.concat(generateSchemaResponse(input.operation));
+        schemaInteractions = schemaInteractions.concat(generateSchemaResponse(input.operation));
     }
-    const op = {
+    return {
         method: input.method,
         path: input.path,
         schemaInteractions
     };
-    return op;
 }
 
 function processParameter(input: OpenAPIV3.RequestBodyObject | OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject): JSONSchema4 {

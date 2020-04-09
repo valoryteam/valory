@@ -1,4 +1,3 @@
-
 ////////////////////////////////////////////////////////
 // ___   ___    _  _  ___ _____   ___ ___ ___ _____   //
 // |   \ / _ \  | \| |/ _ \_   _| | __|   \_ _|_   _| //
@@ -9,12 +8,158 @@
 // be directly edited.                                //
 ////////////////////////////////////////////////////////
 
+// @ts-nocheck
+/* tslint:disable */
+'use strict';
 
-    // @ts-nocheck
-    /* tslint:disable */
-    'use strict';function f(c,d){if(c===d)return!0;var b=Array.isArray(c),a=Array.isArray(d);if(b&&a){if(c.length!=d.length)return!1;for(a=0;a<c.length;a++)if(!f(c[a],d[a]))return!1;return!0}if(b!=a)return!1;if(c&&d&&"object"===typeof c&&"object"===typeof d){b=Object.keys(c);if(b.length!==Object.keys(d).length)return!1;a=c instanceof Date;var e=d instanceof Date;if(a&&e)return c.getTime()==d.getTime();if(a!=e)return!1;a=c instanceof RegExp;e=d instanceof RegExp;if(a&&e)return c.toString()==d.toString();
-if(a!=e)return!1;for(a=0;a<b.length;a++)if(!Object.prototype.hasOwnProperty.call(d,b[a]))return!1;for(a=0;a<b.length;a++)if(!f(c[b[a]],d[b[a]]))return!1;return!0}return!1}/** @noinline */ const h="ValidationError[required]: request";
-module.exports={validators:{"/":{POST:{"-1":function(){function c(b,a){if(b&&"object"===typeof b&&!Array.isArray(b)){b=b.headers;if(void 0===b)return c.errors=[`${h}${(a||"")+""} should have required property \'headers\'`],!1;if(b&&"object"===typeof b&&!Array.isArray(b)){var e=b["test-type"];if(void 0===e)return c.errors=[`${h}${(a||"")+".headers"} should have required property \'test-type\'`],!1;if("string"!==typeof e)return c.errors=[`${"ValidationError[type]: request"}${(a||"")+".headers['test-type']"} should be string`],
-!1;b=!1;for(var g=0;g<d.length;g++)if(f(e,d[g])){b=!0;break}if(!b)return c.errors=[`${"ValidationError[enum]: request"}${(a||"")+".headers['test-type']"} should be equal to one of the allowed values`],!1}}c.errors=null;return!0}var d=["asc","desc"];return c}()}}},compswagVersion:2,specHash:"2147823ca686f3d86075b7be7b0961341179349e"};
+function g(c, d) {
+    if (c === d) {
+        return !0;
+    }
+    var a = Array.isArray(c), b = Array.isArray(d);
+    if (a && b) {
+        if (c.length != d.length) {
+            return !1;
+        }
+        for (b = 0; b < c.length; b++) {
+            if (!g(c[b], d[b])) {
+                return !1;
+            }
+        }
+        return !0;
+    }
+    if (a != b) {
+        return !1;
+    }
+    if (c && d && "object" === typeof c && "object" === typeof d) {
+        a = Object.keys(c);
+        if (a.length !== Object.keys(d).length) {
+            return !1;
+        }
+        b = c instanceof Date;
+        var e = d instanceof Date;
+        if (b && e) {
+            return c.getTime() == d.getTime();
+        }
+        if (b != e) {
+            return !1;
+        }
+        b = c instanceof RegExp;
+        e = d instanceof RegExp;
+        if (b && e) {
+            return c.toString() == d.toString();
+        }
+        if (b != e) {
+            return !1;
+        }
+        for (b = 0; b < a.length; b++) {
+            if (!Object.prototype.hasOwnProperty.call(d, a[b])) {
+                return !1;
+            }
+        }
+        for (b = 0; b < a.length; b++) {
+            if (!g(c[a[b]], d[a[b]])) {
+                return !1;
+            }
+        }
+        return !0;
+    }
+    return !1;
+}
 
-    
+/** @noinline */ const h = "ValidationError[required]: request", k = "ValidationError[type]: request",
+    m = "ValidationError[enum]: request";
+module.exports = {
+    validators: {
+        "/": {
+            POST: {
+                202: function() {
+                    return !0;
+                }, 313: function() {
+                    function c(a, b) {
+                        if (a && "object" === typeof a && !Array.isArray(a)) {
+                            a = a.body;
+                            if (void 0 === a) {
+                                return c.errors = [`${h}${(b || "") + ""} should have required property \'body\'`], !1;
+                            }
+                            if (a && "object" === typeof a && !Array.isArray(a)) {
+                                for (var e in a) {
+                                    if ("type" != e && "number" != e) {
+                                        return c.errors = [`${"ValidationError[additionalProperties]: request"}${(b || "") + ".body"} should NOT have additional properties`], !1;
+                                    }
+                                }
+                                var f = a.type;
+                                if (void 0 === f) {
+                                    return c.errors =
+                                        [`${h}${(b || "") + ".body"} should have required property \'type\'`], !1;
+                                }
+                                if ("string" !== typeof f) {
+                                    return c.errors = [`${k}${(b || "") + ".body.type"} should be string`], !1;
+                                }
+                                e = !1;
+                                for (var l = 0; l < d.length; l++) {
+                                    if (g(f, d[l])) {
+                                        e = !0;
+                                        break;
+                                    }
+                                }
+                                if (!e) {
+                                    return c.errors = [`${m}${(b || "") + ".body.type"} should be equal to one of the allowed values`], !1;
+                                }
+                                if (void 0 === a.number) {
+                                    return c.errors = [`${h}${(b || "") + ".body"} should have required property \'number\'`], !1;
+                                }
+                                if ("string" !== typeof a.number) {
+                                    return c.errors = [`${k}${(b || "") + ".body.number"} should be string`],
+                                        !1;
+                                }
+                            } else {
+                                return c.errors = [`${k}${(b || "") + ".body"} should be object`], !1;
+                            }
+                        }
+                        c.errors = null;
+                        return !0;
+                    }
+
+                    var d = ["https://nrfcloud.github.io/docs/sms"];
+                    return c;
+                }(), "-1": function() {
+                    function c(a, b) {
+                        if (a && "object" === typeof a && !Array.isArray(a)) {
+                            a = a.headers;
+                            if (void 0 === a) {
+                                return c.errors = [`${h}${(b || "") + ""} should have required property \'headers\'`], !1;
+                            }
+                            if (a && "object" === typeof a && !Array.isArray(a)) {
+                                var e = a["test-type"];
+                                if (void 0 === e) {
+                                    return c.errors = [`${h}${(b || "") + ".headers"} should have required property \'test-type\'`],
+                                        !1;
+                                }
+                                if ("string" !== typeof e) {
+                                    return c.errors = [`${k}${(b || "") + ".headers['test-type']"} should be string`], !1;
+                                }
+                                a = !1;
+                                for (var f = 0; f < d.length; f++) {
+                                    if (g(e, d[f])) {
+                                        a = !0;
+                                        break
+                                    }
+                                }
+                                if (!a) {
+                                    return c.errors = [`${m}${(b || "") + ".headers['test-type']"} should be equal to one of the allowed values`], !1
+                                }
+                            }
+                        }
+                        c.errors = null;
+                        return !0
+                    }
+
+                    var d = ["asc", "desc"];
+                    return c
+                }()
+            }
+        }
+    }, compswagVersion: 2, specHash: "2147823ca686f3d86075b7be7b0961341179349e"
+};
+
