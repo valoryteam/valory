@@ -7,7 +7,6 @@ import {relative, join} from "path";
 import Method = Tsoa.Method;
 import {uppercaseHttpMethod} from "../../lib/common/headers";
 import Parameter = Tsoa.Parameter;
-import {compressObject} from "../../lib/common/util";
 
 const ROUTE_MODULE_HEADER = `
 // @ts-nocheck
@@ -41,7 +40,6 @@ export class RouteModule {
         
         module.exports = {
             routesVersion: ${ROUTES_VERSION},
-            components: \`${compressObject(this.spec.components)}\`,
             register(app) {
                 ${routes.join("\n")}
             }
@@ -92,7 +90,7 @@ export class RouteModule {
         const controllerName = this.getControllerName(controller.name);
         const qualifiedMethod = `${controllerName}.${method.name}`;
         return `
-        app.endpoint("${path}","${uppercaseHttpMethod(method.method)}",\`${compressObject(this.spec.paths[path][method.method])}\`)
+        app.endpoint("${path}","${uppercaseHttpMethod(method.method)}")
             .aML(${controllerName}.middleware)
             .aML(${qualifiedMethod}.middleware)
             .aM({

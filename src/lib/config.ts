@@ -20,7 +20,17 @@ export interface ValoryConfig {
     outputDirectory: string;
     specOutput?: string;
     compilerOptions: Partial<CompilerOptions>;
+    spec: Partial<OpenAPIV3.Document>;
 }
+
+export const DefaultConfig: Partial<ValoryConfig> = {
+    spec: {
+        info: {
+            title: "Default Title",
+            version: "1"
+        }
+    }
+};
 
 const ConfigSchema: JSONSchema7 = {
     type: "object",
@@ -50,6 +60,9 @@ const ConfigSchema: JSONSchema7 = {
                     type: "boolean"
                 }
             }
+        },
+        spec: {
+            type: "object",
         }
     },
     required: ["entrypoint", "outputDirectory"]
@@ -81,10 +94,12 @@ export namespace Config {
     }
 
     function loadValidatedConfig(configPath: string) {
-        const data = JSON.parse(readFileSync(configPath, {encoding: "utf8"}));
+        const lodash = "lodash";
+        const data = require(lodash).merge(JSON.parse(readFileSync(configPath, {encoding: "utf8"})), DefaultConfig);
         if (!ajv().validate(ConfigSchema, data)) {
             throw Error("Config is invalid");
         }
+
         return data;
     }
 

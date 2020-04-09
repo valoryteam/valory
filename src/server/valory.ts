@@ -8,17 +8,8 @@ import {RoutesModule, ValoryGlobalData} from "../lib/common/compiler-headers";
 import P = require("pino");
 import {loadGlobalData} from "../lib/global-data-load";
 import {ApiMiddleware} from "../main";
-import {decompressObject, decompressObjectIfNeeded} from "../lib/common/util";
 
 export interface ValoryArgs {
-    openapi: {
-        info: OpenAPIV3.InfoObject;
-        servers?: OpenAPIV3.ServerObject[];
-        components?: OpenAPIV3.ComponentsObject;
-        security?: OpenAPIV3.SecurityRequirementObject[];
-        tags?: OpenAPIV3.TagObject[];
-        externalDocs?: OpenAPIV3.ExternalDocumentationObject;
-    };
     beforeAllMiddleware?: ApiMiddleware[];
     afterAllMiddleware?: ApiMiddleware[];
     adaptor: ApiAdaptor;
@@ -29,7 +20,6 @@ export class Valory {
     private static instance: Valory;
     private static directInstantiation = true;
     public readonly adaptor: ApiAdaptor;
-    /** @internal */ public readonly apiDef: OpenAPIV3.Document;
     public readonly logger: Logger;
 
     /** @internal */ public readonly beforeAllMiddleware: ApiMiddleware[];
@@ -55,18 +45,12 @@ export class Valory {
         }
         Valory.instance = this;
 
-        const {adaptor, openapi, baseLogger, afterAllMiddleware, beforeAllMiddleware} = args;
+        const {adaptor, baseLogger, afterAllMiddleware, beforeAllMiddleware} = args;
 
         this.adaptor = this.resolveAdaptor(adaptor);
         this.afterAllMiddleware = afterAllMiddleware;
         this.beforeAllMiddleware = beforeAllMiddleware;
         this.logger = baseLogger || P();
-
-        this.apiDef = {
-            ...openapi,
-            paths: {},
-            openapi: "3.0.2",
-        };
 
         Config.load(false);
 
@@ -83,17 +67,13 @@ export class Valory {
         return new defaultAdaptor();
     }
 
-    private endpoint(path: string, method: HttpMethod, operation: OpenAPIV3.OperationObject | string) {
-        return new Endpoint(this, path, method, operation);
+    private endpoint(path: string, method: HttpMethod) {
+        return new Endpoint(this, path, method);
     }
 
     public start() {
-        if (Config.CompileMode) {
-            this.exportMetadata();
-        } else {
-            this.logger.info("Startup Complete");
-            return this.adaptor.start();
-        }
+        this.logger.info("Startup Complete");
+        return this.adaptor.start();
     }
 
     public shutdown() {
@@ -102,18 +82,5 @@ export class Valory {
 
     public registerGeneratedRoutes(routes: RoutesModule) {
         routes.register(this);
-        if (Config.CompileMode) {
-            this.apiDef.components = {
-                ...decompressObjectIfNeeded(routes.components),
-                ...this.apiDef.components
-            };
-        }
-    }
-
-    private exportMetadata() {
-        Config.setMetadata({
-            openapi: this.apiDef,
-            version: METADATA_VERSION
-        });
     }
 }

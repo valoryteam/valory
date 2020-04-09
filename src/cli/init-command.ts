@@ -47,6 +47,12 @@ async function promptForConfig(path: string): Promise<ValoryConfig> {
             allErrors: false,
             coerceTypes: false,
             prepackErrors: true
+        },
+        spec: {
+            info: {
+                version: "1",
+                title: "DefaultTitle"
+            }
         }
     };
 }

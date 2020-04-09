@@ -7,12 +7,6 @@ import {Body, Post, Route} from "../server/decorators";
 
 const app = Valory.createInstance({
    adaptor: new DefaultAdaptor(8080),
-   openapi: {
-       info: {
-           title: "Test Api",
-           version: "1"
-       }
-   }
 });
 
 // app.endpoint("/test", "GET", {

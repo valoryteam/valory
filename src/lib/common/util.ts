@@ -62,24 +62,3 @@ export function lowercaseKeys(obj: {[key: string]: unknown}) {
     }
     return obj;
 }
-
-export function decompressObject<T>(compressed: string): T {
-    const decompressed = brotliDecompressSync(Buffer.from(compressed, "base64")).toString();
-    return JSON.parse(decompressed);
-}
-
-export function decompressObjectIfNeeded<T>(compressed: string | T): T {
-    if (typeof compressed !== "string") return compressed;
-    else return decompressObject(compressed);
-}
-
-export function compressObject<T>(object: T): string {
-    const uncompressed = Buffer.from(JSON.stringify(object));
-    return brotliCompressSync(uncompressed, {
-        params: {
-            [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-            [zlib.constants.BROTLI_PARAM_QUALITY]: 10,
-            [zlib.constants.BROTLI_PARAM_SIZE_HINT]: uncompressed.byteLength
-        }
-    }).toString("base64");
-}

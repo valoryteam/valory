@@ -12,6 +12,7 @@ import {RouteCompiler} from "../compiler/route-compiler/route-compiler";
 import {HttpMethodLowercase, HttpMethodsLowercase, uppercaseHttpMethod} from "../lib/common/headers";
 import {GLOBAL_ENTRY_KEY} from "../lib/common/compiler-headers";
 import {writeFileSync} from "fs";
+import {merge} from "lodash";
 
 export interface CompileOptions {
     path: string;
@@ -76,18 +77,13 @@ async function compile(options: CompileOptions) {
     await checkRequirements();
     const routeCompiler = new RouteCompiler({entrypoint: Config.resolveEntryPoint(), outputDirectory: Config.resolveOutputDirectory()});
     const routes = await routeCompiler.compile();
-    await spinnerWrap(saveGlobalDataRoutesOnly(routes, Config.resolveOutputDirectory()), "Saving Routes");
-    console.log(chalk.bold("Appserver Warmup"));
-    const metadata = await spinnerWrap(() => {
-        require(Config.resolveEntryPoint());
-        return Config.getMetadata();
-    }, "Registering Routes");
-    const specCompiler = new SpecCompiler(metadata.openapi, Config.ConfigData.compilerOptions);
+    const spec = merge(routes.spec, Config.ConfigData.spec);
+    const specCompiler = new SpecCompiler(spec, Config.ConfigData.compilerOptions);
     const compiledSpec = await specCompiler.compile();
-    await spinnerWrap(saveGlobalData({validation: compiledSpec, routes}, Config.resolveOutputDirectory()), "Outputting Generated Files");
-    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(metadata.openapi));}
+    await spinnerWrap(saveGlobalData({validation: compiledSpec, routes: routes.routeModule}, Config.resolveOutputDirectory()), "Outputting Generated Files");
+    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(spec));}
     ThreadSpinner.shutdown();
-    printFooter(metadata.openapi);
+    printFooter(spec);
 }
 
 function printFooter(spec: OpenAPIV3.Document) {

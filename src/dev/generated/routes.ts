@@ -27,10 +27,9 @@ function isController(object) {
         
         module.exports = {
             routesVersion: 2,
-            components: `G6IAQAXCduTPAxom2gXdNggq2EXdbHZbwFh3QZJFgRY1fwB+t7HRMuicsHRG9bHKQX8J6rGeCQF2mnZ9BZwPE87RSA6M5DPO22hnpiF4pDGEZTeKJkuVQAZ/noxAFA==`,
             register(app) {
                 
-        app.endpoint("/","POST",`G5EBAIzTFfMjhHUPormlflsdr1tJdtuS4gsrE/wv8tg6LF19/+/mO8ANxmM2aA2QhVH0DzgOPAwodRNBEPTwsrUzue0D9e92gV3NiYAXQ1CXup2RHok3zc13xP+IK6UYHra1mZcwT99AFQeCb2l0FgCi9qypCJXZKVr1mPz4gmd0F85ALIvOLc9ZTd+XEd0OgK1k52BMwPSJaD7aXc1LgCQDw2BY3Fd+9QZJECvlRWPyfVU1niqqHQ==`)
+        app.endpoint("/","POST")
             .aML(TestControllerController.middleware)
             .aML(TestControllerController.test.middleware)
             .aM({
@@ -66,3 +65,4 @@ function isController(object) {
         
             }
         };
+        
