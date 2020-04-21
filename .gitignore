@@ -18,4 +18,4 @@ pkg
 runtime
 /compiler
 DEBUG
-**/generated
+*/**/generated

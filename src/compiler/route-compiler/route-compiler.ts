@@ -18,6 +18,7 @@ export class RouteCompiler {
         const metadata = await spinnerWrap(() => {
             const metadataGenerator = new MetadataGenerator(this.input.entrypoint, {
                 skipLibCheck: true,
+                noEmit: true,
             });
             return metadataGenerator.Generate();
         }, "Generating Metadata");
