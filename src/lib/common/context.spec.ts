@@ -11,7 +11,6 @@ describe("parsing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
 
@@ -26,7 +25,6 @@ describe("parsing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `cool=true&stuff=blue`
         });
 
@@ -43,7 +41,6 @@ describe("parsing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
 
@@ -61,7 +58,6 @@ describe("serializing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
         context.response.body = context.request.body;
@@ -77,7 +73,6 @@ describe("serializing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `cool=true&stuff=blue`
         });
         context.response.body = context.request.body;
@@ -95,7 +90,6 @@ describe("serializing tests", () => {
             method: "POST",
             path: "/test",
             pathParams: {},
-            queryParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
         context.response.body = context.request.body;
