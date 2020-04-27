@@ -60,7 +60,6 @@ export class TestController extends Controller {
     @Response(202)
     @SuccessResponse(313)
     @Post() public test(@Header("test-type") test: Direction): EndpointArgsSMS {
-        // this.setHeader("content-type", "text/plain");
         return {
             cool: true,
             yes: "blue"

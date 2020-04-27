@@ -69,13 +69,14 @@ export class ApiContext {
         }
     }
 
+    public prepareHeaders(): {[name: string]: string} {
+        const headers = this.response.headers;
+        headers["content-type"] = headers["content-type"] || ApiContext.defaultContentType;
+        return headers;
+    }
+
     public responseContentType() {
-        const type = this.response.headers["content-type"];
-        if (type == null) {
-            this.response.headers["content-type"] = ApiContext.defaultContentType;
-            return ApiContext.defaultContentType;
-        }
-        return type;
+        return this.response.headers["content-type"] || ApiContext.defaultContentType;
     }
 
     public serializeResponse() {
