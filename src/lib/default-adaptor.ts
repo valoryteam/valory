@@ -1,7 +1,6 @@
 import {ApiContext} from "./common/context";
 import {HttpMethod, ApiAdaptor} from "./common/headers";
 import {IncomingMessage, ServerResponse} from "http";
-import url = require("url");
 import P = require("pino");
 
 const polka = require("polka");
@@ -28,10 +27,8 @@ export class DefaultAdaptor implements ApiAdaptor {
             });
 
             req.on("end", async () => {
-                const parsedUrl = url.parse(req.url, true);
                 const ctx = new ApiContext({
                     headers: req.headers,
-                    queryParams: parsedUrl.query,
                     pathParams: (req as any).params,
                     path,
                     method,

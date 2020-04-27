@@ -37,7 +37,7 @@ export class ApiContext {
     public readonly requestId = uuid();
     public readonly request: ApiRequest;
 
-    constructor(request: Omit<ApiRequest, "body" | "formData">) {
+    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams">) {
         const headers = lowercaseKeys(request.headers);
         const contentType = request.headers["content-type"] || ApiContext.defaultContentType;
         const body = ApiContext.parse(contentType, request.rawBody);
@@ -49,7 +49,7 @@ export class ApiContext {
             method: request.method,
             rawBody: request.rawBody,
             pathParams: request.pathParams,
-            queryParams: request.queryParams
+            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.path)
         };
     }
 
