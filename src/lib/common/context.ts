@@ -70,7 +70,12 @@ export class ApiContext {
     }
 
     public responseContentType() {
-        return this.response.headers["content-type"] || ApiContext.defaultContentType;
+        const type = this.response.headers["content-type"];
+        if (type == null) {
+            this.response.headers["content-type"] = ApiContext.defaultContentType;
+            return ApiContext.defaultContentType;
+        }
+        return type;
     }
 
     public serializeResponse() {

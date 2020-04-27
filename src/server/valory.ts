@@ -59,7 +59,7 @@ export class Valory {
         const defaultAdaptorPath = process.env[VALORY_DEFAULT_ADAPTOR_VAR];
         if (defaultAdaptorPath == null) {return provided;}
         const defaultAdaptor = require(defaultAdaptorPath).DefaultAdaptor;
-        return new defaultAdaptor();
+        return new defaultAdaptor(8080);
     }
 
     private endpoint(path: string, method: HttpMethod) {

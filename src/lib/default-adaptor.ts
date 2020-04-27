@@ -2,6 +2,7 @@ import {ApiContext} from "./common/context";
 import {HttpMethod, ApiAdaptor} from "./common/headers";
 import {IncomingMessage, ServerResponse} from "http";
 import url = require("url");
+import P = require("pino");
 
 const polka = require("polka");
 const pathReplacer = /{([\S]*?)}/g;
@@ -10,6 +11,7 @@ export class DefaultAdaptor implements ApiAdaptor {
     private server = polka();
     private port = 8080;
     private host?: string;
+    private logger = P();
 
     constructor(port?: number, host?: string) {
         this.port = +process.env.PORT || port;
