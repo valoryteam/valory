@@ -55,9 +55,9 @@ const ConfigSchema: JSONSchema7 = {
                     type: "boolean"
                 },
                 coerceTypes: {
-                    oneOf: [
+                    anyOf: [
                         {type: "boolean"},
-                        {type: "string", const: "array"}
+                        {const: "array"}
                     ]
                 },
                 prepackErrors: {
@@ -98,7 +98,7 @@ export namespace Config {
     }
 
     function loadValidatedConfig(configPath: string) {
-        const data = merge(JSON.parse(readFileSync(configPath, {encoding: "utf8"})), DefaultConfig);
+        const data = merge(DefaultConfig, JSON.parse(readFileSync(configPath, {encoding: "utf8"})));
         if (!ajv({
             useDefaults: "shared",
             removeAdditional: "all"
