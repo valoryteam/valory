@@ -30,7 +30,7 @@ export class DefaultAdaptor implements ApiAdaptor {
                 const ctx = new ApiContext({
                     headers: req.headers,
                     pathParams: (req as any).params,
-                    path,
+                    url: req.url,
                     method,
                     rawBody,
                 });

@@ -3,6 +3,7 @@ import uuid = require("uuid-random");
 import {lowercaseKeys} from "./util";
 import qs = require("querystring");
 import {ApiRequest, ApiResponse} from "./headers";
+import url = require("url");
 
 export type ContentTypeParser = (input: string) => any;
 export type ContentTypeSerializer = (input: unknown) => string;
@@ -37,19 +38,20 @@ export class ApiContext {
     public readonly requestId = uuid();
     public readonly request: ApiRequest;
 
-    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams">) {
+    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {url: string}) {
         const headers = lowercaseKeys(request.headers);
         const contentType = request.headers["content-type"] || ApiContext.defaultContentType;
         const body = ApiContext.parse(contentType, request.rawBody);
+        const {query, path} = url.parse(request.url);
         this.request = {
             formData: body,
             body,
             headers,
-            path: request.path,
+            path,
             method: request.method,
             rawBody: request.rawBody,
             pathParams: request.pathParams,
-            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.path)
+            queryParams: ApiContext.parse("application/x-www-form-urlencoded", query)
         };
     }
 

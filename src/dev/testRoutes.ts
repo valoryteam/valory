@@ -59,7 +59,7 @@ export class TestController extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("test-type") test: Direction): EndpointArgsSMS {
+    @Post() public test(@Header("test-type") test: Direction, @Query() thing: string[]): EndpointArgsSMS {
         return {
             cool: true,
             yes: "blue"
