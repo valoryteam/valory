@@ -10,16 +10,22 @@ export type ContentTypeSerializer = (input: unknown) => string;
 
 const NOOP_STRING: ContentTypeSerializer = input => (input.toString());
 
-export class ApiContext {
-    public static defaultContentType = "application/json";
-    private static parserMap: {[type: string]: ContentTypeParser} = {
+// Storage on global is required so that content handler registration can work while using CLI
+(global as any).VALORY_CONTENT_HANDLER = {
+    parserMap: {
         "application/json": JSON.parse,
         "application/x-www-form-urlencoded": qs.parse
-    };
-    private static serializerMap: {[type: string]: ContentTypeSerializer} = {
+    },
+    serializerMap: {
         "application/json": JSON.stringify,
         "application/x-www-form-urlencoded": qs.stringify
-    };
+    }
+};
+
+export class ApiContext {
+    public static defaultContentType = "application/json";
+    private static parserMap: {[type: string]: ContentTypeParser} = (global as any).VALORY_CONTENT_HANDLER.parserMap;
+    private static serializerMap: {[type: string]: ContentTypeSerializer} = (global as any).VALORY_CONTENT_HANDLER.serializerMap;
 
     public static registerParser(type: string, parser: ContentTypeParser) {
         ApiContext.parserMap[type] = parser;
@@ -38,20 +44,19 @@ export class ApiContext {
     public readonly requestId = uuid();
     public readonly request: ApiRequest;
 
-    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {url: string}) {
+    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {path: string, query: string}) {
         const headers = lowercaseKeys(request.headers);
         const contentType = request.headers["content-type"] || ApiContext.defaultContentType;
         const body = ApiContext.parse(contentType, request.rawBody);
-        const {query, path} = url.parse(request.url);
         this.request = {
             formData: body,
             body,
             headers,
-            path,
+            path: request.path,
             method: request.method,
             rawBody: request.rawBody,
             pathParams: request.pathParams,
-            queryParams: ApiContext.parse("application/x-www-form-urlencoded", query)
+            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.query)
         };
     }
 

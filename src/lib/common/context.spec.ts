@@ -9,7 +9,8 @@ describe("parsing tests", () => {
                 "Content-Type": "application/json"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
@@ -23,7 +24,8 @@ describe("parsing tests", () => {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `cool=true&stuff=blue`
         });
@@ -39,7 +41,8 @@ describe("parsing tests", () => {
                 "Content-Type": "application/blah"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
@@ -56,7 +59,8 @@ describe("serializing tests", () => {
                 "Content-Type": "application/json"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
@@ -71,7 +75,8 @@ describe("serializing tests", () => {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `cool=true&stuff=blue`
         });
@@ -88,7 +93,8 @@ describe("serializing tests", () => {
                 "Content-Type": "application/json"
             },
             method: "POST",
-            url: "/test",
+            path: "/test",
+            query: "",
             pathParams: {},
             rawBody: `{"cool": true, "stuff": "blue"}`
         });
