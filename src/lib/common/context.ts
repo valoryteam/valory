@@ -11,16 +11,18 @@ export type ContentTypeSerializer = (input: unknown) => string;
 const NOOP_STRING: ContentTypeSerializer = input => (input.toString());
 
 // Storage on global is required so that content handler registration can work while using CLI
-(global as any).VALORY_CONTENT_HANDLER = {
-    parserMap: {
-        "application/json": JSON.parse,
-        "application/x-www-form-urlencoded": qs.parse
-    },
-    serializerMap: {
-        "application/json": JSON.stringify,
-        "application/x-www-form-urlencoded": qs.stringify
-    }
-};
+if ((global as any).VALORY_CONTENT_HANDLER == null) {
+    (global as any).VALORY_CONTENT_HANDLER = {
+        parserMap: {
+            "application/json": JSON.parse,
+            "application/x-www-form-urlencoded": qs.parse
+        },
+        serializerMap: {
+            "application/json": JSON.stringify,
+            "application/x-www-form-urlencoded": qs.stringify
+        }
+    };
+}
 
 export class ApiContext {
     public static defaultContentType = "application/json";
