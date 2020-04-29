@@ -1,6 +1,7 @@
 import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query} from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
+import {Get} from "tsoa";
 
 export interface TestInput {
     /**
@@ -38,7 +39,7 @@ export const literalMiddleware: ApiMiddleware = {
 export type OmitTestInput = Omit<TestInput, "string">;
 
 /**
- * @format email
+ * @pattern ^[^\/\s_]{1,128}$|^[0-a-z9:_-]{1,128}$
  */
 export type StringAlias = string;
 
@@ -48,6 +49,10 @@ export type StringAlias = string;
 export type NumberAlias = number;
 
 export type Complex = Omit<TestInput & {[key: string]: any}, "string">;
+
+export interface Cool<T> {
+    thing: T;
+}
 
 export enum Direction {
     ASC = "asc",
@@ -59,7 +64,7 @@ export class TestController extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("test-type") test: Direction, @Query() thing: string[]): EndpointArgsSMS {
+    @Post() public test(@Header("test-type") test: StringAlias): Cool<TestInput> {
         return {
             cool: true,
             yes: "blue"

@@ -124,7 +124,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, cach
         function() {
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
-        return `const pattern${id} = ${cache.add(`new RegExp(\`${pattern}\`)`)};`;
+        return `const pattern${id} = ${cache.add(String.raw`/${pattern}/`)};`;
     }).join("\n")}
             const validate = ${functionHeader} {
                 ${functionBody}
