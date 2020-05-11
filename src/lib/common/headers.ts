@@ -5,7 +5,7 @@ import {ApiContext} from "./context";
 export type HttpMethod = typeof HttpMethods[number];
 
 export type HttpMethodLowercase = typeof HttpMethodsLowercase[number];
-    
+
 export const HttpMethodsLowercase = [
     "post",
     "put",
@@ -71,6 +71,7 @@ export interface ApiExchange {
 
 export const VALORY_METADATA_VAR = "VALORY_METADATA";
 export const VALORY_DEFAULT_ADAPTOR_VAR = "VALORY_DEFAULT_ADAPTOR";
+export const LOGGER_VAR = "LOGLEVEL";
 export const METADATA_VERSION = 2;
 export const COMPSWAG_VERSION = 2;
 export const ROUTES_VERSION = 2;

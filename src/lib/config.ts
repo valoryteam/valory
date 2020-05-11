@@ -4,9 +4,10 @@ import * as path from "path";
 import {JSONSchema7} from "json-schema";
 import {IPackageJSON} from "package-json";
 import {CompilerOptions} from "../compiler/spec-compiler/spec-compiler";
-import {METADATA_VERSION, VALORY_DEFAULT_ADAPTOR_VAR, VALORY_METADATA_VAR} from "./common/headers";
+import {LOGGER_VAR, METADATA_VERSION, VALORY_DEFAULT_ADAPTOR_VAR, VALORY_METADATA_VAR} from "./common/headers";
 import ajv = require("ajv");
 import {merge} from "lodash";
+import * as Pino from "pino";
 
 export interface ValoryMetadata {
     openapi: OpenAPIV3.Document;
@@ -85,6 +86,7 @@ export namespace Config {
     export let ConfigPath = "";
     export let ConfigData: ValoryConfig;
     export let CLIMode = false;
+    export let Logger = Pino({level: process.env[LOGGER_VAR] || "info"});
 
     export function load(cliMode: boolean, rootPath?: string, loadConfig: boolean = false) {
         CLIMode = cliMode;

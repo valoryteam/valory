@@ -3,10 +3,11 @@ import Metadata = Tsoa.Metadata;
 import {OpenAPIV3} from "openapi-types";
 import Controller = Tsoa.Controller;
 import {Config} from "../../lib/config";
-import {relative, join} from "path";
+import {relative, join, parse} from "path";
 import Method = Tsoa.Method;
 import {ROUTES_VERSION, uppercaseHttpMethod} from "../../lib/common/headers";
 import Parameter = Tsoa.Parameter;
+import {Logger} from "pino";
 
 const ROUTE_MODULE_HEADER = `
 // @ts-nocheck
@@ -20,11 +21,15 @@ const name = "PrimaryHandler";
 `;
 
 export class RouteModule {
+    private logger: Logger;
+
     constructor(
         private readonly metadata: Metadata,
         private readonly spec: OpenAPIV3.Document,
         private readonly outputDirectory: string
-    ) {}
+    ) {
+        this.logger = Config.Logger.child({class: RouteModule.name, outputDirectory: this.outputDirectory});
+    }
 
     public generate() {
         const imports = this.metadata.controllers.map(this.generateControllerImport.bind(this));
@@ -54,7 +59,10 @@ export class RouteModule {
     }
 
     private generateControllerImport(controller: Controller) {
-        return `import {${controller.name}} from "./${relative(this.outputDirectory, controller.location.split(".")[0])}";`;
+        const {dir, name} = parse(controller.location);
+        const controllerLocation = join(dir, name);
+        this.logger.debug({controllerLocation}, "Resolving controller path");
+        return `import {${controller.name}} from "./${relative(this.outputDirectory, controllerLocation)}";`;
     }
 
     private generateControllerInstantiators(controller: Controller) {
