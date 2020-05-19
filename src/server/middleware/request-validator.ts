@@ -4,8 +4,7 @@ import {ApiContext} from "../../lib/common/context";
 import {AttachmentRegistry} from "../../lib/common/attachment-registry";
 import {AJVTypes} from "../../lib/common/compiler-headers";
 
-// tslint:disable-next-line:no-empty
-const NOOP = () => {};
+const NOOP = () => true;
 
 export class RequestValidator implements ApiMiddleware {
     public static ValidationErrorsKey = AttachmentRegistry.createKey<string[]>();
