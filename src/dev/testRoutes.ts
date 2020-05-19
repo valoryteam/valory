@@ -1,4 +1,4 @@
-import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query} from "../server/decorators";
+import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query, Options} from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
 import {Get} from "tsoa";
@@ -61,6 +61,23 @@ export enum Direction {
 
 @Route()
 export class TestController extends Controller {
+    @PrependMiddleware(literalMiddleware)
+    @Response(202)
+    @SuccessResponse(313)
+    @Post() public test(@Header("test-type") test: StringAlias): Cool<TestInput> {
+        return {
+            cool: true,
+            yes: "blue"
+        } as any;
+    }
+
+    @Get() public yay() {
+        return "yay";
+    }
+}
+
+@Route("test")
+export class Test2Controller extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)

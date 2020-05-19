@@ -10,7 +10,8 @@ import {OpenAPIV3} from "openapi-types";
 
 export class RouteCompiler {
     constructor(
-       private input: {entrypoint: string, outputDirectory: string}
+       private input: {entrypoint: string, outputDirectory: string},
+       private options: {allowedHeaders: string[]},
     ) {}
 
     public async compile(): Promise<{ routeModule: string, spec: OpenAPIV3.Document }> {
@@ -28,7 +29,7 @@ export class RouteCompiler {
             noImplicitAdditionalProperties: "silently-remove-extras",
         });
         const spec = await spinnerWrap(oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec())), "Generating Spec");
-        const routeModule = new RouteModule(metadata, spec as any, this.input.outputDirectory);
+        const routeModule = new RouteModule(metadata, spec as any, this.input.outputDirectory, this.options.allowedHeaders);
         const routes = await spinnerWrap(routeModule.generate(), "Generating Routes");
         return {routeModule: routes, spec: JSON.parse(JSON.stringify(spec))};
     }

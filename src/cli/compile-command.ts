@@ -85,7 +85,7 @@ async function compile(options: CompileOptions) {
     }, "Loading Environment");
     printHeader();
     await checkRequirements();
-    const routeCompiler = new RouteCompiler({entrypoint: Config.resolveEntryPoint(), outputDirectory: Config.resolveOutputDirectory()});
+    const routeCompiler = new RouteCompiler({entrypoint: Config.resolveEntryPoint(), outputDirectory: Config.resolveOutputDirectory()}, {allowedHeaders: Config.ConfigData.cors.allowedHeaders});
     const routes = await routeCompiler.compile();
     const spec = merge(routes.spec, Config.ConfigData.spec);
     const specCompiler = new SpecCompiler(spec, Config.ConfigData.compilerOptions);

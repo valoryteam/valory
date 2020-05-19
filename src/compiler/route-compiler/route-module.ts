@@ -8,16 +8,56 @@ import Method = Tsoa.Method;
 import {ROUTES_VERSION, uppercaseHttpMethod} from "../../lib/common/headers";
 import Parameter = Tsoa.Parameter;
 import {Logger} from "pino";
+import {CORSData, generateCORSData} from "./cors-data-generator";
 
 const ROUTE_MODULE_HEADER = `
 // @ts-nocheck
 /* tslint:disable */
 
-function isController(object) {
-    return 'getHeaders' in object && 'getStatus' in object && 'setStatus' in object
+function generateCORSResponse(allowedHeaders, allowedMethods) {
+    return {
+        headers: {
+            "Content-Type": "text/plain",
+            "Access-Control-Allow-Headers": allowedHeaders,
+            "Access-Control-Allow-Methods": allowedMethods,
+        },
+        statusCode: 200
+    }
 }
 
 const name = "PrimaryHandler";
+`;
+
+const REGISTER_ENDPOINT = `
+function registerEndpoint(app, path, method, controller, qualifiedMethod, boundHandler) {
+    app.endpoint(path, method)
+        .aML(controller.middleware)
+        .aML(qualifiedMethod.middleware)
+        .aM({
+            name,
+            async handler(ctx) {
+                if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
+                    return;
+                }
+                controller.ctx = ctx;
+                controller.logger = ctx.attachments.getAttachment(Endpoint.HandlerLoggerKey);
+                controller.headers = ctx.response.headers || {};
+                
+                const response = await boundHandler(ctx);
+                ctx.response.body = response;
+                ctx.response.statusCode = qualifiedMethod.statusCode || 200;
+                if (controller.statusSet) {
+                    ctx.response.statusCode = controller.getStatus();                        
+                }
+                ctx.response.headers = controller.getHeaders();
+                controller.clearStatus();
+                controller.clearHeaders();
+            }
+        })
+        .aML(qualifiedMethod.postMiddleware)
+        .aML(controller.postMiddleware)
+        .done();
+}
 `;
 
 export class RouteModule {
@@ -26,7 +66,8 @@ export class RouteModule {
     constructor(
         private readonly metadata: Metadata,
         private readonly spec: OpenAPIV3.Document,
-        private readonly outputDirectory: string
+        private readonly outputDirectory: string,
+        private readonly allowedHeaders: string[],
     ) {
         this.logger = Config.Logger.child({class: RouteModule.name, outputDirectory: this.outputDirectory});
     }
@@ -35,21 +76,35 @@ export class RouteModule {
         const imports = this.metadata.controllers.map(this.generateControllerImport.bind(this));
         const instantiators = this.metadata.controllers.map(this.generateControllerInstantiators.bind(this));
         const routes = this.metadata.controllers.flatMap(this.generateController.bind(this));
-        const extensionChecks = this.metadata.controllers.flatMap(this.generateExtensionCheck.bind(this));
+        const cors = generateCORSData(this.spec, this.allowedHeaders).map(this.generateCORSHandler.bind(this));
+        // const extensionChecks = this.metadata.controllers.flatMap(this.generateExtensionCheck.bind(this));
 
         return `
         ${ROUTE_MODULE_HEADER}
         ${this.generateValoryRuntimeImport()}
         ${imports.join("\n")}
         ${instantiators.join("\n")}
-        ${extensionChecks.join("\n")}
+        ${REGISTER_ENDPOINT}
         
         module.exports = {
             routesVersion: ${ROUTES_VERSION},
             register(app) {
                 ${routes.join("\n")}
+                ${cors.join("\n")}
             }
         };
+        `;
+    }
+
+    private generateCORSHandler(corsData: CORSData) {
+        return `
+        app.endpoint("${corsData.path}", "OPTIONS")
+            .aM({
+                name: "CORSHandler",
+                handler(ctx) {
+                    ctx.response = generateCORSResponse("${corsData.allowedHeaders.join(",")}","${corsData.allowedMethods.join(",")}");
+                }
+            }).done();
         `;
     }
 
@@ -69,16 +124,8 @@ export class RouteModule {
         return `const ${this.getControllerName(controller.name)} = new ${controller.name}();`;
     }
 
-    private generateExtensionCheck(controller: Controller) {
-        return `const ${this.getControllerExtensionCheckName(controller.name)} = isController(${this.getControllerName(controller.name)});`;
-    }
-
     private getControllerName(name: string) {
         return `${name}Controller`;
-    }
-
-    private getControllerExtensionCheckName(name: string) {
-        return `${this.getControllerName(name)}ExtendsController`;
     }
 
     private generateController(controller: Controller) {
@@ -99,39 +146,10 @@ export class RouteModule {
         const controllerName = this.getControllerName(controller.name);
         const qualifiedMethod = `${controllerName}.${method.name}`;
         return `
-        app.endpoint("${path}","${uppercaseHttpMethod(method.method)}")
-            .aML(${controllerName}.middleware)
-            .aML(${qualifiedMethod}.middleware)
-            .aM({
-                name,
-                async handler(ctx) {
-                    if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
-                        return;
-                    }
-                    if (${this.getControllerExtensionCheckName(controller.name)}) {
-                        ${controllerName}.ctx = ctx;
-                        ${controllerName}.logger = ctx.attachments.getAttachment(Endpoint.HandlerLoggerKey);
-                        ${controllerName}.headers = ctx.response.headers || {};
-                    }
-                    
-                    const response = await ${controllerName}.${method.name}(
-                        ${method.parameters.map(this.generateParameter).join(",")}
-                    );
-                    ctx.response.body = response;
-                    ctx.response.statusCode = ${qualifiedMethod}.statusCode || 200;
-                    if (${this.getControllerExtensionCheckName(controller.name)}) {
-                        if (${controllerName}.statusSet) {
-                            ctx.response.statusCode = ${controllerName}.getStatus();                        
-                        }
-                        ctx.response.headers = ${controllerName}.getHeaders();
-                        ${controllerName}.clearStatus();
-                        ${controllerName}.clearHeaders();
-                    }
-                }
-            })
-            .aML(${controllerName}.${method.name}.postMiddleware)
-            .aML(${controllerName}.postMiddleware)
-            .done();
+        registerEndpoint(app, "${path}", "${uppercaseHttpMethod(method.method)}", ${controllerName}, ${qualifiedMethod},
+            (ctx) => ${qualifiedMethod}(
+                ${method.parameters.map(this.generateParameter).join(",")}
+            ));
         `;
     }
 

@@ -20,6 +20,9 @@ export interface ValoryConfig {
     specOutput?: string;
     compilerOptions: Partial<CompilerOptions>;
     spec: Partial<OpenAPIV3.Document>;
+    cors: {
+        allowedHeaders: string[];
+    };
 }
 
 export const DefaultConfig: Partial<ValoryConfig> = {
@@ -34,6 +37,9 @@ export const DefaultConfig: Partial<ValoryConfig> = {
             title: "Default Title",
             version: "1"
         }
+    },
+    cors: {
+        allowedHeaders: ["Content-Type"]
     }
 };
 
@@ -72,6 +78,17 @@ const ConfigSchema: JSONSchema7 = {
         spec: {
             type: "object",
             additionalItems: true
+        },
+        cors: {
+            type: "object",
+            properties: {
+                allowedHeaders: {
+                    type: "array",
+                    items: {
+                        type: "string"
+                    }
+                }
+            }
         }
     },
     required: ["entrypoint", "outputDirectory"]

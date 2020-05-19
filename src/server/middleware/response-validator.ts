@@ -15,7 +15,7 @@ export class ResponseValidator implements ApiMiddleware {
     }
 
     public handler(ctx: ApiContext) {
-        const validator = this.validatorMap[ctx.request.path][ctx.request.method][ctx.response.statusCode || 200];
+        const validator = this.validatorMap[ctx.request.path]?.[ctx.request.method]?.[ctx.response.statusCode || 200];
         const result = validator?.(ctx.response);
 
         if (validator && result !== true) {

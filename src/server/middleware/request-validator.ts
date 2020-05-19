@@ -4,6 +4,9 @@ import {ApiContext} from "../../lib/common/context";
 import {AttachmentRegistry} from "../../lib/common/attachment-registry";
 import {AJVTypes} from "../../lib/common/compiler-headers";
 
+// tslint:disable-next-line:no-empty
+const NOOP = () => {};
+
 export class RequestValidator implements ApiMiddleware {
     public static ValidationErrorsKey = AttachmentRegistry.createKey<string[]>();
 
@@ -11,7 +14,7 @@ export class RequestValidator implements ApiMiddleware {
     private readonly validator: AJVTypes.ValidateFunction;
 
     constructor(valory: Valory, path: string, method: HttpMethod) {
-        this.validator = valory.globalData.validation.validators[path][method]["-1"];
+        this.validator = (method !== "OPTIONS") ? valory.globalData.validation.validators[path][method]["-1"] : NOOP as any;
     }
 
     public handler(ctx: ApiContext) {
