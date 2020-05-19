@@ -54,6 +54,9 @@ async function promptForConfig(path: string): Promise<ValoryConfig> {
                 version: "1",
                 title: "DefaultTitle"
             }
+        },
+        cors: {
+            allowedHeaders: ["Content-Type"]
         }
     };
 }
