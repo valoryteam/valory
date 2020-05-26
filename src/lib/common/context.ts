@@ -26,6 +26,7 @@ if ((global as any).VALORY_CONTENT_HANDLER == null) {
 
 export class ApiContext {
     public static defaultContentType = "application/json";
+    public static requestIdGenerator: () => string = uuid;
     private static parserMap: {[type: string]: ContentTypeParser} = (global as any).VALORY_CONTENT_HANDLER.parserMap;
     private static serializerMap: {[type: string]: ContentTypeSerializer} = (global as any).VALORY_CONTENT_HANDLER.serializerMap;
 
@@ -43,13 +44,14 @@ export class ApiContext {
         statusCode: 200
     };
     public readonly attachments = new AttachmentRegistry();
-    public readonly requestId = uuid();
+    public readonly requestId: string;
     public readonly request: ApiRequest;
 
-    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {path: string, query: string}) {
+    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {path: string, query: string, requestId?: string}) {
         const headers = lowercaseKeys(request.headers);
         const contentType = request.headers["content-type"] || ApiContext.defaultContentType;
         const body = ApiContext.parse(contentType, request.rawBody);
+        this.requestId = request.requestId || ApiContext.requestIdGenerator();
         this.request = {
             formData: body,
             body,
