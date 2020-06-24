@@ -8,10 +8,15 @@ import {AttachmentRegistry} from "../lib/common/attachment-registry";
 import {RequestValidator} from "./middleware/request-validator";
 import {arrayPush} from "../lib/common/util";
 
+const NOOP_HOOK: RequestExecutorNamespaceHook = (ctx, executor) => executor.execute(ctx);
+
+export type RequestExecutorNamespaceHook = (ctx: ApiContext, executor: AsyncSeries<ApiContext, any>) => Promise<void>;
+
 export class Endpoint {
     public static readonly ExceptionKey = AttachmentRegistry.createKey<Error>();
     public static readonly RequestLoggerKey = AttachmentRegistry.createKey<Logger>();
     public static readonly HandlerLoggerKey = AttachmentRegistry.createKey<Logger>();
+    public static requestExecutorNamespaceHook: RequestExecutorNamespaceHook = NOOP_HOOK;
 
     private executor: AsyncSeries<ApiContext, ApiMiddleware>;
     private middleware: ApiMiddleware[] = [];
@@ -45,7 +50,7 @@ export class Endpoint {
     public async handleRequest(ctx: ApiContext): Promise<ApiContext> {
         const requestLogger = this.logger.child({requestId: ctx.requestId});
         ctx.attachments.putAttachment(Endpoint.RequestLoggerKey, requestLogger);
-        await this.executor.execute(ctx);
+        await Endpoint.requestExecutorNamespaceHook(ctx, this.executor);
         return ctx;
     }
 

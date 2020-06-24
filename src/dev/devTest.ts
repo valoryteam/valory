@@ -4,12 +4,17 @@ import {DefaultAdaptor} from "../lib/default-adaptor";
 import "./testRoutes";
 import "./generated";
 import {Body, Post, Route} from "../server/decorators";
-import {ResponseValidator} from "../main";
+import {Endpoint, ResponseValidator} from "../main";
 
 const app = Valory.createInstance({
    adaptor: new DefaultAdaptor(8080),
    afterAllMiddleware: [new ResponseValidator()]
 });
+
+Endpoint.requestExecutorNamespaceHook = (ctx, executor) => {
+   console.log('hooked');
+   return executor.execute(ctx);
+};
 
 // app.endpoint("/test", "GET", {
 //     requestBody: {
