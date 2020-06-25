@@ -78,9 +78,11 @@ export class TestController extends Controller {
 
 @Route("test")
 export class Test2Controller extends Controller {
-    @PrependMiddleware(literalMiddleware)
-    @Response(202)
-    @SuccessResponse(313)
+    /**
+     * A really cool endpoint that does a thing
+     * @summary Test Thing
+     * @param test
+     */
     @Post() public test(@Header("test-type") test: StringAlias): Cool<TestInput> {
         return {
             cool: true,

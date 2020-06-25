@@ -6,7 +6,7 @@ import {ApiRequest, ApiResponse} from "./headers";
 import url = require("url");
 
 export type ContentTypeParser = (input: string) => any;
-export type ContentTypeSerializer = (input: unknown) => string;
+export type ContentTypeSerializer = (input: unknown) => string | Buffer;
 
 const NOOP_STRING: ContentTypeSerializer = input => (input.toString());
 
@@ -15,11 +15,12 @@ if ((global as any).VALORY_CONTENT_HANDLER == null) {
     (global as any).VALORY_CONTENT_HANDLER = {
         parserMap: {
             "application/json": JSON.parse,
-            "application/x-www-form-urlencoded": qs.parse
+            "application/x-www-form-urlencoded": qs.parse,
         },
         serializerMap: {
             "application/json": JSON.stringify,
-            "application/x-www-form-urlencoded": qs.stringify
+            "application/x-www-form-urlencoded": qs.stringify,
+            "application/octet-stream": (x: Buffer) => x
         }
     };
 }

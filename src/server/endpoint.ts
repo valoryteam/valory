@@ -16,7 +16,7 @@ export class Endpoint {
     public static readonly ExceptionKey = AttachmentRegistry.createKey<Error>();
     public static readonly RequestLoggerKey = AttachmentRegistry.createKey<Logger>();
     public static readonly HandlerLoggerKey = AttachmentRegistry.createKey<Logger>();
-    public static requestExecutorNamespaceHook: RequestExecutorNamespaceHook = NOOP_HOOK;
+    // public static requestExecutorNamespaceHook: RequestExecutorNamespaceHook = NOOP_HOOK;
 
     private executor: AsyncSeries<ApiContext, ApiMiddleware>;
     private middleware: ApiMiddleware[] = [];
@@ -50,7 +50,7 @@ export class Endpoint {
     public async handleRequest(ctx: ApiContext): Promise<ApiContext> {
         const requestLogger = this.logger.child({requestId: ctx.requestId});
         ctx.attachments.putAttachment(Endpoint.RequestLoggerKey, requestLogger);
-        await Endpoint.requestExecutorNamespaceHook(ctx, this.executor);
+        await this.executor.execute(ctx);
         return ctx;
     }
 
