@@ -7,6 +7,7 @@ import {RouteModule} from "./route-module";
 import {unencodePropNames} from "./unencode-prop-names";
 import {oneOfToAnyOf} from "./oneOf-to-anyOf";
 import {OpenAPIV3} from "openapi-types";
+import {routeCollisionCheck} from "./route-collision-check";
 
 export class RouteCompiler {
     constructor(
@@ -28,7 +29,11 @@ export class RouteCompiler {
             outputDirectory: tmpdir(),
             noImplicitAdditionalProperties: "silently-remove-extras",
         });
-        const spec = await spinnerWrap(oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec())), "Generating Spec");
+        const spec = await spinnerWrap(() => {
+            const unverifiedSpec  = oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec()));
+            routeCollisionCheck(unverifiedSpec as any);
+            return unverifiedSpec;
+        }, "Generating Spec");
         const routeModule = new RouteModule(metadata, spec as any, this.input.outputDirectory, this.options.allowedHeaders);
         const routes = await spinnerWrap(routeModule.generate(), "Generating Routes");
         return {routeModule: routes, spec: JSON.parse(JSON.stringify(spec))};

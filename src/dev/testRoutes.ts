@@ -1,7 +1,19 @@
-import {AppendMiddleware, Body, Header, Post, PrependMiddleware, Route, SuccessResponse, Response, Query, Options} from "../server/decorators";
+import {
+    AppendMiddleware,
+    Body,
+    Header,
+    Post,
+    PrependMiddleware,
+    Route,
+    SuccessResponse,
+    Response,
+    Query,
+    Options,
+    Path, Delete
+} from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
-import {Get} from "tsoa";
+import {Get, Hidden} from "tsoa";
 
 export interface TestInput {
     /**
@@ -10,7 +22,39 @@ export interface TestInput {
      * @isInt
      */
     number: number;
-    string: EndpointArgs[];
+}
+
+/**
+ * @tsoaModel
+ */
+export interface PaginatedResult<A> {
+    items: A[];
+    /**
+     * Reflects the total results, not just the total returned by a singular page of results.
+     * @example 1
+     */
+    total: number;
+    /**
+     * Token used to retrieve the next page of items in the list. Present in a response only if the total available results exceeds the specified limit per page. This token does not change between requests.
+     * @example "4bb1f9ab35bd"
+     */
+    pageNextToken?: string;
+}
+
+/**
+ * @tsoaModel
+ */
+export interface Expression {
+    /**
+     * The syntax identifier for the expression engine.
+     * @example "https://nrfcloud.github.io/docs/jsonata"
+     */
+    syntax: string;
+    /**
+     * A [JSONata expression](http://try.jsonata.org/B1lwqEd-Q) that specifies how the payload of a message that triggers an alert state is transformed for use in an alert notification.
+     * @example {"text": "Temperature is now \" & payload.message.message.event.characteristic.parsedValues[0].value & \"°C\""}
+     */
+    expression: string;
 }
 
 export interface EndpointArgsURL {
@@ -64,7 +108,7 @@ export class TestController extends Controller {
     @PrependMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("test-type") test: StringAlias): Cool<TestInput> {
+    @Post() public test(@Header("test-type") test: StringAlias): PaginatedResult<TestInput> {
         return {
             cool: true,
             yes: "blue"
@@ -78,15 +122,12 @@ export class TestController extends Controller {
 
 @Route("test")
 export class Test2Controller extends Controller {
-    /**
-     * A really cool endpoint that does a thing
-     * @summary Test Thing
-     * @param test
-     */
-    @Post() public test(@Header("test-type") test: StringAlias): Cool<TestInput> {
-        return {
-            cool: true,
-            yes: "blue"
-        } as any;
+
+    @Get("{id}") public pathParamTest(@Path() id: string) {
+        return id;
+    }
+
+    @Delete("{identifier}") public pathParamTest2(@Path() identifier: string) {
+        return identifier;
     }
 }

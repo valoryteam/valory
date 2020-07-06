@@ -19,6 +19,13 @@ export function OperationId(value: string): any {
     };
 }
 
+export function Hidden(value: string): any {
+    return () => {
+        return;
+    };
+}
+
+
 /**
  * @param {name} security name from securityDefinitions
  */
