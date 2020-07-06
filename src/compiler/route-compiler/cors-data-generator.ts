@@ -1,7 +1,7 @@
 import {OpenAPIV2, OpenAPIV3} from "openapi-types";
 import {HttpMethodsLowercase, uppercaseHttpMethod} from "../../lib/common/headers";
 import {normalizePath} from "./route-collision-check";
-import {merge} from "lodash";
+import {merge, cloneDeep} from "lodash";
 
 export interface CORSData {
     path: string;
@@ -10,7 +10,7 @@ export interface CORSData {
 }
 
 export function generateCORSData(spec: OpenAPIV3.Document, allowedHeaders: string[]): CORSData[] {
-    const dedupedPaths = Object.entries(spec.paths)
+    const dedupedPaths = Object.entries(cloneDeep(spec.paths))
         .reduce((col, [path, op]) => {
             const norm = normalizePath(path);
             col[norm] = [...(col[norm] ?? []), op];
