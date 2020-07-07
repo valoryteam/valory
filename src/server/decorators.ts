@@ -19,13 +19,6 @@ export function OperationId(value: string): any {
     };
 }
 
-export function Hidden(value: string): any {
-    return () => {
-        return;
-    };
-}
-
-
 /**
  * @param {name} security name from securityDefinitions
  */
@@ -231,15 +224,15 @@ export function Route(name?: string): any {
     };
 }
 
-// /**
-//  * Can be used to entirely hide an method from documentation.
-//  * @Decorator
-//  */
-// export function Hidden(): any {
-//     return () => {
-//         return;
-//     };
-// }
+/**
+ * Can be used to entirely hide an method from documentation.
+ * @Decorator
+ */
+export function Hidden(): any {
+    return () => {
+        return;
+    };
+}
 
 /**
  * Adds a given set of tags to either an endpoint or controller
