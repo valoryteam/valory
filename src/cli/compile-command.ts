@@ -18,6 +18,7 @@ import {
 } from "../lib/common/headers";
 import {writeFileSync} from "fs";
 import {merge} from "lodash";
+import {filterSpec} from "../compiler/route-compiler/unmark-hidden";
 
 export interface CompileOptions {
     path: string;
@@ -85,26 +86,36 @@ async function compile(options: CompileOptions) {
     }, "Loading Environment");
     printHeader();
     await checkRequirements();
-    const routeCompiler = new RouteCompiler({entrypoint: Config.resolveEntryPoint(), outputDirectory: Config.resolveOutputDirectory()}, {allowedHeaders: Config.ConfigData.cors.allowedHeaders});
+    const routeCompiler = new RouteCompiler({
+        entrypoint: Config.resolveEntryPoint(),
+        outputDirectory: Config.resolveOutputDirectory()
+    }, {allowedHeaders: Config.ConfigData.cors.allowedHeaders});
     const routes = await routeCompiler.compile();
     const spec = merge(routes.spec, Config.ConfigData.spec);
     const specCompiler = new SpecCompiler(spec, Config.ConfigData.compilerOptions);
     const compiledSpec = await specCompiler.compile();
-    await spinnerWrap(saveGlobalData({validation: compiledSpec, routes: routes.routeModule}, Config.resolveOutputDirectory()), "Outputting Generated Files");
-    if (Config.ConfigData.specOutput != null) {writeFileSync(Config.resolveSpecOutput(), JSON.stringify(spec));}
+    await spinnerWrap(saveGlobalData({
+        validation: compiledSpec,
+        routes: routes.routeModule
+    }, Config.resolveOutputDirectory()), "Outputting Generated Files");
+    if (Config.ConfigData.specOutput != null) {
+        writeFileSync(Config.resolveSpecOutput(), JSON.stringify(filterSpec(spec, routes.hiddenPaths)));
+    }
     ThreadSpinner.shutdown();
-    printFooter(spec);
+    printFooter(spec, routes.hiddenPaths);
 }
 
-function printFooter(spec: OpenAPIV3.Document) {
+function printFooter(spec: OpenAPIV3.Document, hiddenPaths: string[]) {
     console.log("");
     console.log(chalk.bold("Routes"));
-    console.log(getRouteList(spec));
+    console.log(getRouteList(spec, hiddenPaths));
 }
 
-function getRouteList(spec: OpenAPIV3.Document) {
-    return Object.entries(spec.paths).flatMap(([path, item]) =>{
-        return Object.keys(item).filter(key => HttpMethodsLowercase.includes(key as any)).map((method: HttpMethodLowercase) => `${path}:${uppercaseHttpMethod(method)}`);
+function getRouteList(spec: OpenAPIV3.Document, hiddenPaths: string[]) {
+    return Object.entries(spec.paths).flatMap(([path, item]) => {
+        return Object.keys(item)
+            .filter(key => HttpMethodsLowercase.includes(key as any))
+            .map((method: HttpMethodLowercase) => `${path}:${uppercaseHttpMethod(method)} ${(hiddenPaths.includes(`${path}.${method}`)) ? "(HIDDEN)" : ""}`);
     }).join("\n");
 }
 

@@ -21,7 +21,8 @@ export {
     AppendMiddleware,
     PrependMiddleware,
     Options,
-    Security
+    Security,
+    Hidden
 } from "./server/decorators";
 export {Endpoint} from "./server/endpoint";
 export {RequestValidator} from "./server/middleware/request-validator";

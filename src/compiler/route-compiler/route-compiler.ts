@@ -8,6 +8,7 @@ import {unencodePropNames} from "./unencode-prop-names";
 import {oneOfToAnyOf} from "./oneOf-to-anyOf";
 import {OpenAPIV3} from "openapi-types";
 import {routeCollisionCheck} from "./route-collision-check";
+import {unmarkHidden} from "./unmark-hidden";
 
 export class RouteCompiler {
     constructor(
@@ -15,7 +16,7 @@ export class RouteCompiler {
        private options: {allowedHeaders: string[]},
     ) {}
 
-    public async compile(): Promise<{ routeModule: string, spec: OpenAPIV3.Document }> {
+    public async compile(): Promise<{ routeModule: string, spec: OpenAPIV3.Document, hiddenPaths: string[] }> {
         console.log(chalk.bold("Controller Generation"));
         const metadata = await spinnerWrap(() => {
             const metadataGenerator = new MetadataGenerator(this.input.entrypoint, {
@@ -24,6 +25,7 @@ export class RouteCompiler {
             });
             return metadataGenerator.Generate();
         }, "Generating Metadata");
+        const hiddenPaths = unmarkHidden(metadata);
         const specGenerator = new SpecGenerator3(metadata, {
             entryFile: this.input.entrypoint,
             outputDirectory: tmpdir(),
@@ -36,6 +38,6 @@ export class RouteCompiler {
         }, "Generating Spec");
         const routeModule = new RouteModule(metadata, spec as any, this.input.outputDirectory, this.options.allowedHeaders);
         const routes = await spinnerWrap(routeModule.generate(), "Generating Routes");
-        return {routeModule: routes, spec: JSON.parse(JSON.stringify(spec))};
+        return {hiddenPaths, routeModule: routes, spec: JSON.parse(JSON.stringify(spec))};
     }
 }

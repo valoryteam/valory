@@ -120,6 +120,7 @@ export class TestController extends Controller {
     }
 }
 
+@Hidden()
 @Route("test")
 export class Test2Controller extends Controller {
 
