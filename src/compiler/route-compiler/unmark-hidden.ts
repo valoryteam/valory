@@ -1,7 +1,7 @@
 import { Tsoa } from 'tsoa/dist/metadataGeneration/tsoa';
 import { normalisePath } from 'tsoa/dist/utils/pathUtils';
 import {OpenAPIV3} from "openapi-types";
-import {unset, cloneDeep} from 'lodash';
+import {unset, cloneDeep, omitBy, isEmpty} from 'lodash';
 
 export function unmarkHidden(metadata: Tsoa.Metadata): string[] {
     const hiddenPaths: string[] = [];
@@ -20,6 +20,7 @@ export function unmarkHidden(metadata: Tsoa.Metadata): string[] {
 
 export function filterSpec(spec: OpenAPIV3.Document, hiddenPaths: string[]) {
     const filteredSpec = cloneDeep(spec);
-    hiddenPaths.forEach(path => unset(filteredSpec,path));
+    hiddenPaths.forEach(path => unset(filteredSpec.paths,path));
+    filteredSpec.paths = omitBy(filteredSpec.paths, isEmpty);
     return filteredSpec;
 }
