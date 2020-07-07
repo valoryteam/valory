@@ -33,6 +33,7 @@ export class RouteCompiler {
         });
         const spec = await spinnerWrap(() => {
             const unverifiedSpec  = oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec()));
+            delete unverifiedSpec?.servers;
             routeCollisionCheck(unverifiedSpec as any);
             return unverifiedSpec;
         }, "Generating Spec");
