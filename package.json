@@ -17,7 +17,7 @@
 		"node": ">=12"
 	},
 	"author": "John Conley",
-	"license": "ISC",
+	"license": "MIT",
 	"files": [
 		"package.json",
 		"README.md",
