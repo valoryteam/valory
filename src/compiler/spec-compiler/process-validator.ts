@@ -11,6 +11,7 @@ const ERROR_VAR = "validationErrors";
 const SCHEMA_VAR = "schema";
 const ErrorObjReg = /{[ ]*?keyword:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?dataPath:[ ]*?([\s\S]*?),[ ]*?schemaPath:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?params:[ ]*?([\s\S]*?),[ ]*?message:[ ]*?'([\s\S]*?)'[ ]*?}/g;
 const ValidIdentifierReg = /^(?:[A-Za-z_])(?:[0-9a-zA-Z_]*)$/;
+const LiteralRegexReg = /^\/([^\n]*?[^\\])\/([igmsuy]*?)$/;
 
 const NoopSchemas = [
     {},
@@ -124,7 +125,11 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, cach
         function() {
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
-        return `const pattern${id} = ${cache.add(`new RegExp(\`${JSON.stringify(pattern).replace(/"/g, "")}\`)`)};`;
+                const preparedPattern = (LiteralRegexReg.test(pattern)) ?
+                    pattern :
+                    `new RegExp(\`${JSON.stringify(pattern).replace(/"/g, "")}\`)`;
+                
+                return `const pattern${id} = ${cache.add(preparedPattern)};`;
     }).join("\n")}
             const validate = ${functionHeader} {
                 ${functionBody}

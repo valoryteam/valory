@@ -22,6 +22,10 @@ export interface TestInput {
      * @isInt
      */
     number: number;
+    /**
+     * @format date-time
+     */
+    date: string;
 }
 
 /**
@@ -83,7 +87,7 @@ export const literalMiddleware: ApiMiddleware = {
 export type OmitTestInput = Omit<TestInput, "string">;
 
 /**
- * @pattern ^[^\/\s_]{1,128}$|^[0-a-z9:_-]{1,128}$
+ * @pattern /^[^\/\s_]{1,128}$|^[0-a-z9:_-]{1,128}$/i
  */
 export type StringAlias = string;
 
@@ -120,10 +124,13 @@ export class TestController extends Controller {
     }
 }
 
-@Hidden()
 @Route("test")
 export class Test2Controller extends Controller {
 
+    /**
+     *
+     * @format id date-time
+     */
     @Get("{id}") public pathParamTest(@Path() id: string) {
         return id;
     }

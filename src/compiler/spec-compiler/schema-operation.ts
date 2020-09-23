@@ -51,7 +51,7 @@ function resolveParameterOASchema(input: OpenAPIV3.RequestBodyObject | OpenAPIV3
     if (contentEntries.length > 1) { throw Error("Only a single content type is supported");}
     const schema = (input as OpenAPIV3.ParameterObject).schema ?
         (input as OpenAPIV3.ParameterObject).schema :
-        contentEntries[0]?.schema || {type: "null"};
+        contentEntries[0]?.schema || {type: "null" as any};
 
     if (isReferenceObject(schema)) {throw Error("Unresolved $ref. How did this happen?");}
     return schema;
