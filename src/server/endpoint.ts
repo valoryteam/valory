@@ -38,9 +38,20 @@ export class Endpoint {
     private buildExecutor() {
         this.executor = new AsyncSeries(
             this.middleware,
-            (arg: ApiContext, i: number) => {
+            (arg: ApiContext, exec, i: number) => {
+                if (exec.filter) {
+                    if (exec.filter.mustExclude) {
+                        if (arg.attachments.hasAnyAttachments(exec.filter.mustExclude))
+                            return false;
+                    }
+                    if (exec.filter.mustInclude) {
+                        if (!arg.attachments.hasAllAttachments(exec.filter.mustInclude))
+                            return false;
+                    }
+                }
                 const handlerLogger = arg.attachments.getAttachment(Endpoint.RequestLoggerKey).child({middleware: this.middleware[i].name});
                 arg.attachments.putAttachment(Endpoint.HandlerLoggerKey, handlerLogger);
+                return true;
             },
             (arg, err, i) => {
                 arg.attachments.putAttachment(Endpoint.ExceptionKey, err);

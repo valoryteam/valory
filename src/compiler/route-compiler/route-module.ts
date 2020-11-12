@@ -35,10 +35,8 @@ function registerEndpoint(app, path, method, controller, qualifiedMethod, boundH
         .aML(qualifiedMethod.middleware)
         .aM({
             name,
+            filter: {mustExclude: handlerEscapeKeys},
             async handler(ctx) {
-                if (ctx.attachments.hasAnyAttachments(handlerEscapeKeys)) {
-                    return;
-                }
                 controller.ctx = ctx;
                 controller.logger = ctx.attachments.getAttachment(Endpoint.HandlerLoggerKey);
                 controller.headers = ctx.response.headers || {};

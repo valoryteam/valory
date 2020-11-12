@@ -14,6 +14,7 @@ import {
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
 import {Get, Hidden} from "tsoa";
+import {Endpoint, RequestValidator} from "../main";
 
 export interface TestInput {
     /**
@@ -74,8 +75,12 @@ export interface EndpointArgsSMS {
 export type EndpointArgs = EndpointArgsSMS | EndpointArgsURL;
 
 export const literalMiddleware: ApiMiddleware = {
+    filter: {
+        mustInclude: [RequestValidator.ValidationErrorsKey]
+    },
     name: "LiteralMiddleware",
     handler(ctx) {
+        ctx.attachments.getAttachment(Endpoint.RequestLoggerKey).info("Validation occurred");
         ctx.response.headers["request-id"] = ctx.requestId;
     }
 };
@@ -109,7 +114,7 @@ export enum Direction {
 
 @Route()
 export class TestController extends Controller {
-    @PrependMiddleware(literalMiddleware)
+    @AppendMiddleware(literalMiddleware)
     @Response(202)
     @SuccessResponse(313)
     @Post() public test(@Header("test-type") test: StringAlias): PaginatedResult<TestInput> {
@@ -131,7 +136,8 @@ export class Test2Controller extends Controller {
      *
      * @format id date-time
      */
-    @Get("{id}") public pathParamTest(@Path() id: string) {
+    @PrependMiddleware(literalMiddleware)
+    @Get("{id}") public pathParamTest(@Path() id: number) {
         return id;
     }
 

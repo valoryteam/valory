@@ -1,6 +1,7 @@
 import {Map} from "./util";
 import {OpenAPIV3} from "openapi-types";
 import {ApiContext} from "./context";
+import {AttachmentKey} from "./attachment-registry";
 
 export type HttpMethod = typeof HttpMethods[number];
 
@@ -93,7 +94,11 @@ export interface ApiRequest extends ApiExchange {
 export type ApiMiddlewareExecutor = (ctx: ApiContext) => Promise<void> | void;
 
 export interface ApiMiddleware {
-    handler: ApiMiddlewareExecutor;
+    readonly handler: ApiMiddlewareExecutor;
+    readonly filter?: {
+        readonly mustInclude?: AttachmentKey<any>[],
+        readonly mustExclude?: AttachmentKey<any>[]
+    };
     readonly name: string;
     readonly tags?: OpenAPIV3.TagObject[];
 }
