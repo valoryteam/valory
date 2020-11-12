@@ -21,8 +21,7 @@ const funcError = jest.fn((ctx: TestContext) => {
     throw "a nasty exception";
 });
 // tslint:disable-next-line:no-empty
-const iterator = jest.fn((ctx: TestContext) => {
-});
+const iterator = jest.fn((ctx: TestContext) => true);
 // tslint:disable-next-line:no-empty
 const errorCallback = jest.fn(ctx => {
 });

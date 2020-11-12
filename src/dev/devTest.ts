@@ -11,10 +11,10 @@ const app = Valory.createInstance({
    afterAllMiddleware: [new ResponseValidator()]
 });
 
-Endpoint.requestExecutorNamespaceHook = (ctx, executor) => {
-   console.log('hooked');
-   return executor.execute(ctx);
-};
+/**
+ * @tsoaModel
+ */
+export type Nominal<Type> = Type;
 
 // app.endpoint("/test", "GET", {
 //     requestBody: {

@@ -94,7 +94,7 @@ export type OmitTestInput = Omit<TestInput, "string">;
 /**
  * @pattern /^[^\/\s_]{1,128}$|^[0-a-z9:_-]{1,128}$/i
  */
-export type StringAlias = string;
+export type StringAlias = Nominal<string>;
 
 /**
  * @isInt test
@@ -111,6 +111,10 @@ export enum Direction {
     ASC = "asc",
     DESC = "desc"
 }
+
+export type Nominal<Type> = Type & {
+    readonly symbol: symbol;
+};
 
 @Route()
 export class TestController extends Controller {
