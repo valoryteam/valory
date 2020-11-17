@@ -1,5 +1,5 @@
-import { Tsoa } from 'tsoa/dist/metadataGeneration/tsoa';
-import { normalisePath } from 'tsoa/dist/utils/pathUtils';
+import { Tsoa } from '@tsoa/runtime';
+import { normalisePath } from '@tsoa/cli/dist/utils/pathUtils';
 import {OpenAPIV3} from "openapi-types";
 import {unset, cloneDeep, omitBy, isEmpty} from 'lodash';
 

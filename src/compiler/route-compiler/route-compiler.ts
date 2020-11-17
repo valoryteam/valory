@@ -1,6 +1,6 @@
 import * as chalk from "chalk";
-import {MetadataGenerator} from "tsoa/dist/metadataGeneration/metadataGenerator";
-import {SpecGenerator3} from "tsoa/dist/swagger/specGenerator3";
+import {MetadataGenerator} from "@tsoa/cli/dist/metadataGeneration/metadataGenerator";
+import {SpecGenerator3} from "@tsoa/cli/dist/swagger/specGenerator3";
 import {spinnerWrap} from "../../lib/spinner";
 import {tmpdir} from "os";
 import {RouteModule} from "./route-module";
