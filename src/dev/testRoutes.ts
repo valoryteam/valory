@@ -74,14 +74,17 @@ export interface EndpointArgsSMS {
 
 export type EndpointArgs = EndpointArgsSMS | EndpointArgsURL;
 
-export const literalMiddleware: ApiMiddleware = {
-    filter: {
-        mustInclude: [RequestValidator.ValidationErrorsKey]
-    },
+export const literalMiddleware1: ApiMiddleware = {
     name: "LiteralMiddleware",
     handler(ctx) {
-        ctx.attachments.getAttachment(Endpoint.RequestLoggerKey).info("Validation occurred");
-        ctx.response.headers["request-id"] = ctx.requestId;
+        ctx.attachments.getAttachment(Endpoint.RequestLoggerKey).info("Middleware 1");
+    }
+};
+
+export const literalMiddleware2: ApiMiddleware = {
+    name: "LiteralMiddleware",
+    handler(ctx) {
+        ctx.attachments.getAttachment(Endpoint.RequestLoggerKey).info("Middleware 2");
     }
 };
 
@@ -118,7 +121,7 @@ export type Nominal<Type> = Type & {
 
 @Route()
 export class TestController extends Controller {
-    @AppendMiddleware(literalMiddleware)
+    @AppendMiddleware(literalMiddleware1)
     @Response(202)
     @SuccessResponse(313)
     @Post() public test(@Header("test-type") test: StringAlias): PaginatedResult<TestInput> {
@@ -140,7 +143,7 @@ export class Test2Controller extends Controller {
      *
      * @format id date-time
      */
-    @PrependMiddleware(literalMiddleware)
+    @PrependMiddleware(literalMiddleware1, literalMiddleware2)
     @Get("{id}") public pathParamTest(@Path() id: number) {
         return id;
     }

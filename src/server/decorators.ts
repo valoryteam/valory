@@ -34,7 +34,7 @@ export function Security(name: string | { [name: string]: string[] }, scopes?: s
  * @Decorator
  * @param {ApiMiddleware} middleware
  */
-export function PrependMiddleware(middleware: ApiMiddleware): any {
+export function PrependMiddleware(...middleware: ApiMiddleware[]): any {
     return (target: any, propertyKey?: string) => {
         if (propertyKey != null) {
             target = target[propertyKey];
@@ -44,7 +44,7 @@ export function PrependMiddleware(middleware: ApiMiddleware): any {
         if (target.middleware == null) {
             target.middleware = [];
         }
-        target.middleware.push(middleware);
+        target.middleware = [...middleware, ...target.middleware];
     };
 }
 
@@ -53,7 +53,7 @@ export function PrependMiddleware(middleware: ApiMiddleware): any {
  * @Decorator
  * @param {ApiMiddleware} middleware
  */
-export function AppendMiddleware(middleware: ApiMiddleware): any {
+export function AppendMiddleware(...middleware: ApiMiddleware[]): any {
     return (target: any, propertyKey?: string) => {
         if (propertyKey != null) {
             target = target[propertyKey];
@@ -63,7 +63,7 @@ export function AppendMiddleware(middleware: ApiMiddleware): any {
         if (target.postMiddleware == null) {
             target.postMiddleware = [];
         }
-        target.postMiddleware.push(middleware);
+        target.postMiddleware = [...target.postMiddleware, ...middleware];
     };
 }
 
