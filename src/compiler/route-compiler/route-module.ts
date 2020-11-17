@@ -1,4 +1,4 @@
-import {Tsoa} from "tsoa/dist/metadataGeneration/tsoa";
+import {Tsoa} from "@tsoa/runtime";
 import Metadata = Tsoa.Metadata;
 import {OpenAPIV3} from "openapi-types";
 import Controller = Tsoa.Controller;
