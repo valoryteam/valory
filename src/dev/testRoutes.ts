@@ -94,7 +94,7 @@ export const literalMiddleware2: ApiMiddleware = {
 export type OmitTestInput = Omit<TestInput, "string">;
 
 /**
- * @pattern /^[^\/\s_]{1,128}$|^[0-a-z9:_-]{1,128}$/i
+ * @pattern ^[a-zA-Z0-9-:]{4,}$
  */
 export type StringAlias = Nominal<string>;
 

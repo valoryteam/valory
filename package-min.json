@@ -4,7 +4,7 @@
 	"version": "3.4.3",
 	"description": "Minimal runtime-only valory build",
 	"files": [
-		"dist",
+		"dist/**/*.{js,d.ts}",
 		"package.json"
 	],
 	"main": "dist/main.js",

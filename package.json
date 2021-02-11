@@ -1,6 +1,6 @@
 {
 	"name": "valory",
-	"version": "4.0.0-v4.38",
+	"version": "4.0.0-v4.40",
 	"description": "A server agnostic web framework for creating bulletproof apis",
 	"scripts": {
 		"test": "jest",
@@ -21,7 +21,7 @@
 	"files": [
 		"package.json",
 		"README.md",
-		"compiler",
+		"compiler/**/*.{js,d.ts}",
 		"templates",
 		"tsconfig.json",
 		"tslint.json",
