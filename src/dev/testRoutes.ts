@@ -9,11 +9,10 @@ import {
     Response,
     Query,
     Options,
-    Path, Delete
+    Path, Delete, Get
 } from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
-import {Get, Hidden} from "tsoa";
 import {Endpoint, RequestValidator} from "../main";
 
 export interface TestInput {
@@ -104,7 +103,7 @@ export type StringAlias = Nominal<string>;
  */
 export type NumberAlias = number;
 
-export type Complex = Omit<TestInput & {[key: string]: any}, "string">;
+export type Complex = Omit<TestInput & { [key: string]: any }, "string">;
 
 export interface Cool<T> {
     thing: T;
@@ -124,14 +123,16 @@ export class TestController extends Controller {
     @AppendMiddleware(literalMiddleware1)
     @Response(202)
     @SuccessResponse(313)
-    @Post() public test(@Header("test-type") test: StringAlias): PaginatedResult<TestInput> {
+    @Post()
+    public test(@Header("test-type") test?: StringAlias, @Body() body?: StringAlias): PaginatedResult<TestInput> {
         return {
             cool: true,
             yes: "blue"
         } as any;
     }
 
-    @Get() public yay() {
+    @Get()
+    public yay() {
         return "yay";
     }
 }
@@ -144,11 +145,13 @@ export class Test2Controller extends Controller {
      * @format id date-time
      */
     @PrependMiddleware(literalMiddleware1, literalMiddleware2)
-    @Get("{id}") public pathParamTest(@Path() id: number) {
+    @Get("{id}")
+    public pathParamTest(@Path() id: number) {
         return id;
     }
 
-    @Delete("{identifier}") public pathParamTest2(@Path() identifier: string) {
+    @Delete("{identifier}")
+    public pathParamTest2(@Path() identifier: string) {
         return identifier;
     }
 }

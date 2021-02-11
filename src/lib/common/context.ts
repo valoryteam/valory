@@ -66,6 +66,10 @@ export class ApiContext {
     }
 
     private static parse(contentType: string = ApiContext.defaultContentType, input: string) {
+        if (input === "" || input == null) {
+            return undefined;
+        }
+
         try {
             return (ApiContext.parserMap[contentType] || NOOP_STRING)(input);
         } catch (e) {

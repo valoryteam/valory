@@ -887,28 +887,28 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@tsoa/cli@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.4.0.tgz#4534eb097455a5e70c3cc793e444326b6ecd862e"
-  integrity sha512-GQ2Ik8JMjaE35ppyUjQUfkYtFliFQnhqibW4qe4Ub/upF+U85ElYGiwIXHS5DMkFocf457sEJ7bth9rXVZga1w==
+"@tsoa/cli@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.5.1.tgz#31641dacf0ab9597092973df9204946f40ff5871"
+  integrity sha512-jIVcrBj9BorhKA09M2q5L24aq+nj0CW4oQ4Ga4amkIWs1TZ3vUDiPEg3JiY+U8XRTgcY4DP1EcGQ4b2jMlLxAQ==
   dependencies:
-    "@tsoa/runtime" "^3.4.0"
+    "@tsoa/runtime" "^3.5.0"
     deepmerge "^4.2.2"
     fs-extra "^8.1.0"
     glob "^7.1.6"
     handlebars "^4.7.6"
-    merge "^1.2.1"
+    merge "^2.1.0"
     minimatch "^3.0.4"
     moment "^2.24.0"
-    typescript "^3.9.2"
+    typescript "^4.1.2"
     validator "^12.2.0"
     yamljs "^0.3.0"
     yargs "^14.0.0"
 
-"@tsoa/runtime@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.4.0.tgz#71e2d143904bb5a14dd51d574c1e321096e915af"
-  integrity sha512-MupTlxiDgvj8qyukYdzD2xNEUL4rgZTwYWkySEDxVJ/9rgLAiu27chY9ceEkFqpQp0z51a/Ts/Y3a+WpwtiCMw==
+"@tsoa/runtime@^3.5.0":
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.5.0.tgz#b8ac309a43959138d97792053d834ac7d6d64732"
+  integrity sha512-8IEQyfLU2EcfScssD1ynCbiVHsgI7aasKCcnoE6D/B0tWfTr48JfsXN/Pf+n/VNdbq4Qm96aNyxi37TcKnLktA==
   dependencies:
     moment "^2.24.0"
     validator "^12.2.0"
@@ -3311,40 +3311,40 @@ globby@^11.0.0:
     merge2 "^1.3.0"
     slash "^3.0.0"
 
-google-closure-compiler-java@^20200920.0.0:
-  version "20200920.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20200920.0.0.tgz#23519b14e004f2a9eda4f5b887842ae46ad7022e"
-  integrity sha512-q8m/+QLBWrzjg5VZ2b4B628zDvbi0Gyenj9bvZQlPY7mqj68HXhe5aOfKzZO7vXgHDXMvsvI3v/1g5mPAku/5w==
+google-closure-compiler-java@^20210106.0.0:
+  version "20210106.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-java/-/google-closure-compiler-java-20210106.0.0.tgz#37dfa976d0c3b32d9d5ba2b5ae05050ec926e5a3"
+  integrity sha512-RtuvBPpzBMTAizTYoLDXv3hVURi7NVXHa/bn/bf25pryrKOYUNjCCOhPRK8CP9koh/k25pSB/lyAXikFmSq+vg==
 
-google-closure-compiler-linux@^20200920.0.0:
-  version "20200920.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20200920.0.0.tgz#622c28a784e8a93f9cc5e7cd7b675d2ed0e11d0b"
-  integrity sha512-F5HcTbeklcaxdWzlZu5b1ZKzCt1kSBUWsBfvlrDCFkA2pdBxIIC2VPokGAUZCqlfno2J2gYARz8FNCrx0tCx5g==
+google-closure-compiler-linux@^20210106.0.0:
+  version "20210106.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-linux/-/google-closure-compiler-linux-20210106.0.0.tgz#63e92546bd7e5a7bbad1f5fc64cf98de44f343ce"
+  integrity sha512-Ae2j6Ob1YDadFCiaZWg7zB2WI/wyOLH/ntEQy/OzljZPvepmO3/WNNYAH9SulCdS/T018/vz+C8nR657fRUlnQ==
 
-google-closure-compiler-osx@^20200920.0.0:
-  version "20200920.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20200920.0.0.tgz#6157a06e7d851d25d60de95c4bcd464d768278b1"
-  integrity sha512-2WY+HaUWVQNg9WZs9d4Op3zvS6yIVN2AIouU4grwYWXfFk+CMXZou0ASlsOURaYc2WZ22LW/G1w3vINDoCkSww==
+google-closure-compiler-osx@^20210106.0.0:
+  version "20210106.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-osx/-/google-closure-compiler-osx-20210106.0.0.tgz#b27858226479e1d61adc9bd65d59eaf1ba51858c"
+  integrity sha512-e58BcBbCzhpBFJ4f1a9TYPshkTq4cLVeZndRn+o42eLsLp1e2HoqJYudBHrGj6bBLbYwHfQA3hicdC8Nd8cv7w==
 
-google-closure-compiler-windows@^20200920.0.0:
-  version "20200920.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20200920.0.0.tgz#755ddeb8032530c6ed13962e328d9af3269d0748"
-  integrity sha512-0c4Dem3em3ASNpcR/2USx1Kvb+I7L2MvsV1IZ5Pu98jTuhnkmlccQqPzk2rZR6lllVbVFXTb6tju0JxZ7Zoxjg==
+google-closure-compiler-windows@^20210106.0.0:
+  version "20210106.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler-windows/-/google-closure-compiler-windows-20210106.0.0.tgz#e2626f51c60339a5f8fea3a3c230556ddf0bc302"
+  integrity sha512-FPgsZR/h4Bg2rQuXF/jGJu2FF0hXWYXGEYk2L2NlC2D1kl+MErrVsXPMJUVnwxpPjenfhahLle1ZMHvNTPDtsQ==
 
-google-closure-compiler@^20200920.0.0:
-  version "20200920.0.0"
-  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20200920.0.0.tgz#e1c54b7f1be8cbb33649d8d05e761bbf11e4eaa3"
-  integrity sha512-IOC77xL3+pYcAM+OVfcILKdrZNEy767JmpdVs2sq3I9+4JoHeKaJrmQXgbcXN2reUmzBw5b5m9Kd036Cr8ouBA==
+google-closure-compiler@^20210106.0.0:
+  version "20210106.0.0"
+  resolved "https://registry.yarnpkg.com/google-closure-compiler/-/google-closure-compiler-20210106.0.0.tgz#3bb92a7b25618de20e397b01ea482deea69c85bc"
+  integrity sha512-65HuRilVBBe726iinP9FJ7zLdDdLajDBfW63JD+oohIF+lRv9P/qyqTvQQV9cTFUbUJi8ar4nwe537NIMJkBjA==
   dependencies:
     chalk "2.x"
-    google-closure-compiler-java "^20200920.0.0"
+    google-closure-compiler-java "^20210106.0.0"
     minimist "1.x"
     vinyl "2.x"
     vinyl-sourcemaps-apply "^0.2.0"
   optionalDependencies:
-    google-closure-compiler-linux "^20200920.0.0"
-    google-closure-compiler-osx "^20200920.0.0"
-    google-closure-compiler-windows "^20200920.0.0"
+    google-closure-compiler-linux "^20210106.0.0"
+    google-closure-compiler-osx "^20210106.0.0"
+    google-closure-compiler-windows "^20210106.0.0"
 
 got@^6.7.1:
   version "6.7.1"
@@ -5262,10 +5262,10 @@ merge2@^1.3.0:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.3.0.tgz#5b366ee83b2f1582c48f87e47cf1a9352103ca81"
   integrity sha512-2j4DAdlBOkiSZIsaXk4mTE3sRS02yBHAtfy127xRV3bQUFqXkjHCHLW6Scv7DwNRbIWNHH8zpnz9zMaKXIdvYw==
 
-merge@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/merge/-/merge-1.2.1.tgz#38bebf80c3220a8a487b6fcfb3941bb11720c145"
-  integrity sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==
+merge@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/merge/-/merge-2.1.0.tgz#91fff62458ba2eca378dd395fa85f1690bf87f60"
+  integrity sha512-TcuhVDV+e6X457MQAm7xIb19rWhZuEDEho7RrwxMpQ/3GhD5sDlnP188gjQQuweXHy9igdke5oUtVOXX1X8Sxg==
 
 micromatch@^3.1.4:
   version "3.1.10"
@@ -7928,15 +7928,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.9.2:
-  version "3.9.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.3.tgz#d3ac8883a97c26139e42df5e93eeece33d610b8a"
-  integrity sha512-D/wqnB2xzNFIcoBG9FG8cXRDjiqSTbG2wd8DMZeQyJlP1vfTkIxH4GKveWaEBYySKIg+USu+E+EDIR47SqnaMQ==
-
 typescript@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.0.3.tgz#153bbd468ef07725c1df9c77e8b453f8d36abba5"
   integrity sha512-tEu6DGxGgRJPb/mVPIZ48e69xCn2yRmCgYmDugAVwmJ6o+0u1RI18eO7E7WBTLYLaEVVOhwQmcdhQHweux/WPg==
+
+typescript@^4.1.2:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.1.3.tgz#519d582bd94cba0cf8934c7d8e8467e473f53bb7"
+  integrity sha512-B3ZIOf1IKeH2ixgHhj6la6xdwR9QrLC5d1VKeCSY4tvkqhF2eqd9O7txNlS0PO3GrBAFIdr3L1ndNwteUbZLYg==
 
 uglify-js@^3.1.4:
   version "3.9.4"
