@@ -60,8 +60,8 @@ export class ApiContext {
             path: request.path,
             method: request.method,
             rawBody: request.rawBody,
-            pathParams: request.pathParams,
-            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.query)
+            pathParams: request.pathParams || {},
+            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.query) || {}
         };
     }
 

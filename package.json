@@ -1,6 +1,6 @@
 {
 	"name": "valory",
-	"version": "4.0.0-v4.40",
+	"version": "4.0.0-v4.41",
 	"description": "A server agnostic web framework for creating bulletproof apis",
 	"scripts": {
 		"test": "jest",
