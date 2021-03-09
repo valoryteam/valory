@@ -1,5 +1,20 @@
 import {Controller} from "./controller";
 import {ApiMiddleware} from "../lib/common/headers";
+import {IsValidHeader} from "@tsoa/runtime/src/utils/isHeaderType";
+
+export function SuccessResponse<HeaderType extends IsValidHeader<HeaderType> = {}>(name: string | number, description?: string): any {
+    return (target: any, propertyKey?: string) => {
+        if (propertyKey == null) { return; }
+        if (typeof name !== "number") { return; }
+        target[propertyKey].statusCode = name;
+    };
+}
+
+export function Response<ExampleType, HeaderType extends IsValidHeader<HeaderType> = {}>(name: string | number, description?: string, example?: ExampleType): any {
+    return () => {
+        return;
+    };
+}
 
 export function Example<T>(exampleModel: T): any {
     return () => {
@@ -14,6 +29,12 @@ export function Head(value?: string): any {
 }
 
 export function OperationId(value: string): any {
+    return () => {
+        return;
+    };
+}
+
+export function NoSecurity(): any {
     return () => {
         return;
     };
@@ -187,27 +208,6 @@ export function Query(name?: string): any {
  * @param {string} [name] The name of the header parameter
  */
 export function Header(name?: string): any {
-    return () => {
-        return;
-    };
-}
-
-export function SuccessResponse(name: string | number, description?: string): any {
-    return (target: any, propertyKey?: string) => {
-        if (propertyKey == null) { return; }
-        if (typeof name !== "number") { return; }
-        target[propertyKey].statusCode = name;
-    };
-}
-
-/**
- * Add data about an additional response type.
- * @Decorator
- * @param name the status code used by this response
- * @param description
- * @param example
- */
-export function Response(name: number, description?: string, example?: object): any {
     return () => {
         return;
     };

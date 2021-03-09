@@ -124,7 +124,7 @@ export class TestController extends Controller {
     @Response(202)
     @SuccessResponse(313)
     @Post()
-    public test(@Header("test-type") test?: StringAlias, @Body() body?: StringAlias): PaginatedResult<TestInput> {
+    public test(@Header("test-type") test?: Direction.ASC | Direction.DESC, @Body() body?: StringAlias): PaginatedResult<TestInput> {
         return {
             cool: true,
             yes: "blue"

@@ -887,12 +887,12 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@tsoa/cli@^3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.5.1.tgz#31641dacf0ab9597092973df9204946f40ff5871"
-  integrity sha512-jIVcrBj9BorhKA09M2q5L24aq+nj0CW4oQ4Ga4amkIWs1TZ3vUDiPEg3JiY+U8XRTgcY4DP1EcGQ4b2jMlLxAQ==
+"@tsoa/cli@^3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.5.2.tgz#14f90b462289bab111fdbba2bee64bf2ffce73a7"
+  integrity sha512-eY0oGJn8b94k/YgXp5jy0hp1RPuTaeOitI1UZWJpNvKt7v11zK9sp+psKJurH82XkOsjkGnNY9S658nnAZSIXQ==
   dependencies:
-    "@tsoa/runtime" "^3.5.0"
+    "@tsoa/runtime" "^3.5.2"
     deepmerge "^4.2.2"
     fs-extra "^8.1.0"
     glob "^7.1.6"
@@ -905,10 +905,10 @@
     yamljs "^0.3.0"
     yargs "^14.0.0"
 
-"@tsoa/runtime@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.5.0.tgz#b8ac309a43959138d97792053d834ac7d6d64732"
-  integrity sha512-8IEQyfLU2EcfScssD1ynCbiVHsgI7aasKCcnoE6D/B0tWfTr48JfsXN/Pf+n/VNdbq4Qm96aNyxi37TcKnLktA==
+"@tsoa/runtime@^3.5.2":
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.5.2.tgz#fbd8004e4be794bf3b0f66a1cd42af0ff7cbd561"
+  integrity sha512-XtJWAQn/54XJxAVbHG+sAMNYX473U+SFKnXZY5CKB6zlVVap2wMF1c/MRbG5GGj9b0UvWNdLn2XjOPkXPkSjcg==
   dependencies:
     moment "^2.24.0"
     validator "^12.2.0"
