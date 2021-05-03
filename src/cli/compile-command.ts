@@ -1,4 +1,4 @@
-import {CommandModule} from "yargs";
+import {CommandModule, CommandBuilder} from "yargs";
 import {spawnSync} from "child_process";
 import {gte, coerce} from "semver";
 import chalk = require("chalk");
@@ -22,6 +22,7 @@ import {filterSpec} from "../compiler/route-compiler/unmark-hidden";
 
 export interface CompileOptions {
     path: string;
+    debugOutputPath?: string;
 }
 
 async function checkRequirements() {
@@ -101,6 +102,9 @@ async function compile(options: CompileOptions) {
     if (Config.ConfigData.specOutput != null) {
         writeFileSync(Config.resolveSpecOutput(), JSON.stringify(filterSpec(spec, routes.hiddenPaths)));
     }
+    if (options.debugOutputPath != null) {
+        await specCompiler.saveDebugOutput(options.debugOutputPath);
+    }
     ThreadSpinner.shutdown();
     printFooter(spec, routes.hiddenPaths);
 }
@@ -122,9 +126,18 @@ function getRouteList(spec: OpenAPIV3.Document, hiddenPaths: string[]) {
 export const CompileCommand: CommandModule = {
     command: "compile",
     describe: "Runs the Valory compile",
+    builder: {
+        debugOutputPath: {
+            type: "string",
+            alias: "d",
+            demandOption: false,
+            description: "Directory to output compiler debug artifacts"
+        }
+    },
     async handler(args) {
-        compile({
-            path: process.cwd()
+        await compile({
+            path: process.cwd(),
+            debugOutputPath: args.debugOutputPath as string | null
         });
     }
 };

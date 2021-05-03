@@ -11,7 +11,7 @@ declare module "@openapi-contrib/openapi-schema-to-json-schema" {
         supportPatternProperties?: boolean;
     }
 
-    export function fromSchema(schema: OpenAPIV3.SchemaObject, options?: Options): JSONSchema4
+    export function fromSchema(schema: OpenAPIV3.SchemaObject, options?: Options): JSONSchema4;
 
-    export function fromParameter(parameter: OpenAPIV3.ParameterObject, options?: Options): JSONSchema4 | {[media: string]: JSONSchema4}
+    export function fromParameter(parameter: OpenAPIV3.ParameterObject, options?: Options): JSONSchema4 | {[media: string]: JSONSchema4};
 }

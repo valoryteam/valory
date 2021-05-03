@@ -4,6 +4,7 @@ import {Operation} from "./operations";
 import {JSONSchema4} from "json-schema";
 import {fromSchema} from "@openapi-contrib/openapi-schema-to-json-schema";
 import {isReferenceObject} from "../../lib/common/util";
+const mapKeysDeep = require("map-keys-deep-lodash");
 
 export interface SchemaOperation {
     path: string;
@@ -28,12 +29,31 @@ export function generateSchemaOperation(input: Operation, excludeResponses: bool
     };
 }
 
+function lockNumericFormats(schema: OpenAPIV3.SchemaObject) {
+    return mapKeysDeep(schema, (value: string, key: string) => {
+        if (key === "format" && ["int32", "int64", "float", "double"].includes(value)) {
+            return "format-numeric";
+        }
+        return key;
+    });
+}
+
+function unlockNumericFormats(schema: JSONSchema4) {
+    return mapKeysDeep(schema, (value: string, key: string) => {
+        if (key === "format-numeric") {
+            return "format";
+        }
+        return key;
+    });
+}
+
 function processParameter(input: OpenAPIV3.RequestBodyObject | OpenAPIV3.ParameterObject | OpenAPIV3.ReferenceObject): JSONSchema4 {
     if (isReferenceObject(input)) {throw Error("Unresolved $ref. How did this happen");}
     const outerSchema: JSONSchema4 = {properties: {}};
     const location = resolveParameterLocation(input);
     if (input.required) {outerSchema.required = [location];}
-    const innerSchema = fromSchema(resolveParameterOASchema(input), {cloneSchema: true});
+    const oaSchema = lockNumericFormats(resolveParameterOASchema(input));
+    const innerSchema = unlockNumericFormats(fromSchema(oaSchema, {cloneSchema: true}));
     if (location === "body") {
         outerSchema.properties.body = innerSchema;
     } else {

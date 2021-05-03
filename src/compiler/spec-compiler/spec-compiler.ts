@@ -11,6 +11,9 @@ import {generateModule} from "./generate-module";
 import {compileModule} from "./compile-module";
 import {cloneDeep,} from "lodash";
 import {ValueCache} from "./value-cache";
+import {randomBytes} from 'crypto';
+import {promises as fs} from 'fs';
+import {join, resolve} from 'path';
 
 // tslint:disable-next-line:no-empty-interface
 export interface CompilerOptions {
@@ -80,5 +83,35 @@ export class SpecCompiler {
         this.output.moduleSource = await spinnerWrap(generateModule(this.output.processedCompiledSchemaOperations, this.input, cache), "Generating Module");
         this.output.moduleCompiled = await spinnerWrap(compileModule(this.output.moduleSource), "Compiling Module");
         return this.output.moduleCompiled;
+    }
+
+    public async saveDebugOutput(outputDir: string): Promise<void> {
+        const debugOutput = `valory_debug_${randomBytes(6).toString("hex")}`;
+        const debugDir = join(outputDir, debugOutput);
+        await fs.mkdir(debugDir, {recursive: true}).catch(err => null);
+
+        await spinnerWrap(Promise.all(Object.entries(this.output).map(<T extends keyof SpecCompilerOutput>(item: [T, SpecCompilerOutput[T]]) => {
+            const [key, content] = item;
+            let outputContent: string = "";
+            let extension = ".json";
+            switch (key) {
+                case "moduleSource":
+                case "moduleCompiled":
+                    extension = ".js";
+                    outputContent = content as string;
+                    break;
+                default:
+                    extension = ".json";
+                    outputContent = JSON.stringify(content, null, 2);
+                    break;
+            }
+
+            return {
+                key, content: outputContent,
+                fileName: `${key}${extension}`
+            };
+        }).map(async artifact => {
+            await fs.writeFile(join(debugDir, artifact.fileName), artifact.content);
+        })), `Saving Debug Artifacts to ${resolve(debugDir)}`);
     }
 }

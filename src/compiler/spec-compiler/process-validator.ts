@@ -47,7 +47,7 @@ export function processCompiledSchemaOperation(input: CompiledSchemaOperation, c
 
 function processError(fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string, cache: ValueCache) {
     const templateCache = (value: string) => `\${${cache.add("`" + value + "`")}}`;
-    const packed = `\`${templateCache(`ValidationError[${keyword}]: request`)}\${${dataPath}} ${message}\``;
+    const packed = `\`${templateCache(`ValidationError[${keyword}]: request`)}\${${dataPath}}\` + ${cache.add("`" + message + "`")}`;
     return packed;
 }
 
