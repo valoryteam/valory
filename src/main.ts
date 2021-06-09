@@ -23,7 +23,9 @@ export {
     Options,
     Security,
     Hidden,
-    NoSecurity
+    NoSecurity,
+    Extension,
+    ExtensionType
 } from "./server/decorators";
 export {Endpoint} from "./server/endpoint";
 export {RequestValidator} from "./server/middleware/request-validator";

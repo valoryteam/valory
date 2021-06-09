@@ -887,31 +887,29 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@tsoa/cli@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.7.0.tgz#b46b2c26306b5613834cee44a79f31ee4f6a87a3"
-  integrity sha512-VYX0Vthu1adgrSQwgF2kg4S8lI0FmjWHIY3ReekWg21UEloUtmPGPVSMzaDO6oCk8FG3Uvg68cGBZVodXY21IQ==
+"@tsoa/cli@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@tsoa/cli/-/cli-3.8.0.tgz#5a5fae9fd5967156d48c9ca747baa5d32094c222"
+  integrity sha512-L5qvCPNtrAoCYSLyVtgGgLkzsAglV8IPKi4FeUiPTWuZgTBJXOZihcSjuMpJpDmG51qrE5oaIglHDZ5zwxhi2A==
   dependencies:
-    "@tsoa/runtime" "^3.7.0"
+    "@tsoa/runtime" "^3.8.0"
     deepmerge "^4.2.2"
     fs-extra "^8.1.0"
     glob "^7.1.6"
     handlebars "^4.7.6"
     merge "^2.1.0"
     minimatch "^3.0.4"
-    moment "^2.24.0"
     typescript "^4.1.2"
-    validator "^12.2.0"
+    validator "^13.6.0"
     yamljs "^0.3.0"
     yargs "^14.0.0"
 
-"@tsoa/runtime@^3.7.0":
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.7.0.tgz#8f7d39128db92333a42ace08b707f03090f0dc8d"
-  integrity sha512-6SO20FRp7DnORJaKR5eWZPiIfr6/I3z/oMqEEaz92Kqz6BCII6ft2Aoum8v/EbGhtHkgaVkXDrsQ6FonbSNciw==
+"@tsoa/runtime@^3.8.0":
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/@tsoa/runtime/-/runtime-3.8.0.tgz#41bff8682f019371e7945259d98c6944adab22aa"
+  integrity sha512-/T+hJiSdI5uVvdlGstAIAzZiFqsMODsRwy6DTefKmc3s4K7DxrXtNltjtru9nR0LSPHLiGFt2UhFsRArDWWDqA==
   dependencies:
-    moment "^2.24.0"
-    validator "^12.2.0"
+    validator "^13.6.0"
 
 "@types/babel__core@^7.0.0":
   version "7.1.9"
@@ -5411,11 +5409,6 @@ modify-values@^1.0.0:
   resolved "https://registry.yarnpkg.com/modify-values/-/modify-values-1.0.1.tgz#b3939fa605546474e3e3e3c63d64bd43b4ee6022"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-moment@^2.24.0:
-  version "2.26.0"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.26.0.tgz#5e1f82c6bafca6e83e808b30c8705eed0dcbd39a"
-  integrity sha512-oIixUO+OamkUkwjhAVE18rAMfRJNsNe/Stid/gwHSOfHrOtw9EhAY2AHvdKZ/k/MggcYELFCJz/Sn2pL8b8JMw==
-
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -8164,10 +8157,15 @@ validate.io-number@^1.0.3:
   resolved "https://registry.yarnpkg.com/validate.io-number/-/validate.io-number-1.0.3.tgz#f63ffeda248bf28a67a8d48e0e3b461a1665baf8"
   integrity sha1-9j/+2iSL8opnqNSODjtGGhZluvg=
 
-validator@^12.0.0, validator@^12.2.0:
+validator@^12.0.0:
   version "12.2.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-12.2.0.tgz#660d47e96267033fd070096c3b1a6f2db4380a0a"
   integrity sha512-jJfE/DW6tIK1Ek8nCfNFqt8Wb3nzMoAbocBF6/Icgg1ZFSBpObdnwVY2jQj6qUqzhx5jc71fpvBWyLGO7Xl+nQ==
+
+validator@^13.6.0:
+  version "13.6.0"
+  resolved "https://registry.yarnpkg.com/validator/-/validator-13.6.0.tgz#1e71899c14cdc7b2068463cb24c1cc16f6ec7059"
+  integrity sha512-gVgKbdbHgtxpRyR8K0O6oFZPhhB5tT1jeEHZR0Znr9Svg03U0+r9DXWMrnRAB+HtCStDQKlaIZm42tVsVjqtjg==
 
 verror@1.10.0:
   version "1.10.0"

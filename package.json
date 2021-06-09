@@ -1,6 +1,6 @@
 {
 	"name": "valory",
-	"version": "4.0.0-v4.42",
+	"version": "4.0.0-v4.44",
 	"description": "A server agnostic web framework for creating bulletproof apis",
 	"scripts": {
 		"test": "jest",
@@ -49,8 +49,8 @@
 	},
 	"dependencies": {
 		"@openapi-contrib/openapi-schema-to-json-schema": "^3.0.4",
-		"@tsoa/cli": "^3.7.0",
-		"@tsoa/runtime": "^3.7.0",
+		"@tsoa/cli": "^3.8.0",
+		"@tsoa/runtime": "^3.8.0",
 		"ajv": "^6.12.5",
 		"chalk": "^4.0.0",
 		"google-closure-compiler": "^20210406.0.0",

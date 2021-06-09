@@ -121,10 +121,12 @@ export type Nominal<Type> = Type & {
 @Route()
 export class TestController extends Controller {
     @AppendMiddleware(literalMiddleware1)
-    @Response(202)
     @SuccessResponse(313)
     @Post()
-    public test(@Header("test-type") test?: Direction.ASC | Direction.DESC, @Body() body?: StringAlias): PaginatedResult<TestInput> {
+    public test(
+        @Header("test-type") test?: Direction.ASC | Direction.DESC,
+        @Body() body?: StringAlias,
+    ): PaginatedResult<TestInput> {
         return {
             cool: true,
             yes: "blue"

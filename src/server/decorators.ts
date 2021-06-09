@@ -1,6 +1,7 @@
 import {Controller} from "./controller";
 import {ApiMiddleware} from "../lib/common/headers";
 import {IsValidHeader} from "@tsoa/runtime/src/utils/isHeaderType";
+import {HttpStatusCodeLiteral} from "@tsoa/runtime/src/interfaces/response";
 
 export function SuccessResponse<HeaderType extends IsValidHeader<HeaderType> = {}>(name: string | number, description?: string): any {
     return (target: any, propertyKey?: string) => {
@@ -27,6 +28,14 @@ export function Head(value?: string): any {
         return;
     };
 }
+
+export function Extension(_name: string, _value: ExtensionType | ExtensionType[]): () => void {
+    return () => {
+        return;
+    };
+}
+
+export type ExtensionType = string | { [name: string]: ExtensionType | ExtensionType[] };
 
 export function OperationId(value: string): any {
     return () => {
@@ -243,3 +252,4 @@ export function Tags(...values: string[]): any {
         return;
     };
 }
+
