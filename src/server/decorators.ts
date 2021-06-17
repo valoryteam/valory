@@ -1,7 +1,5 @@
 import {Controller} from "./controller";
 import {ApiMiddleware} from "../lib/common/headers";
-import {IsValidHeader} from "@tsoa/runtime/src/utils/isHeaderType";
-import {HttpStatusCodeLiteral} from "@tsoa/runtime/src/interfaces/response";
 
 export function SuccessResponse<HeaderType extends IsValidHeader<HeaderType> = {}>(name: string | number, description?: string): any {
     return (target: any, propertyKey?: string) => {
@@ -12,6 +10,15 @@ export function SuccessResponse<HeaderType extends IsValidHeader<HeaderType> = {
 }
 
 export function Response<ExampleType, HeaderType extends IsValidHeader<HeaderType> = {}>(name: string | number, description?: string, example?: ExampleType): any {
+    return () => {
+        return;
+    };
+}
+
+/**
+ * used to show a method as deprecated on swagger documentation
+ */
+export function Deprecated(): any {
     return () => {
         return;
     };
@@ -253,3 +260,8 @@ export function Tags(...values: string[]): any {
     };
 }
 
+export type IsValidHeader<HeaderValue> = keyof HeaderValue extends string | number
+    ? HeaderValue[keyof HeaderValue] extends string | string[] | undefined
+        ? {}
+        : 'Header values must be string or string[]'
+    : 'Header names must be of type string';

@@ -9,7 +9,7 @@ import {
     Response,
     Query,
     Options,
-    Path, Delete, Get
+    Path, Delete, Get, Hidden, Deprecated
 } from "../server/decorators";
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
@@ -121,10 +121,11 @@ export type Nominal<Type> = Type & {
 @Route()
 export class TestController extends Controller {
     @AppendMiddleware(literalMiddleware1)
-    @SuccessResponse(313)
+    @SuccessResponse<{"Content-Type": "application/octet-stream"}>(313)
     @Post()
     public test(
-        @Header("test-type") test?: Direction.ASC | Direction.DESC,
+        @Query() thing?: string,
+        @Deprecated() @Header("test-type") test?: Direction.ASC | Direction.DESC,
         @Body() body?: StringAlias,
     ): PaginatedResult<TestInput> {
         return {
