@@ -25,7 +25,8 @@ export {
     Hidden,
     NoSecurity,
     Extension,
-    ExtensionType
+    ExtensionType,
+    Deprecated,
 } from "./server/decorators";
 export {Endpoint} from "./server/endpoint";
 export {RequestValidator} from "./server/middleware/request-validator";
