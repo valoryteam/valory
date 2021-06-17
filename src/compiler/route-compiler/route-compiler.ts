@@ -10,6 +10,7 @@ import {OpenAPIV3} from "openapi-types";
 import {routeCollisionCheck} from "./route-collision-check";
 import {unmarkHidden} from "./unmark-hidden";
 import {updateResponseContentType} from "./update-response-content-type";
+import {Swagger} from "@tsoa/runtime";
 
 export class RouteCompiler {
     constructor(

@@ -2,9 +2,10 @@ import {HttpMethodsLowercase} from "../../main";
 import {OpenAPIV3} from "openapi-types";
 import {dereference} from "swagger-parser";
 import {cloneDeep,} from "lodash";
+import {Swagger} from "@tsoa/runtime";
 
-export async function updateResponseContentType(spec: OpenAPIV3.Document): Promise<OpenAPIV3.Document> {
-    const derefSpec = await dereference(cloneDeep(spec));
+export async function updateResponseContentType(spec: Swagger.Spec3): Promise<Swagger.Spec3> {
+    const derefSpec = await dereference(cloneDeep(spec as unknown as OpenAPIV3.Document));
     const paths = Object.keys(derefSpec.paths);
     for (const path of paths) {
         HttpMethodsLowercase.forEach((method) => {
