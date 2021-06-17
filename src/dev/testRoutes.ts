@@ -14,6 +14,53 @@ import {
 import {Controller} from "../server/controller";
 import {ApiMiddleware} from "../lib/common/headers";
 import {Endpoint, RequestValidator} from "../main";
+const spec = require('./generated/openapi.json');
+const docSite = `
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+  <head>
+    <title>nRF Connect for Cloud Device API Documentation</title>
+    <link rel="shortcut icon" href="https://nordicsemi.com/images/Nordic-favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <style>
+      body{margin:0;padding:0}
+      .powered-by-badge{display:none}
+      .api-info-header+p{display:none!important}
+      header{text-align:right;padding-right:20px}
+    </style>
+  </head>
+  <body>
+    <redoc 
+      hide-loading 
+      expand-responses=all
+      hide-single-request-sample-tab
+      expand-single-schema-field
+      json-sample-expand-level=all
+      path-in-middle-panel
+      required-props-first
+      sort-props-alphabetically
+    ></redoc>
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+    <script>
+      $(document).ready(function(){$(".api-info-header + p").hide(),$(document).on("click",function(o){window.history&&window.history.pushState?window.history.pushState("","",window.location.pathname):window.location.href=window.location.href.replace(/#.*$/,"#")});
+      const theme = {
+        logo: {
+          gutter: '10px'
+        },
+        sidebar: { 
+          textColor: 'white',
+          activeTextColor: '#00adef',
+          backgroundColor: '#023d55'
+        },
+        rightPanel: {
+          backgroundColor: '#023d55'
+        }
+      };
+      Redoc.init(${JSON.stringify(spec)},{ theme })});</script>
+  </body>
+</html>`;
 
 export interface TestInput {
     /**
@@ -118,14 +165,14 @@ export type Nominal<Type> = Type & {
     readonly symbol: symbol;
 };
 
+type OctetStream = "application/octet-stream";
+
 @Route()
 export class TestController extends Controller {
     @AppendMiddleware(literalMiddleware1)
-    @SuccessResponse<{"Content-Type": "application/octet-stream"}>(313)
     @Post()
     public test(
-        @Query() thing?: string,
-        @Deprecated() @Header("test-type") test?: Direction.ASC | Direction.DESC,
+        @Header("test-type") test?: Direction.ASC | Direction.DESC,
         @Body() body?: StringAlias,
     ): PaginatedResult<TestInput> {
         return {
@@ -135,8 +182,17 @@ export class TestController extends Controller {
     }
 
     @Get()
-    public yay() {
-        return "yay";
+    @SuccessResponse<{
+        "content-type": "text/html",
+    }>(313)
+    public getDocumentation() {
+        this.setHeader('content-type', 'text/html');
+        return docSite;
+    }
+
+    @Get('openapi.json')
+    public getSpec(): any {
+        return spec;
     }
 }
 

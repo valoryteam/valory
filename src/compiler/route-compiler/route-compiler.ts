@@ -9,6 +9,7 @@ import {oneOfToAnyOf} from "./oneOf-to-anyOf";
 import {OpenAPIV3} from "openapi-types";
 import {routeCollisionCheck} from "./route-collision-check";
 import {unmarkHidden} from "./unmark-hidden";
+import {updateResponseContentType} from "./update-response-content-type";
 
 export class RouteCompiler {
     constructor(
@@ -31,8 +32,8 @@ export class RouteCompiler {
             outputDirectory: tmpdir(),
             noImplicitAdditionalProperties: "silently-remove-extras",
         });
-        const spec = await spinnerWrap(() => {
-            const unverifiedSpec  = oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec()));
+        const spec = await spinnerWrap(async () => {
+            const unverifiedSpec  = await updateResponseContentType(oneOfToAnyOf(unencodePropNames(specGenerator.GetSpec())));
             delete unverifiedSpec?.servers;
             routeCollisionCheck(unverifiedSpec as any);
             return unverifiedSpec;
