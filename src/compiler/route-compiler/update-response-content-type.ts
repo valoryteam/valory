@@ -19,8 +19,8 @@ export async function updateResponseContentType(spec: Swagger.Spec3): Promise<Sw
                const headers = (response).headers;
                const contentType = ((headers?.["Content-Type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum?.[0] ??
                    ((headers?.["content-type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum?.[0];
-               const contentResponseTypes = Object.keys(response.content);
-               if (contentResponseTypes.length > 1) {
+               const contentResponseTypes = Object.keys(response?.content || {});
+               if (contentResponseTypes.length !== 1) {
                    continue;
                }
                const existingContentType = contentResponseTypes[0];

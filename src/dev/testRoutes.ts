@@ -184,7 +184,7 @@ export class TestController extends Controller {
     @Get()
     @SuccessResponse<{
         "content-type": "text/html",
-    }>(313)
+    }>(200)
     public getDocumentation() {
         this.setHeader('content-type', 'text/html');
         return docSite;
