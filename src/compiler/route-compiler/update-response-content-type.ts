@@ -17,10 +17,13 @@ export async function updateResponseContentType(spec: Swagger.Spec3): Promise<Sw
            for (const responseCode of responseCodes) {
                const response = operation.responses[responseCode] as OpenAPIV3.ResponseObject;
                const headers = (response).headers;
-               const contentType = ((headers?.["Content-Type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum?.[0] ??
-                   ((headers?.["content-type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum?.[0];
+               const contentTypeEnum = ((headers?.["Content-Type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum ?? ((headers?.["content-type"] as OpenAPIV3.HeaderObject)?.schema as OpenAPIV3.SchemaObject)?.enum;
+               if (contentTypeEnum == null || contentTypeEnum?.length !== 1) {
+                   continue;
+               }
+               const contentType = contentTypeEnum[0];
                const contentResponseTypes = Object.keys(response?.content || {});
-               if (contentResponseTypes.length !== 1) {
+               if (contentResponseTypes.length !== 1 || contentType == null) {
                    continue;
                }
                const existingContentType = contentResponseTypes[0];
