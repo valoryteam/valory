@@ -1,4 +1,4 @@
-import {readFileSync} from "fs";
+import {existsSync, readFileSync, writeFileSync} from "fs";
 import {OpenAPIV3} from "openapi-types";
 import * as path from "path";
 import {JSONSchema7} from "json-schema";
@@ -8,6 +8,7 @@ import {LOGGER_VAR, METADATA_VERSION, VALORY_DEFAULT_ADAPTOR_VAR, VALORY_METADAT
 import ajv = require("ajv");
 import {merge} from "lodash";
 import * as Pino from "pino";
+import {parse as yamlParse, stringify as yamlStringify} from "yaml";
 
 export interface ValoryMetadata {
     openapi: OpenAPIV3.Document;
@@ -94,7 +95,7 @@ const ConfigSchema: JSONSchema7 = {
     required: ["entrypoint", "outputDirectory"]
 };
 
-export const CONFIG_FILE = "valory.json";
+export const CONFIG_FILE = ["valory.yaml", "valory.json"];
 
 export namespace Config {
     export let RootPath = "";
@@ -108,7 +109,7 @@ export namespace Config {
     export function load(cliMode: boolean, rootPath?: string, loadConfig: boolean = false) {
         CLIMode = cliMode;
         RootPath = rootPath || resolveRootPath();
-        ConfigPath = path.join(RootPath, CONFIG_FILE);
+        ConfigPath = resolveConfigPath(RootPath);
         PackageJSONPath = path.join(RootPath, "package.json");
         if (loadConfig) {
             ConfigData = loadValidatedConfig(ConfigPath);
@@ -116,8 +117,42 @@ export namespace Config {
         }
     }
 
+    function resolveConfigPath(rootPath: string) {
+        const paths = CONFIG_FILE.map(file => path.join(rootPath, file));
+        for (const configPath of paths) {
+            if (existsSync(configPath)) {
+                return configPath;
+            }
+        }
+        return CONFIG_FILE[0];
+    }
+
+    function parseConfig(configPath: string) {
+        const data = readFileSync(configPath, {encoding: "utf8"});
+        const ext = path.extname(configPath);
+        switch (ext) {
+            case ".json":
+                return JSON.parse(data);
+            case ".yaml":
+                return yamlParse(data, {});
+        }
+    }
+
+    export function saveConfig(config: ValoryConfig) {
+        let data = "";
+        switch (path.extname(ConfigPath)) {
+            case ".yaml":
+                data = yamlStringify(config);
+                break;
+            case ".json":
+                data = JSON.stringify(config, null, 4);
+                break;
+        }
+        writeFileSync(ConfigPath, data);
+    }
+
     function loadValidatedConfig(configPath: string) {
-        const data = merge(DefaultConfig, JSON.parse(readFileSync(configPath, {encoding: "utf8"})));
+        const data = merge(DefaultConfig, parseConfig(configPath));
         if (!ajv({
             useDefaults: "shared",
             removeAdditional: "all"

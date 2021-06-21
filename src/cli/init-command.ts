@@ -67,7 +67,6 @@ export const InitCommand: CommandModule = {
     async handler() {
         Config.load(true, process.cwd());
         ThreadSpinner.shutdown();
-        const content = JSON.stringify(await promptForConfig(process.cwd()), null, 4);
-        writeFileSync(Config.ConfigPath, content);
+        Config.saveConfig(await promptForConfig(process.cwd()));
     }
 };
