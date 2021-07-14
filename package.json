@@ -53,7 +53,7 @@
 		"@tsoa/runtime": "^3.8.0",
 		"ajv": "^6.12.5",
 		"chalk": "^4.0.0",
-		"google-closure-compiler": "^20210406.0.0",
+		"google-closure-compiler": "^20210601.0.0",
 		"inquirer": "^7.3.3",
 		"inquirer-path": "^1.0.0-beta5",
 		"json-schema-merge-allof": "^0.8.1",

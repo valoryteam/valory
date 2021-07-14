@@ -15,10 +15,10 @@ export async function compileModule(module: string): Promise<string> {
         js: intermediateFileTmp.name,
         rewrite_polyfills: false,
         compilation_level: "ADVANCED",
-        use_types_for_optimization: true,
+        use_types_for_optimization: false,
         preserve_type_annotations: true,
         js_output_file: compiledFileTmp.name,
-        language_out: "ECMASCRIPT_2016",
+        language_out: "ECMASCRIPT_2019",
         jscomp_off: SUPPRESSED_ERRORS,
     };
 
