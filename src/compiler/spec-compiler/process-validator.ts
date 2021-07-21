@@ -12,6 +12,12 @@ const SCHEMA_VAR = "schema";
 const ErrorObjReg = /{[ ]*?keyword:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?dataPath:[ ]*?([\s\S]*?),[ ]*?schemaPath:[ ]*?'([\s\S]*?)'[ ]*?,[ ]*?params:[ ]*?([\s\S]*?),[ ]*?message:[ ]*?'([\s\S]*?)'[ ]*?}/g;
 const ValidIdentifierReg = /^(?:[A-Za-z_])(?:[0-9a-zA-Z_]*)$/;
 const LiteralRegexReg = /^\/([^\n]*?[^\\])\/([igmsuy]*?)$/;
+const CONSTANTS = [
+    {value: /['"]string['"]/g, constant: "STRING"},
+    {value: /['"]number['"]/g, constant: "NUMBER"},
+    {value: /['"]object['"]/g, constant: "OBJECT"},
+    {value: /['"]boolean['"]/g, constant: "BOOLEAN"}
+];
 
 const NoopSchemas = [
     {},
@@ -47,8 +53,12 @@ export function processCompiledSchemaOperation(input: CompiledSchemaOperation, c
 
 function processError(fullMatch: string, keyword: string, dataPath: string, schemaPath: string, params: string, message: string, cache: ValueCache) {
     const templateCache = (value: string) => `\${${cache.add("`" + value + "`")}}`;
-    const packed = `\`${templateCache(`ValidationError[${keyword}]: request`)}\${${dataPath}}\` + ${cache.add("` " + message + "`")}`;
-    return packed;
+    dataPath = dataPath.replace("(dataPath || '') + ", '').trim();
+    if (dataPath === '""') {
+        return `${cache.add('"ValidationError[${keyword}]: request"')} + ${cache.add("` " + message + "`")}`;
+    } else {
+        return `${cache.add('"ValidationError[${keyword}]: request"')} + ${dataPath} + ${cache.add("` " + message + "`")}`;
+    }
 }
 
 function objectifyArray<T>(arr: T[]): { [key: string]: T } {
@@ -117,12 +127,17 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, cach
         return (mangled != null) ? `properties.${mangled}` : match;
     });
 
+    // Set constants
+    CONSTANTS.forEach(({value, constant}) => {
+       processedCode = processedCode.replace(value, constant);
+    });
+
     const functionHeader = processedCode.substring(0, processedCode.indexOf("{"));
     const functionBody = processedCode.substring(processedCode.indexOf("{") + 1, processedCode.lastIndexOf("}"));
     const objectfiedSchema = objectifyUnions(mangledSchema);
 
     const finalCode = `
-        function() {
+        (()=>{
             const validateSchema = ${JSON.stringify(objectfiedSchema)};
             ${(input.validator.source as any).patterns.map((pattern: string, id: number) => {
                 const preparedPattern = (LiteralRegexReg.test(pattern)) ?
@@ -135,7 +150,7 @@ function processCompiledSchemaInteraction(input: CompiledSchemaInteraction, cach
                 ${functionBody}
             };
             return validate;
-        }()
+        })()
     `;
 
     return {

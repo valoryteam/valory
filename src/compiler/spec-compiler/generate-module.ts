@@ -11,6 +11,10 @@ const VALIDATOR_MODULE_HEADER = `
 
 const HOSTNAME = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[-0-9a-z]{0,61}[0-9a-z])?)*$/i;
 const UUID = /^(?:urn:uuid:)?[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i;
+/** @noinline */ const STRING = "string";
+/** @noinline */ const NUMBER = "number";
+/** @noinline */ const BOOLEAN = "boolean";
+/** @noinline */ const OBJECT = "object";
 
 const formats = {
     date: /^\\d\\d\\d\\d-[0-1]\\d-[0-3]\\d$/,
