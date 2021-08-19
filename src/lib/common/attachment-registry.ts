@@ -25,6 +25,14 @@ export class AttachmentRegistry {
         return this.attachments.get(key.id);
     }
 
+    public getAttachmentAssert<T>(key: AttachmentKey<T>): T {
+        const value = this.attachments.get(key.id);
+        if (value == null) {
+            throw new MissingAttachmentException();
+        }
+        return value;
+    }
+
     public hasAttachment<T>(key: AttachmentKey<T>): boolean {
         return this.attachments.has(key.id);
     }
@@ -47,5 +55,13 @@ export class AttachmentRegistry {
             }
         }
         return false;
+    }
+}
+
+export class MissingAttachmentException extends Error {
+    public name = 'MissingAttachmentException';
+
+    constructor() {
+        super("Required attachment was missing from registry");
     }
 }

@@ -1,4 +1,4 @@
-import {AttachmentKey, AttachmentRegistry} from "./attachment-registry";
+import {AttachmentKey, AttachmentRegistry, MissingAttachmentException} from "./attachment-registry";
 
 test("should create a key", () => {
     const key = AttachmentRegistry.createKey();
@@ -11,6 +11,7 @@ test("should add and retrieve attachment", () => {
     const key = AttachmentRegistry.createKey<typeof value>();
     reg.putAttachment(key, value);
     expect(reg.getAttachment(key)).toStrictEqual(value);
+    expect(reg.getAttachmentAssert(key)).toStrictEqual(value);
 });
 
 test("should delete an attachment", () => {
@@ -54,4 +55,12 @@ describe("should check for keys", () => {
     test("should check for any keys all missing", () => {
         expect(reg.hasAnyAttachments([key3])).toBe(false);
     });
+});
+
+test("assert should throw on missing key", () => {
+    const reg = new AttachmentRegistry();
+
+    const key = AttachmentRegistry.createKey();
+
+    expect(() => reg.getAttachmentAssert(key)).toThrowError(MissingAttachmentException);
 });
