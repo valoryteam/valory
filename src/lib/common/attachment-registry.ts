@@ -26,11 +26,10 @@ export class AttachmentRegistry {
     }
 
     public getAttachmentAssert<T>(key: AttachmentKey<T>): T {
-        const value = this.attachments.get(key.id);
-        if (value == null) {
+        if (!this.hasAttachment(key)) {
             throw new MissingAttachmentException();
         }
-        return value;
+        return this.attachments.get(key.id);
     }
 
     public hasAttachment<T>(key: AttachmentKey<T>): boolean {
