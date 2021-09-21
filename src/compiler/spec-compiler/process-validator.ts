@@ -55,9 +55,9 @@ function processError(fullMatch: string, keyword: string, dataPath: string, sche
     const templateCache = (value: string) => `\${${cache.add("`" + value + "`")}}`;
     dataPath = dataPath.replace("(dataPath || '') + ", '').trim();
     if (dataPath === '""') {
-        return `${cache.add('"ValidationError[${keyword}]: request"')} + ${cache.add("` " + message + "`")}`;
+        return `${cache.add(`"ValidationError[${keyword}]: request"`)} + ${cache.add("` " + message + "`")}`;
     } else {
-        return `${cache.add('"ValidationError[${keyword}]: request"')} + ${dataPath} + ${cache.add("` " + message + "`")}`;
+        return `${cache.add(`"ValidationError[${keyword}]: request"`)} + ${dataPath} + ${cache.add("` " + message + "`")}`;
     }
 }
 
