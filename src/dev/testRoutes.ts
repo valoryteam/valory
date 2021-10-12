@@ -210,7 +210,7 @@ export class Test2Controller extends Controller {
     }
 
     @Delete("{identifier}")
+    @SuccessResponse(201)
     public pathParamTest2(@Path() identifier: string) {
-        return identifier;
     }
 }

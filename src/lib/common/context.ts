@@ -47,6 +47,7 @@ export class ApiContext {
     public readonly attachments = new AttachmentRegistry();
     public readonly requestId: string;
     public readonly request: ApiRequest;
+    private serializedResponse: string | Buffer;
 
     constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {path: string, query: string, requestId?: string}) {
         const headers = lowercaseKeys(request.headers);
@@ -87,7 +88,8 @@ export class ApiContext {
 
     public prepareHeaders(): {[name: string]: string} {
         const headers = this.response.headers;
-        headers["content-type"] = headers["content-type"] || ApiContext.defaultContentType;
+        headers["content-type"] = this.responseContentType();
+        headers["content-length"] = Buffer.byteLength(this.serializeResponse());
         return headers;
     }
 
@@ -96,8 +98,12 @@ export class ApiContext {
     }
 
     public serializeResponse() {
-        const contentType = this.responseContentType();
         if (this.response.body == null) {return "";}
-        return ApiContext.serialize(contentType, this.response.body);
+        if (this.serializedResponse) {
+            return this.serializedResponse;
+        }
+        const contentType = this.responseContentType();
+        this.serializedResponse = ApiContext.serialize(contentType, this.response.body);
+        return this.serializedResponse;
     }
 }
