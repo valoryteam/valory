@@ -1,142 +1,25 @@
 {
-	"name": "valory",
-	"version": "4.0.0-v4.52",
+	"name": "valory-monorepo",
+	"private": true,
+	"version": "5.0.0",
 	"description": "A server agnostic web framework for creating bulletproof apis",
-	"scripts": {
-		"test": "jest",
-		"buildTest": "tsc && npm run build",
-		"build": "npm run compiler && npm run runtime",
-		"compiler": "tsc -p tsconfig-compiler.json",
-		"release": "semantic-release",
-		"runtime": "tsc -p tsconfig-runtime.json && cp package-min.json runtime/package.json",
-		"lint": "tslint --project .",
-		"clean": "rm -r dist compiler runtime || true",
-		"docgen": "typedoc --module commonjs --target ES6 --includes DOCS.md --excludeExternals --excludePrivate --out docs --excludeNotExported --ignoreCompilerErrors --mode file  src/server/"
-	},
+	"scripts": {},
 	"engines": {
-		"node": ">=12"
+		"node": ">=16"
 	},
+	"workspaces": [
+		"packages/*"
+	],
 	"author": "John Conley",
 	"license": "MIT",
-	"files": [
-		"package.json",
-		"README.md",
-		"compiler/**/*.{js,d.ts}",
-		"templates",
-		"tsconfig.json",
-		"tslint.json",
-		"tsfmt.json"
-	],
-	"devDependencies": {
-		"@commitlint/cli": "^8.3.5",
-		"@commitlint/config-conventional": "^8.3.4",
-		"@types/inquirer": "^7.3.1",
-		"@types/jest": "^26.0.14",
-		"@types/json-schema": "^7.0.6",
-		"@types/lodash": "^4.14.161",
-		"@types/node": "^13.9.2",
-		"@types/pino": "^6.0.0",
-		"@types/semver": "^7.3.4",
-		"@types/tmp": "^0.2.0",
-		"@types/yargs": "^15.0.6",
-		"cz-conventional-changelog": "^2.1.0",
-		"husky": "^4.2.3",
-		"jest": "^26.4.2",
-		"semantic-release": "^17.0.4",
-		"ts-jest": "^26.4.0",
-		"tslint": "^6.1.3",
-		"typescript": "^4.3.4"
-	},
-	"dependencies": {
-		"@openapi-contrib/openapi-schema-to-json-schema": "^3.0.4",
-		"@tsoa/cli": "^3.8.0",
-		"@tsoa/runtime": "^3.8.0",
-		"ajv": "^6.12.5",
-		"chalk": "^4.0.0",
-		"google-closure-compiler": "^20210601.0.0",
-		"inquirer": "^7.3.3",
-		"inquirer-path": "^1.0.0-beta5",
-		"json-schema-merge-allof": "^0.8.1",
-		"json-schema-ref-parser": "^9.0.6",
-		"lodash": "^4.17.20",
-		"map-keys-deep-lodash": "^1.2.3",
-		"openapi-types": "^9.1.0",
-		"pino": "^6.2.1",
-		"polka": "^0.5.2",
-		"semver": "^7.3.2",
-		"swagger-parser": "^10.0.2",
-		"thread-spin": "^1.3.0",
-		"tmp": "^0.2.1",
-		"ts-node": "^10.0.0",
-		"uuid-random": "^1.3.2",
-		"yaml": "^1.10.2",
-		"yargs": "^16.0.3"
-	},
-	"preferGlobal": true,
-	"bin": "compiler/cli/cli.js",
+	"devDependencies": {},
 	"repository": "https://github.com/valoryteam/valory.git",
-	"release": {
-		"repositoryUrl": "https://github.com/valoryteam/valory.git",
-		"branches": [
-			"master",
-			{
-				"name": "v4",
-				"prerelease": true
-			}
-		],
-		"verifyConditions": [
-			{
-				"path": "@semantic-release/github"
-			},
-			{
-				"path": "@semantic-release/npm"
-			},
-			{
-				"path": "@semantic-release/npm",
-				"pkgRoot": "runtime"
-			}
-		],
-		"publish": [
-			{
-				"path": "@semantic-release/npm"
-			},
-			{
-				"path": "@semantic-release/github"
-			},
-			{
-				"path": "@semantic-release/npm",
-				"pkgRoot": "runtime"
-			}
-		],
-		"prepare": [
-			{
-				"path": "@semantic-release/npm"
-			},
-			{
-				"path": "@semantic-release/npm",
-				"pkgRoot": "runtime"
-			}
-		],
-		"success": [],
-		"fail": []
-	},
-	"config": {
-		"commitizen": {
-			"path": "./node_modules/cz-conventional-changelog"
-		}
-	},
-	"publishConfig": {
-		"registry": "https://registry.npmjs.org"
-	},
-	"keywords": [
-		"rest",
-		"framework",
-		"validation",
-		"decorators"
-	],
 	"husky": {
 		"hooks": {
 			"commit-msg": "commitlint -e $HUSKY_GIT_PARAMS"
 		}
+	},
+	"resolutions": {
+		"**/trouter": "3.2.0"
 	}
 }

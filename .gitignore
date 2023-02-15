@@ -9,12 +9,9 @@ docs
 .compswag.js
 DEBUG_OUTPUT/
 generatedRoutes.ts
-valory.json
 shrinkwrap.yaml
 *.log
 .cache
 pkg
-runtime
-/compiler
 DEBUG
-*/**/generated
+old

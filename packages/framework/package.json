@@ -1,0 +1,24 @@
+{
+  "name": "@valory/framework",
+  "version": "5.0.0",
+  "description": "A server agnostic web framework for creating bulletproof apis",
+  "main": "dist/index.js",
+  "author": "John Conley",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "compile": "ttsc -b"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "@types/uuid": "^9.0.0",
+    "ttypescript": "^1.5.15",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "openapi-types": "^12.1.0",
+    "trouter": "^3.2.0",
+    "uuid": "^9.0.0"
+  }
+}

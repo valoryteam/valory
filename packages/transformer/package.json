@@ -1,0 +1,8 @@
+{
+  "name": "@valory/transformer",
+  "version": "5.0.0",
+  "description": "Typescript tranformer to support @valory/runtime",
+  "main": "dist/index.ts",
+  "author": "John Conley",
+  "license": "MIT"
+}

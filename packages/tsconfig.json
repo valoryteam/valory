@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "target": "es2022",
+    "strict": true,
+    "outDir": "dist/",
+    "declaration": true,
+    "skipLibCheck": true,
+    "noUnusedParameters": false,
+    "sourceMap": true,
+    "noUnusedLocals": false,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "rootDir": "src",
+    "composite": true,
+    "types": ["node"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "preserveValueImports": true,
+    "stripInternal": true,
+    "incremental": true,
+
+  }
+}
