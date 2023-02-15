@@ -29,8 +29,8 @@ export abstract class Controller {
   /**
    * Set a header to a given value
    */
-  public setHeader(name: string, value: string | number) {
-    this.headers[name.toLowerCase()] = value;
+  public setHeader(name: string, value: string | string[] | number) {
+    this.headers[name.toLowerCase()] = typeof value === 'number' ? value.toString() : value;
   }
 
   /**

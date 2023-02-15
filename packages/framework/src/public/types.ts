@@ -1,6 +1,6 @@
 import { OpenAPIV3_1 } from 'openapi-types'
 import { ApiContext } from './context.js';
-import { AttachmentRegistry, IAttachmentKey } from '../lib/attachment-registry.js';
+import { AttachmentRegistry, IAttachmentKey } from './attachment-registry.js';
 
 export type ApiMiddlewareExecutor = (ctx: ApiContext) => Promise<void> | void;
 

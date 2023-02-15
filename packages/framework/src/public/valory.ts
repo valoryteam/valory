@@ -1,6 +1,6 @@
 import { ApiMiddleware, HttpMethod } from './types.js';
-import { Endpoint } from '../lib/endpoint.js';
 import { ApiAdaptor } from './api-adaptor.js';
+import { Endpoint } from '../runtime/index.js';
 
 export interface IValoryArgs {
   beforeAllMiddleware?: ApiMiddleware[];

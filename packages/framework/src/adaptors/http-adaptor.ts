@@ -27,15 +27,12 @@ export class HttpAdaptor extends ApiAdaptor {
         });
 
         req.on("end", async () => {
-          const ctx = new ApiContext({
-            headers: req.headers as HttpHeaders,
-            path: url.pathname,
-            method,
+          const ctx = await this.handleRequest({
             rawBody,
-            queryParams: Object.fromEntries(url.searchParams)
+            headers: req.headers as HttpHeaders,
+            method: req.method as HttpMethod,
+            rawPath: req.url || "",
           });
-
-          await this.handleRequest(ctx);
           res.writeHead(ctx.response.statusCode, ctx.prepareHeaders());
           res.end(ctx.serializeResponse());
         });

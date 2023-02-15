@@ -1,18 +1,22 @@
 import {v4} from 'uuid';
-import { ApiRequest, ApiResponse, HttpHeaders } from '../public/types.js'
-import { AttachmentRegistry } from './attachment-registry.js';
+import { ApiRequest, ApiResponse, AttachmentRegistry, HttpHeaders } from '../public/index.js';
 import { lowercaseKeys } from '../runtime/index.js';
 
 export type ContentTypeParser = (input: string) => any;
-export type ContentTypeSerializer = (input: {toString: () => string}) => string | Buffer;
+export type ContentTypeSerializer = (input: any) => string;
 
 const NOOP_STRING: ContentTypeSerializer = input => (input.toString());
 
 export class ApiContext {
     public static defaultContentType = "application/json";
     public static requestIdGenerator: () => string = v4;
-    private static parserMap: {[type: string]: ContentTypeParser} = (global as any).VALORY_CONTENT_HANDLER.parserMap;
-    private static serializerMap: {[type: string]: ContentTypeSerializer} = (global as any).VALORY_CONTENT_HANDLER.serializerMap;
+    private static parserMap: {[type: string]: ContentTypeParser} = {
+        "application/json": JSON.parse,
+    };
+    private static serializerMap: {[type: string]: ContentTypeSerializer} = {
+        "application/json": JSON.stringify,
+        "application/octet-stream": (x: Buffer) => x.toString("base64")
+    };
 
     public static registerParser(type: string, parser: ContentTypeParser) {
         ApiContext.parserMap[type] = parser;
@@ -27,16 +31,17 @@ export class ApiContext {
         headers: {},
         statusCode: 200
     };
-    public readonly attachments = new AttachmentRegistry();
+    public readonly attachments: AttachmentRegistry;
     public readonly requestId: string;
     public readonly request: ApiRequest;
     private serializedResponse?: string | Buffer;
 
-    constructor(request: Omit<ApiRequest, "body" | "formData" | "queryParams" | "path"> & {path: string, queryString: string, requestId?: string}) {
+    constructor(request: Omit<ApiRequest, "body" | "formData" >, meta: {requestId?: string, attachments?: AttachmentRegistry}) {
         const headers = lowercaseKeys(request.headers);
         const contentType = request.headers["content-type"] || ApiContext.defaultContentType;
         const body = ApiContext.parse(ApiContext.parseContentTypeHeader(contentType), request.rawBody);
-        this.requestId = request.requestId || ApiContext.requestIdGenerator();
+        this.attachments = meta.attachments || new AttachmentRegistry();
+        this.requestId = meta.requestId || ApiContext.requestIdGenerator();
         this.request = {
             formData: body,
             body,
@@ -45,7 +50,7 @@ export class ApiContext {
             method: request.method,
             rawBody: request.rawBody,
             pathParams: request.pathParams || {},
-            queryParams: ApiContext.parse("application/x-www-form-urlencoded", request.queryString) || {}
+            queryParams: request.queryParams || {},
         };
     }
 
@@ -86,7 +91,7 @@ export class ApiContext {
     }
 
     public responseContentType() {
-        return this.response.headers["content-type"] || ApiContext.defaultContentType;
+        return ApiContext.parseContentTypeHeader(this.response.headers["content-type"])
     }
 
     public serializeResponse(): string | Buffer {

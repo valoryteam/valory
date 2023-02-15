@@ -45,13 +45,12 @@ export class Endpoint {
       });
   }
 
-  public async handleRequest(ctx: ApiContext): Promise<ApiContext> {
+  public async handleRequest(ctx: ApiContext): Promise<void> {
     if (this.executor == null) {
       throw new Error("Endpoint executor is not built. Did you forget to call 'done()'?");
     }
 
     await this.executor.execute(ctx);
-    return ctx;
   }
 
   public appendMiddleware(middleware: ApiMiddleware) {
